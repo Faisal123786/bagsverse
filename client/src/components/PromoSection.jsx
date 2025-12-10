@@ -42,7 +42,7 @@ const PromoSection = () => {
   ];
 
   return (
-    <Container fluid className="py-2">
+    <Container fluid="lg" className="py-3">
          <div className="mb-4">
         <h2 className="section-title">Shop by Budget</h2>
       </div>

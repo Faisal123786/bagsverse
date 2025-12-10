@@ -77,7 +77,7 @@
 }
 
 .promo-title {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   color: #000;
   font-weight: 800; /* Extra bold */
   text-transform: uppercase;
@@ -134,7 +134,76 @@
 /* Customizing the arrows (optional) */
 .react-multiple-carousel__arrow {
   background: rgba(0, 0, 0, 0.5) !important;
+  margin-bottom: 30px !important;
   &:hover {
     background: rgba(0, 0, 0, 0.8) !important;
+  }
+}
+
+/* --- Trending Products Card --- */
+
+/* 1. The Container Card */
+.product-card {
+  background: #fff;
+  border-radius: 16px; /* Rounded corners */
+  border: 1.5px solid transparent; /* Invisible border by default prevents layout jump */
+  transition: all 0.3s ease-in-out; /* Smooth transition for hover */
+  cursor: pointer;
+
+  /* 2. HOVER EFFECT (The "Magic") */
+  &:hover {
+    border-color: #c5a95f; /* Gold/Amber color from screenshot */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08); /* Soft shadow */
+    
+    /* Optional: Scale up slightly */
+    transform: translateY(-2px);
+  }
+}
+
+/* 3. Image Styling */
+.product-img-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  height: 250px; /* Fixed height for uniformity */
+  background-color: #f8f9fa;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image fills box */
+  }
+}
+
+/* 4. Text Styling */
+.product-category {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.product-price {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #212529;
+}
+
+/* 5. Cart Button Styling */
+.cart-btn {
+  background-color: #d4b86a !important; /* Gold color */
+  border: none !important;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    background-color: #bfa04d !important; /* Darker gold on hover */
+    transform: scale(1.1); /* Button pops slightly */
+  }
+  
+  i {
+    font-size: 1.2rem;
   }
 }
