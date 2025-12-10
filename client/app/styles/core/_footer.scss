@@ -3,6 +3,48 @@
   flex-shrink: 0;
   border-top: $border-default;
 }
+.footer {
+  position: relative;
+  color: #fff;
+  padding: 60px 0;
+  overflow: hidden;
+}
+
+/* Background image with blur */
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://media.istockphoto.com/id/519309544/photo/colorful-leather-handbags-for-sale.jpg?s=612x612&w=0&k=20&c=vr_NWky7ArBQT1wT02l3PU1lO8W3LrTfWeBOUb1jjPA='); /* Replace with your image */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(8px); /* Adjust blur intensity */
+  z-index: 0;
+}
+
+/* Dark overlay on top of blurred image */
+.footer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.87); /* Dark overlay */
+  z-index: 1;
+}
+
+/* Make sure content is above overlay */
+.footer .footer-content,
+.footer .footer-social-item,
+.footer .footer-copyright {
+  position: relative;
+  z-index: 2;
+}
 
 .footer-content {
   @include flex();
@@ -113,4 +155,13 @@
 .footer-copyright {
   text-align: center;
   padding: 16px 0px;
+}
+.footer .footer-link a {
+  color: #fff; /* Default white */
+  text-decoration: none;
+  transition: color 0.3s ease; /* Smooth hover transition */
+}
+
+.footer .footer-link a:hover {
+  color: #d3d3d3!important; /* Light grey on hover */
 }

@@ -36,16 +36,18 @@
 }
 
 .navigation-menu {
-  height: 100%;
-  background-color: $theme-white;
+  // height: 100%;
+  background-color: black;
+  padding: 10px 0px;
+;
 
   .menu-header {
-    border-bottom: $border-default;
-    text-align: right;
-    padding-right: 5px;
-    align-items: center;
-    justify-content: flex-end;
-    height: 50px;
+    // border-bottom: $border-default;
+    // text-align: right;
+    // padding-right: 5px;
+    // align-items: center;
+    // justify-content: flex-end;
+    height: 0px;
     @include flex();
   }
 
@@ -54,40 +56,95 @@
   }
 
   .menu-body {
-    margin-top: 20px;
+    // margin-top: 20px;
 
-    .menu-list {
-      .menu-item {
-        a {
-          color: $font-custom-color !important;
-          font-weight: $font-weight-normal;
-          text-transform: capitalize;
-          display: block;
-          padding: 10px 30px 10px 30px;
-          border-left: 3px solid transparent;
-          @include transition();
+   .menu-list {
+  .menu-item {
+    a {
+      position: relative; // required for ::after
+      color: white !important;
+      font-weight: $font-weight-normal;
+      text-transform: capitalize;
+      display: block;
+      padding: 10px 30px;
+      border-left: 1px solid transparent;
+      @include transition();
 
-          &:hover {
-            background-color: $white;
-            border-left: 3px solid $primary-color;
-            color: $primary-color !important;
-            @include transition();
-          }
+      // Create animated underline
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 2px; // thickness of underline
+        width: 100%;
+        background-color: #e6a13a;
+        transform: scaleX(0);
+        transform-origin: left;
+        color: white!important;
+        transition: transform 0.3s ease;
+      }
 
-          &:focus {
-            outline: none;
-            box-shadow: none;
-            background-color: $white;
-            border-left: 3px solid $primary-color;
-          }
+      &:hover::after {
+        transform: scaleX(1); // animate from left to right
+      }
 
-          &.active-line {
-            font-weight: $font-weight-medium;
-            background-color: $white;
-            color: $primary-color !important;
-            border-color: $primary-color;
-            @include transition();
-          }
+      &:focus {
+        outline: none;
+        box-shadow: none;
+        background-color: #e6a13a;
+        border-bottom: 0px solid #e6a13a;
+        color: white !important;
+      }
+      &:hover {
+        color: white!important;
+      }
+
+      &.active-line {
+        font-weight: $font-weight-medium;
+        background-color: #c49c61;
+        color: white !important;
+
+        &::after {
+          transform: scaleX(1); // underline visible for active item
+        }
+      }
+    }
+  }
+  
+}
+
+  }
+}
+
+
+.menu-body {
+  .menu-list {
+    // Enable horizontal scroll only on mobile
+    @include media-breakpoint-down(xl) {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      scroll-behavior: smooth;
+
+      // Hide scrollbar (iOS/Android/WebKit)
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      -ms-overflow-style: none;  // hide scrollbar for IE/Edge
+      scrollbar-width: none;     // hide scrollbar for Firefox
+    }
+
+    .menu-item {
+      @include media-breakpoint-down(xl) {
+        flex: 0 0 auto; // important → prevents shrinking
+      }
+
+      a {
+        @include media-breakpoint-down(xl) {
+          padding: 10px 20px; // make mobile items smaller & aligned
         }
       }
     }

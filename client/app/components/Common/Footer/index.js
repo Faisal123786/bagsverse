@@ -4,76 +4,89 @@
  *
  */
 
-import React from 'react';
+import React from "react";
 
-import { Link } from 'react-router-dom';
-import { Container } from 'reactstrap';
+import { Link } from "react-router-dom";
+import { Col, Container, Row } from "reactstrap";
 
-import Newsletter from '../../../containers/Newsletter';
+import Newsletter from "../../../containers/Newsletter";
 
 const Footer = () => {
   const infoLinks = [
-    { id: 0, name: 'Contact Us', to: '/contact' },
-    { id: 1, name: 'Sell With Us', to: '/sell' },
-    { id: 2, name: 'Shipping', to: '/shipping' }
+    { id: 0, name: "Contact Us", to: "/contact" },
+    { id: 1, name: "Sell With Us", to: "/sell" },
+    { id: 2, name: "Shipping", to: "/shipping" },
   ];
 
   const footerBusinessLinks = (
-    <ul className='support-links'>
-      <li className='footer-link'>
-        <Link to='/dashboard'>Account Details</Link>
+    <ul className="support-links">
+      <li className="footer-link">
+        <Link to="/dashboard">Account Details</Link>
       </li>
-      <li className='footer-link'>
-        <Link to='/dashboard/orders'>Orders</Link>
+      <li className="footer-link">
+        <Link to="/dashboard/orders">Orders</Link>
       </li>
     </ul>
   );
 
-  const footerLinks = infoLinks.map(item => (
-    <li key={item.id} className='footer-link'>
-      <Link key={item.id} to={item.to}>
+  const footerLinks = infoLinks.map((item) => (
+    <li key={item.id} className="footer-link text-white">
+      <Link key={item.id} to={item.to} className="text-white">
         {item.name}
       </Link>
     </li>
   ));
 
   return (
-    <footer className='footer'>
-      <Container>
-        <div className='footer-content'>
-          <div className='footer-block'>
-            <div className='block-title'>
-              <h3 className='text-uppercase'>Customer Service</h3>
+    <footer className="footer">
+      <Container fluid>
+        <Row>
+          <Col xs="12" sm="12" md="12" lg="12" xl="8" className="mx-auto">
+            <div className="footer-content">
+              <div className="footer-block">
+                <div className="block-title">
+                  <h3 className="text-uppercase text-white">Customer Service</h3>
+                </div>
+                <div className="block-content">
+                  <ul>{footerLinks}</ul>
+                </div>
+              </div>
+              <div className="footer-block">
+                <div className="block-title">
+                  <h3 className="text-uppercase text-white">Links</h3>
+                </div>
+                <div className="block-content">
+                  <ul>{footerLinks}</ul>
+                </div>
+              </div>
+              <div className="footer-block">
+                <div className="block-title">
+                  <h3 className="text-uppercase text-white">Newsletter</h3>
+                  <Newsletter />
+                </div>
+              </div>
             </div>
-            <div className='block-content'>
-              <ul>{footerLinks}</ul>
+            <div className="footer-copyright text-white">
+              <span className="text-white">© {new Date().getFullYear()} BagsVerse</span>
             </div>
-          </div>
-          <div className='footer-block'>
-            <div className='block-title'>
-              <h3 className='text-uppercase'>Links</h3>
-            </div>
-            <div className='block-content'>
-              <ul>{footerLinks}</ul>
-            </div>
-          </div>
-          <div className='footer-block'>
-            <div className='block-title'>
-              <h3 className='text-uppercase'>Newsletter</h3>
-              <Newsletter />
-            </div>
-          </div>
-        </div>
-        <div className='footer-copyright'>
-          <span>© {new Date().getFullYear()} MERN Store</span>
-        </div>
-        <ul className='footer-social-item'>
-          <li>
-            <a href='/#facebook' rel='noreferrer noopener' target='_blank'>
-              <span className='facebook-icon' />
-            </a>
-          </li>
-          <li>
+            <ul className="footer-social-item">
+              <li>
+                <Link to="/">
+                  {/* <span className='facebook-icon' /> */}
+                  <span>
+                    <img
+                      src="./images/goldenLogo.png"
+                      alt="bagverse"
+                      style={{
+                        width: "150px",
+                        height: "150px",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </span>
+                </Link>
+              </li>
+              {/* <li>
             <a href='/#instagram' rel='noreferrer noopener' target='_blank'>
               <span className='instagram-icon' />
             </a>
@@ -87,8 +100,10 @@ const Footer = () => {
             <a href='/#twitter' rel='noreferrer noopener' target='_blank'>
               <span className='twitter-icon' />
             </a>
-          </li>
-        </ul>
+          </li> */}
+            </ul>
+          </Col>
+        </Row>
       </Container>
     </footer>
   );

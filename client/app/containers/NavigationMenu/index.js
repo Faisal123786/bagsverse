@@ -37,14 +37,14 @@ class NavigationMenu extends React.PureComponent {
           )}
         </div>
         <div className='menu-body'>
-          <Container>
-            <h3 className='menu-title text-uppercase'>Shop By Category</h3>
+          <Container fluid>
+            {/* <h3 className='menu-title text-uppercase'>Shop By Category</h3> */}
             <nav role='navigation'>
-              <ul className='menu-list'>
+              <ul className='menu-list mb-0' style={{display:'flex',justifyContent:'center'}}>
                 {categories.map((link, index) => (
                   <li key={index} className='menu-item'>
                     <NavLink
-                      onClick={handleCategoryClick}
+                      // onClick={handleCategoryClick}
                       to={'/shop/category/' + link.slug}
                       activeClassName='active-link'
                       exact

@@ -76,7 +76,9 @@ const Button = props => {
       type={type}
       onClick={onClick}
       style={{
-        borderRadius: round
+        borderRadius: round,
+        backgroundColor: variant === 'primary' ? '#c49c61' : undefined,
+        color: variant === 'primary' ? '#3e362b' : undefined
       }}
     >
       {tooltip && <Tooltip target={tooltipId}>{tooltipContent}</Tooltip>}

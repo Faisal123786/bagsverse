@@ -22,42 +22,42 @@ import {
   FETCH_PRODUCTS_SELECT,
   SET_PRODUCTS_LOADING,
   SET_ADVANCED_FILTERS,
-  RESET_ADVANCED_FILTERS
-} from './constants';
+  RESET_ADVANCED_FILTERS,
+} from "./constants";
 
 const initialState = {
   products: [],
   storeProducts: [],
   product: {
-    _id: ''
+    _id: "",
   },
   storeProduct: {},
   productsSelect: [],
   productFormData: {
-    sku: '',
-    name: '',
-    description: '',
+    sku: "",
+    name: "",
+    description: "",
     quantity: 1,
     price: 1,
     image: {},
     isActive: true,
-    taxable: { value: 0, label: 'No' },
+    taxable: { value: 0, label: "No" },
     brand: {
       value: 0,
-      label: 'No Options Selected'
-    }
+      label: "No Options Selected",
+    },
   },
   isLoading: false,
   productShopData: {
-    quantity: 1
+    quantity: 1,
   },
   formErrors: {},
   editFormErrors: {},
   shopFormErrors: {},
   advancedFilters: {
-    name: 'all',
-    category: 'all',
-    brand: 'all',
+    name: "all",
+    category: "all",
+    brand: "all",
     min: 1,
     max: 2500,
     rating: 0,
@@ -65,8 +65,8 @@ const initialState = {
     totalPages: 1,
     currentPage: 1,
     count: 0,
-    limit: 10
-  }
+    limit: 10,
+  },
 };
 
 const productReducer = (state = initialState, action) => {
@@ -74,133 +74,133 @@ const productReducer = (state = initialState, action) => {
     case FETCH_PRODUCTS:
       return {
         ...state,
-        products: action.payload
+        products: action.payload,
       };
     case FETCH_STORE_PRODUCTS:
       return {
         ...state,
-        storeProducts: action.payload
+        storeProducts: action.payload,
       };
     case FETCH_PRODUCT:
       return {
         ...state,
         product: action.payload,
-        editFormErrors: {}
+        editFormErrors: {},
       };
     case FETCH_STORE_PRODUCT:
       return {
         ...state,
         storeProduct: action.payload,
         productShopData: {
-          quantity: 1
+          quantity: 1,
         },
-        shopFormErrors: {}
+        shopFormErrors: {},
       };
     case SET_PRODUCTS_LOADING:
       return {
         ...state,
-        isLoading: action.payload
+        isLoading: action.payload,
       };
     case FETCH_PRODUCTS_SELECT:
       return { ...state, productsSelect: action.payload };
     case ADD_PRODUCT:
       return {
         ...state,
-        products: [...state.products, action.payload]
+        products: [...state.products, action.payload],
       };
     case REMOVE_PRODUCT:
-      const index = state.products.findIndex(b => b._id === action.payload);
+      const index = state.products.findIndex((b) => b._id === action.payload);
       return {
         ...state,
         products: [
           ...state.products.slice(0, index),
-          ...state.products.slice(index + 1)
-        ]
+          ...state.products.slice(index + 1),
+        ],
       };
     case PRODUCT_CHANGE:
       return {
         ...state,
         productFormData: {
           ...state.productFormData,
-          ...action.payload
-        }
+          ...action.payload,
+        },
       };
     case PRODUCT_EDIT_CHANGE:
       return {
         ...state,
         product: {
           ...state.product,
-          ...action.payload
-        }
+          ...action.payload,
+        },
       };
     case PRODUCT_SHOP_CHANGE:
       return {
         ...state,
         productShopData: {
           ...state.productShopData,
-          ...action.payload
-        }
+          ...action.payload,
+        },
       };
     case SET_PRODUCT_FORM_ERRORS:
       return {
         ...state,
-        formErrors: action.payload
+        formErrors: action.payload,
       };
     case SET_PRODUCT_FORM_EDIT_ERRORS:
       return {
         ...state,
-        editFormErrors: action.payload
+        editFormErrors: action.payload,
       };
     case SET_PRODUCT_SHOP_FORM_ERRORS:
       return {
         ...state,
-        shopFormErrors: action.payload
+        shopFormErrors: action.payload,
       };
     case RESET_PRODUCT:
       return {
         ...state,
         productFormData: {
-          sku: '',
-          name: '',
-          description: '',
+          sku: "",
+          name: "",
+          description: "",
           quantity: 1,
           price: 1,
           image: {},
           isActive: true,
-          taxable: { value: 0, label: 'No' },
+          taxable: { value: 0, label: "No" },
           brand: {
             value: 0,
-            label: 'No Options Selected'
-          }
+            label: "No Options Selected",
+          },
         },
         product: {
-          _id: ''
+          _id: "",
         },
-        formErrors: {}
+        formErrors: {},
       };
     case RESET_PRODUCT_SHOP:
       return {
         ...state,
         productShopData: {
-          quantity: 1
+          quantity: 1,
         },
-        shopFormErrors: {}
+        shopFormErrors: {},
       };
     case SET_ADVANCED_FILTERS:
       return {
         ...state,
         advancedFilters: {
           ...state.advancedFilters,
-          ...action.payload
-        }
+          ...action.payload,
+        },
       };
     case RESET_ADVANCED_FILTERS:
       return {
         ...state,
         advancedFilters: {
-          name: 'all',
-          category: 'all',
-          brand: 'all',
+          name: "all",
+          category: "all",
+          brand: "all",
           min: 1,
           max: 2500,
           rating: 0,
@@ -208,8 +208,8 @@ const productReducer = (state = initialState, action) => {
           totalPages: 1,
           currentPage: 1,
           count: 0,
-          limit: 10
-        }
+          limit: 10,
+        },
       };
     default:
       return state;

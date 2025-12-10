@@ -23,16 +23,19 @@ const Input = props => {
     label,
     name,
     onInputChange,
-    inlineElement
+    inlineElement,
+    multiple 
   } = props;
 
   const _onChange = e => {
-    if (e.target.name == 'image') {
-      onInputChange(e.target.name, e.target.files[0]);
+    if (type === 'file') {
+      const filesArray = multiple ? Array.from(e.target.files) : e.target.files[0];
+      onInputChange(e.target.name, filesArray);
     } else {
       onInputChange(e.target.name, e.target.value);
     }
   };
+
 
   if (type === 'textarea') {
     const styles = `input-box${error ? ' invalid' : ''}`;
@@ -130,6 +133,7 @@ const Input = props => {
             name={name}
             value={value}
             placeholder={placeholder}
+             multiple={multiple}
           />
           {inlineElement}
         </div>
@@ -144,7 +148,8 @@ Input.defaultProps = {
   decimals: true,
   rows: '4',
   inlineElement: null,
-  autoComplete: 'on'
+  autoComplete: 'on',
+  multiple: false,
 };
 
 export default Input;

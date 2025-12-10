@@ -4,14 +4,14 @@
  *
  */
 
-import React from 'react';
+import React from "react";
 
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 
-import actions from '../../actions';
+import actions from "../../actions";
 
-import AddProduct from '../../components/Manager/AddProduct';
-import SubPage from '../../components/Manager/SubPage';
+import AddProduct from "../../components/Manager/AddProduct";
+import SubPage from "../../components/Manager/SubPage";
 
 class Add extends React.PureComponent {
   componentDidMount() {
@@ -26,13 +26,13 @@ class Add extends React.PureComponent {
       formErrors,
       brands,
       productChange,
-      addProduct
+      addProduct,
     } = this.props;
 
     return (
       <SubPage
-        title='Add Product'
-        actionTitle='Cancel'
+        title="Add Product"
+        actionTitle="Cancel"
         handleAction={() => history.goBack()}
       >
         <AddProduct
@@ -48,12 +48,12 @@ class Add extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     user: state.account.user,
     productFormData: state.product.productFormData,
     formErrors: state.product.formErrors,
-    brands: state.brand.brandsSelect
+    brands: state.brand.brandsSelect,
   };
 };
 
