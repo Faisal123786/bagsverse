@@ -80,7 +80,7 @@ class Application extends React.PureComponent {
         <main className="main">
           <Container fluid style={{ paddingLeft: 0, paddingRight: 0 }}>
             <Row>
-              <Col xs={12} sm={12} md={12} lg={12} xl={8}  className="mx-auto px-2">
+              <Col xs={12} sm={12} md={12} lg={12} xl={12} className="mx-auto px-2">
                 <div className="wrapper" style={{ marginTop: "146px" }}>
                   <Switch>
                     <Route exact path="/" component={HomePage} />
