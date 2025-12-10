@@ -8,19 +8,19 @@ import '../styles/main.scss';
 const responsive = {
   superLargeDesktop: {
     breakpoint: { max: 4000, min: 1200 },
-    items: 6 // Show 6 items on very big screens
+    items: 6 
   },
   desktop: {
     breakpoint: { max: 1200, min: 992 },
-    items: 5 // Show 5 items on laptops
+    items: 5 
   },
   tablet: {
     breakpoint: { max: 992, min: 576 },
-    items: 3 // Show 3 items on tablets
+    items: 3 
   },
   mobile: {
     breakpoint: { max: 576, min: 0 },
-    items: 2 // Show 2 items on mobile
+    items: 2 
   }
 };
 
@@ -51,19 +51,19 @@ const CategoryCarousel = () => {
   ];
 
   return (
-    <Container fluid className="py-2">
+    <Container fluid="lg" className="py-3">
       <h3 className="section-title mb-4">Shop by Collections</h3>
       
       <Carousel 
         responsive={responsive}
-        infinite={true} // Loops the slider
-        autoPlay={true} // Optional: Auto scroll
+        infinite={true} 
+        autoPlay={true} 
         autoPlaySpeed={3000}
         keyBoardControl={true}
-        customTransition="transform 500ms ease-in-out" // Smooth transition
+        customTransition="transform 500ms ease-in-out" 
         transitionDuration={500}
         containerClass="carousel-container"
-        removeArrowOnDeviceType={["tablet", "mobile"]} // Optional: Hide arrows on mobile for cleaner look
+        removeArrowOnDeviceType={["tablet", "mobile"]} 
         itemClass="carousel-item-padding-40-px"
       >
         {categories.map((cat) => (

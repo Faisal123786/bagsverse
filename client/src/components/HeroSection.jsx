@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import '../styles/main.scss'; // Ensure we have access to our styles
 
-const HeroSection = ({ images }) => {
+const HeroSections = ({ images }) => {
   // We expect an array of 6 images from the backend.
   // Let's assume the backend sends them in this order of importance:
   // Index 0-1: The 2 MAIN images (Big ones)
@@ -16,7 +16,7 @@ const HeroSection = ({ images }) => {
   const rightImages = images.slice(4, 6);
 
   return (
-    <Container fluid className="py-4 hero-section">
+    <Container fluid="lg" className="py-3 hero-section">
       <Row className="g-3 align-items-stretch">
         
         {/* --- LEFT COLUMN (Desktop: Left | Mobile: Bottom Left) --- */}
@@ -53,5 +53,14 @@ const HeroSection = ({ images }) => {
     </Container>
   );
 };
-
-export default HeroSection;
+const heroImages = [
+    { url: "https://api.mallshark.com/uploads/medium/BOX3-DecemberDeals_33704.webp" }, // Main 1 (Books/Gifts)
+    { url: "https://api.mallshark.com/uploads/medium/BOX5-DecemberSalesV2_35319.webp" }, // Main 2 (Christmas/Red)
+     { url: "https://api.mallshark.com/uploads/medium/BOX1-DecemberDeals_33705.webp" },  // left Side 1 (Makeup)
+    { url: "https://api.mallshark.com/uploads/medium/BOX2-DecemberDeals_33707.webp" },  // left Side 2 (Coffee)
+    { url: "https://api.mallshark.com/uploads/medium/BOX4-DecemberDeals_33706.webp" },  // right Side 3 (Gadgets)
+    { url: "https://api.mallshark.com/uploads/medium/BOX6-CyberMonday_33703.webp" }   // right Side 4 (Boxes)
+  ];
+export default function HeroSection() {
+  return <HeroSections images={heroImages} />;
+}
