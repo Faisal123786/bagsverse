@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { Accordion } from "react-bootstrap";
 import Skeleton from "react-loading-skeleton";
 import { Link, useParams } from "react-router-dom";
 import Marquee from "react-fast-marquee";
 import { useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
-
+import ProductTabs from "../components/ProductTabs";
+import ProductReviews from "../components/ProductReviews";
 import { Footer, Navbar } from "../components";
 
 const Product = () => {
@@ -62,37 +64,133 @@ const Product = () => {
   };
 
   const ShowProduct = () => {
+    const [qty, setQty] = useState(1);
+
+    const handleQty = (type) => {
+      if (type === "dec" && qty > 1) {
+        setQty(qty - 1);
+      }
+      if (type === "inc") {
+        setQty(qty + 1);
+      }
+    };
+
     return (
       <>
-        <div className="container my-5 py-2">
+        <div className="container my-2 py-2">
           <div className="row">
+            {/* --- LEFT SIDE: IMAGE --- */}
             <div className="col-md-6 col-sm-12 py-3">
               <img
-                className="img-fluid"
+                className="img-fluid sticky-top"
                 src={product.image}
                 alt={product.title}
                 width="400px"
                 height="400px"
+                style={{ objectFit: "contain", maxHeight: "500px" }}
               />
             </div>
-            <div className="col-md-6 col-md-6 py-5">
-              <h4 className="text-uppercase text-muted">{product.category}</h4>
-              <h1 className="display-5">{product.title}</h1>
-              <p className="lead">
-                {product.rating && product.rating.rate}{" "}
-                <i className="fa fa-star"></i>
-              </p>
-              <h3 className="display-6  my-4">${product.price}</h3>
-              <p className="lead">{product.description}</p>
-              <button
-                className="btn btn-outline-dark"
-                onClick={() => addProduct(product)}
+
+            {/* --- RIGHT SIDE: DETAILS --- */}
+            <div className="col-md-6 col-sm-12 py-3">
+
+              {/* 1. Header: Title + Heart Icon */}
+              <div className="d-flex justify-content-between align-items-start">
+                <div>
+                  <h2 className="display-6 fw-normal mb-0">{product.title}</h2>
+                  {/* Category below title like screenshot */}
+                  {/* <span className="text-muted small">{product.category}</span> */}
+                </div>
+                {/* Heart Icon Button */}
+                <button className="btn btn-light border rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
+                  <i className="fa fa-heart-o"></i>
+                </button>
+              </div>
+
+              {/* Price */}
+              <h3 className="my-3 fw-bold">Rs. {product.price} PKR</h3>
+
+              {/* Reviews */}
+              <div className="mb-4 d-flex align-items-center">
+                <span className="text-danger me-2"> {/* Red stars per screenshot */}
+                  <i className="fa fa-star"></i>
+                  <i className="fa fa-star"></i>
+                  <i className="fa fa-star"></i>
+                  <i className="fa fa-star"></i>
+                  <i className="fa fa-star"></i>
+                </span>
+                <span className="text-muted small">
+                  {product.rating && product.rating.count} reviews
+                </span>
+              </div>
+
+              {/* 2. Quantity & Add to Cart (SAME LINE) */}
+              <div className="mb-3">
+                <p className="mb-2 small fw-bold">Quantity</p>
+                <div className="d-flex gap-3">
+                  {/* Quantity Box */}
+                  <div
+                    className="d-flex align-items-center justify-content-between border rounded-0"
+                    style={{ width: "120px", height: "48px" }} // Fixed height
+                  >
+                    <button className="btn  border-0 px-3 no-focus " onClick={() => handleQty("dec")}>-</button>
+                    <span className="fw-bold">{qty}</span>
+                    <button className="btn  border-0 px-3 no-focus " onClick={() => handleQty("inc")}>+</button>
+                  </div>
+
+                  {/* Add to Cart Button (Takes remaining space) */}
+                  <button
+                    className="btn btn-outline-dark flex-grow-1 text-uppercase fw-bold rounded-0"
+                    style={{ height: "48px" }} // Matches height of qty box
+                    onClick={() => addProduct(product)}
+                  >
+                    Add to cart
+                  </button>
+                </div>
+              </div>
+
+              {/* 3. Buy It Now (Full width below) */}
+              <Link
+                to="/cart"
+                className="btn btn-dark w-100 py-2 mb-4 text-uppercase fw-bold rounded-0"
+                style={{ height: "48px", display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                Add to Cart
-              </button>
-              <Link to="/cart" className="btn btn-dark mx-3">
-                Go to Cart
+                Buy it now
               </Link>
+
+              {/* Share */}
+              <div className="mb-3">
+                <div className="d-flex align-items-center gap-2 cursor-pointer text-muted">
+                  <i className="fa fa-share-alt"></i>
+                  <span className="small">Share</span>
+                </div>
+              </div>
+
+              {/* Shipping Info with Divider */}
+              <hr />
+              <div className="d-flex align-items-center gap-3 text-muted my-4" style={{ fontSize: '0.9rem' }}>
+                <i className="fa fa-cube fa-lg"></i>
+                <span>Free Shipping on all orders above Rs. 7,999 PKR!</span>
+              </div>
+
+              {/* 4. Accordions (Closed by default - removed defaultActiveKey) */}
+              <div className="mt-4">
+                <Accordion flush>
+                  <Accordion.Item eventKey="0">
+                    <Accordion.Header>Disclaimer</Accordion.Header>
+                    <Accordion.Body className="text-muted small">
+                      Actual colors may vary. This is due to computer monitors displaying colors differently.
+                    </Accordion.Body>
+                  </Accordion.Item>
+                  <Accordion.Item eventKey="1">
+                    <Accordion.Header>Cleaning Instruction</Accordion.Header>
+                    <Accordion.Body className="text-muted small">
+                      To clean this product, wipe with a soft, dry cloth. Avoid using harsh chemicals.
+                    </Accordion.Body>
+                  </Accordion.Item>
+                </Accordion>
+              </div>
+
             </div>
           </div>
         </div>
@@ -171,11 +269,13 @@ const Product = () => {
   return (
     <>
       <Navbar />
-      <div className="container">
+      <div className="container-lg container-fluid">
         <div className="row">{loading ? <Loading /> : <ShowProduct />}</div>
-        <div className="row my-5 py-5">
+        <div className="row"><ProductTabs /></div>
+        <div className="row"><ProductReviews /></div>
+        <div className="row my-2 py-2">
           <div className="d-none d-md-block">
-          <h2 className="">You may also Like</h2>
+            <h2 className="">You may also Like</h2>
             <Marquee
               pauseOnHover={true}
               pauseOnClick={true}
