@@ -91,3 +91,44 @@ export const deleteProduct = async id => {
     throw new Error(error.response?.data?.error || 'Failed to delete product');
   }
 };
+
+// category
+
+export const fetchCategories = async () => {
+  const response = await API.get('/category');
+  return response.data.categories;
+};
+export const addCategory = async data => {
+  try {
+    const response = await API.post('/category/add', data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to add category');
+  }
+};
+
+export const updateCategory = async (id, data) => {
+  try {
+    const response = await API.put(`/category/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to update category');
+  }
+};
+
+export const getCategoryById = async id => {
+  try {
+    const response = await API.get(`/category/${id}`);
+    return response.data.category;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch category');
+  }
+};
+export const deleteCategory = async id => {
+  try {
+    const response = await API.delete(`/category/delete/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to delete category');
+  }
+};

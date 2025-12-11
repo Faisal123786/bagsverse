@@ -6,6 +6,9 @@ import Account from './Account';
 import AddProduct from './AddProduct';
 import EditProduct from './EditProduct';
 import ProductList from './ProductList';
+import CategoryList from './CategoryList';
+import AddCategory from './AddCategory';
+import EditCategory from './EditCategory';
 
 // Example: get user from localStorage
 const getUser = () => {
@@ -69,6 +72,9 @@ const AdminLayout = () => {
                   <Route path='/add-product' element={<AddProduct />} />
                   <Route path='/product/:id' element={<EditProduct />} />
                   <Route path='/products' element={<ProductList />} />
+                  <Route path='/categories' element={<CategoryList />} />
+                  <Route path='/add-category' element={<AddCategory />} />
+                  <Route path='/category/:id' element={<EditCategory />} />
                 </>
               )}
               {user?.role === 'ROLE MERCHANT' && (
