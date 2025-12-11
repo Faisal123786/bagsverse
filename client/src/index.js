@@ -17,7 +17,6 @@ import {
   Register,
   Checkout,
   PageNotFound,
-  AdminDashboard,
   MerchantDashboard
 } from './pages';
 
@@ -25,6 +24,7 @@ import ScrollToTop from './components/ScrollToTop';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
+import AdminLayout from './admin';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -66,18 +66,19 @@ root.render(
           />
 
           <Route
-            path='/admin'
+            path='/admin/*'
             element={
-              <ProtectedRoute rolesAllowed={['ADMIN']}>
-                {/* <AdminDashboard /> */}
+              <ProtectedRoute rolesAllowed={['ROLE ADMIN']}>
+                <AdminLayout />
               </ProtectedRoute>
             }
           />
+          {/* other routes */}
 
           <Route
             path='/merchant'
             element={
-              <ProtectedRoute rolesAllowed={['MERCHANT']}>
+              <ProtectedRoute rolesAllowed={['ROLE MERCHANT']}>
                 {/* <MerchantDashboard /> */}
               </ProtectedRoute>
             }
