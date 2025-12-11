@@ -122,7 +122,7 @@ const Navbar = () => {
                       <li>
                         <NavLink
                           className='dropdown-item'
-                          to='/admin-dashboard'
+                          to='/admin'
                           onClick={() => setUserDropdown(false)}
                         >
                           <i className='fa fa-tachometer-alt me-2'></i> Admin

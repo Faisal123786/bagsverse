@@ -38,8 +38,7 @@ const Register = () => {
 
     onSubmit: async (values, { resetForm }) => {
       try {
-        const response = await registerUser(values);
-        console.log(response);
+        registerUser(values);
         toast.success('Registration Successful!');
         resetForm();
       } catch (error) {
