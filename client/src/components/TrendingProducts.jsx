@@ -15,7 +15,7 @@ const responsive = {
 // 2. The Product Card Component
 const ProductCard = ({ image, category, price }) => {
   return (
-    <div className="product-card p-3">
+    <div className="product-card ">
       {/* Image Area */}
       <div className="product-img-wrapper mb-3">
         <img src={image} alt={category} className="img-fluid" />
@@ -27,10 +27,11 @@ const ProductCard = ({ image, category, price }) => {
           <span className="product-category text-muted d-block mb-1">{category}</span>
           <h5 className="product-price mb-0">{price}</h5>
         </div>
-        
+
         {/* Cart Button */}
         <Button variant="warning" className="cart-btn rounded-circle text-white">
-          <i className="fa fa-shopping-cart"></i>
+          {/* <i className="fa fa-shopping-cart"></i> */}
+          <i className="fa fa-cart-plus"></i>
         </Button>
       </div>
     </div>
@@ -51,8 +52,8 @@ const TrendingProducts = () => {
   return (
     <Container fluid="lg" className="py-3">
       <h3 className="section-title mb-4">Trending on BagsVerse</h3>
-      
-      <Carousel 
+
+      <Carousel
         responsive={responsive}
         infinite={true}
         autoPlay={true}
@@ -60,14 +61,14 @@ const TrendingProducts = () => {
         keyBoardControl={true}
         customTransition="transform 500ms ease-in-out"
         transitionDuration={500}
-        itemClass="px-2 mt-3" 
+        itemClass="px-2 mt-3"
       >
         {products.map((item) => (
-          <ProductCard 
-            key={item.id} 
-            image={item.img} 
-            category={item.category} 
-            price={item.price} 
+          <ProductCard
+            key={item.id}
+            image={item.img}
+            category={item.category}
+            price={item.price}
           />
         ))}
       </Carousel>
