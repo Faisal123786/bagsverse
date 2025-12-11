@@ -1,40 +1,131 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Footer, Navbar } from "../components";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Footer, Navbar } from '../components';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { loginUser } from '../api';
+import toast, { Toaster } from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser, logoutUser } from '../redux/action/userAction';
 
 const Login = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.handleUser.user);
+
+  // Auto-logout if localStorage is removed
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedUser = localStorage.getItem('user');
+      if (!storedUser && user) {
+        dispatch(logoutUser());
+        navigate('/login');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [dispatch, navigate, user]);
+
+  const formik = useFormik({
+    initialValues: { email: '', password: '' },
+    validationSchema: Yup.object({
+      email: Yup.string().email('Invalid email').required('Email required'),
+      password: Yup.string().min(6, 'Min 6 chars').required('Password required')
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        const response = await loginUser(values);
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+        dispatch(setUser(response.user));
+        toast.success('Login Successful!');
+        resetForm();
+
+        // Redirect based on role
+        if (response.user.role === 'ADMIN') navigate('/admin');
+        else if (response.user.role === 'MERCHANT') navigate('/merchant');
+        else navigate('/');
+      } catch (error) {
+        toast.error('Login Failed!');
+      }
+    }
+  });
+
   return (
     <>
+      <Toaster position='top-right' />
       <Navbar />
-      <div className="container my-3 py-3">
-        <h1 className="text-center">Login</h1>
+      <div className='container my-3 py-3'>
+        <h1 className='text-center'>Login</h1>
         <hr />
-        <div class="row my-4 h-100">
-          <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
-            <form>
-              <div class="my-3">
-                <label for="display-4">Email address</label>
+        <div className='row my-4 h-100'>
+          <div className='col-md-4 col-lg-4 col-sm-8 mx-auto'>
+            <form onSubmit={formik.handleSubmit}>
+              {/* Email */}
+              <div className='form my-3'>
+                <label>Email Address</label>
                 <input
-                  type="email"
-                  class="form-control"
-                  id="floatingInput"
-                  placeholder="name@example.com"
+                  type='email'
+                  placeholder='name@example.com'
+                  className={`form-control ${
+                    formik.touched.email && formik.errors.email
+                      ? 'is-invalid'
+                      : ''
+                  }`}
+                  {...formik.getFieldProps('email')}
                 />
+                {formik.touched.email && formik.errors.email && (
+                  <small className='text-danger'>{formik.errors.email}</small>
+                )}
               </div>
-              <div class="my-3">
-                <label for="floatingPassword display-4">Password</label>
+
+              {/* Password */}
+              <div className='form my-3 position-relative'>
+                <label>Password</label>
                 <input
-                  type="password"
-                  class="form-control"
-                  id="floatingPassword"
-                  placeholder="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder='Password'
+                  className={`form-control ${
+                    formik.touched.password && formik.errors.password
+                      ? 'is-invalid'
+                      : ''
+                  }`}
+                  {...formik.getFieldProps('password')}
                 />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '40px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+                {formik.touched.password && formik.errors.password && (
+                  <small className='text-danger'>
+                    {formik.errors.password}
+                  </small>
+                )}
               </div>
-              <div className="my-3">
-                <p>New Here? <Link to="/register" className="text-decoration-underline text-info">Register</Link> </p>
-              </div>
-              <div className="text-center">
-                <button class="my-2 mx-auto btn btn-dark" type="submit" disabled>
+
+              <p>
+                New Here?{' '}
+                <Link
+                  to='/register'
+                  className='text-info text-decoration-underline'
+                >
+                  Register
+                </Link>
+              </p>
+
+              <div className='text-center'>
+                <button className='my-2 btn btn-dark w-100' type='submit'>
                   Login
                 </button>
               </div>

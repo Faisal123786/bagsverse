@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logoutUser } from '../redux/action/userAction';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const cartItems = useSelector(state => state.handleCart);
+  const user = useSelector(state => state.handleUser.user);
+  console.log(user);
+
   const [userDropdown, setUserDropdown] = useState(false);
   const [cartSidebar, setCartSidebar] = useState(false);
   const [searchDrawer, setSearchDrawer] = useState(false);
@@ -16,10 +23,17 @@ const Navbar = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Close all except search drawer
+  // Close overlays except search drawer
   const handleOverlayClick = () => {
     setCartSidebar(false);
     setUserDropdown(false);
+  };
+
+  // Logout
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    setUserDropdown(false);
+    navigate('/login');
   };
 
   return (
@@ -32,7 +46,7 @@ const Navbar = () => {
             alt='BagVerse'
             style={{ width: '50px', height: '50px', marginRight: '8px' }}
           />
-          <span className='fw-bold fs-5 text-dark'></span>
+          <span className='fw-bold fs-5 text-dark'>BagVerse</span>
         </NavLink>
 
         {/* DESKTOP SEARCH BAR */}
@@ -90,7 +104,7 @@ const Navbar = () => {
                   right: 0,
                   left: 'auto',
                   margin: 0,
-                  minWidth: '150px',
+                  minWidth: '180px',
                   maxHeight: '400px',
                   overflowY: 'auto',
                   borderRadius: '0.25rem',
@@ -99,24 +113,64 @@ const Navbar = () => {
                   backgroundColor: 'white'
                 }}
               >
-                <li>
-                  <NavLink
-                    className='dropdown-item'
-                    to='/login'
-                    onClick={() => setUserDropdown(false)}
-                  >
-                    <i className='fa fa-sign-in-alt me-2'></i> Sign In
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    className='dropdown-item'
-                    to='/register'
-                    onClick={() => setUserDropdown(false)}
-                  >
-                    <i className='fa fa-user-plus me-2'></i> Sign Up
-                  </NavLink>
-                </li>
+                {user ? (
+                  <>
+                    <li className='dropdown-item'>Hi, {user.firstName}</li>
+
+                    {/* Role-based dashboard */}
+                    {user.role === 'ROLE ADMIN' && (
+                      <li>
+                        <NavLink
+                          className='dropdown-item'
+                          to='/admin-dashboard'
+                          onClick={() => setUserDropdown(false)}
+                        >
+                          <i className='fa fa-tachometer-alt me-2'></i> Admin
+                          Dashboard
+                        </NavLink>
+                      </li>
+                    )}
+                    {user.role === 'ROLE MERCHANT' && (
+                      <li>
+                        <NavLink
+                          className='dropdown-item'
+                          to='/merchant-dashboard'
+                          onClick={() => setUserDropdown(false)}
+                        >
+                          <i className='fa fa-briefcase me-2'></i> Merchant
+                          Dashboard
+                        </NavLink>
+                      </li>
+                    )}
+
+                    <li>
+                      <button className='dropdown-item' onClick={handleLogout}>
+                        <i className='fa fa-sign-out-alt me-2'></i> Logout
+                      </button>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li>
+                      <NavLink
+                        className='dropdown-item'
+                        to='/login'
+                        onClick={() => setUserDropdown(false)}
+                      >
+                        <i className='fa fa-sign-in-alt me-2'></i> Sign In
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink
+                        className='dropdown-item'
+                        to='/register'
+                        onClick={() => setUserDropdown(false)}
+                      >
+                        <i className='fa fa-user-plus me-2'></i> Sign Up
+                      </NavLink>
+                    </li>
+                  </>
+                )}
               </ul>
             )}
           </div>
@@ -143,7 +197,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* OVERLAY for cart and search (user dropdown excluded) */}
+      {/* OVERLAY for cart */}
       {cartSidebar && (
         <div
           className='position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50'
