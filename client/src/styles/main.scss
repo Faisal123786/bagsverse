@@ -335,3 +335,352 @@
     color: #adb5bd;
   }
 }
+
+
+/* --- Product Page Layout --- */
+
+/* Sidebar */
+.filter-sidebar {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #eee;
+}
+
+.filter-title {
+  font-weight: 600;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Price Range Styling */
+.price-input-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.price-box {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 12px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.btn-apply-filter {
+  background-color: #0033a0;
+  /* Dark Blue from screenshot */
+  color: white;
+  width: 100%;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 20px;
+  border: none;
+
+  &:hover {
+    background-color: #002270;
+    color: white;
+  }
+}
+
+/* =========================================
+   1. PRODUCT CARD STYLING (Merged)
+   ========================================= */
+
+
+.custom-card {
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  background: #fff;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  .card-img-wrapper {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+    background-color: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+
+      /* Adds space around the image */
+      transition: transform 0.3s ease;
+    }
+  }
+
+  /* Content Area: White Background */
+  .card-body {
+    padding: 15px;
+    background-color: #fff;
+    /* White background for text */
+    text-align: left;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Title: Smaller and Gray */
+  .card-title {
+    font-size: 0.9rem;
+    /* Smaller font like screenshot */
+    color: #555;
+    /* Dark Gray text */
+    margin-bottom: 10px;
+    line-height: 1.4;
+    font-weight: 400;
+    /* Normal weight, not bold */
+
+    /* Limit to 2 lines */
+    display: -webkit-box;
+
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Price: Bold and Black */
+  .card-price {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #212529;
+  }
+
+  /* Cart Button: Blue Circle */
+  .cart-icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #0033a0;
+    /* Primary Blue */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: background 0.2s, transform 0.2s;
+    font-size: 1.1rem;
+
+    &:hover {
+
+      background-color: #002270;
+      transform: scale(1.1);
+    }
+  }
+
+  /* Hover Effect on whole card */
+  &:hover {
+    border: 1px solid #0033a0;
+    // box-shadow: 0 8px 20px rgba(0, 51, 160, 0.15);
+
+    .card-img-wrapper img {
+      transform: scale(1.05);
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .custom-card .card-img-wrapper {
+    height: 120px;
+  }
+}
+
+/* =========================================
+   2. DUAL RANGE SLIDER CSS
+   ========================================= */
+/* --- Availability Checkbox Styling --- */
+.form-check-input {
+  border-radius: 0;
+  /* Square checkbox */
+  border-color: #dee2e6;
+  cursor: pointer;
+
+  &:checked {
+    background-color: #0033a0;
+    border-color: #0033a0;
+  }
+
+  &:focus {
+    box-shadow: none;
+    border-color: #0033a0;
+  }
+}
+
+.form-check-label {
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* --- OPTIMIZED SLIDER CSS (For Smoothness) --- */
+.slider-container {
+  position: relative;
+  width: 100%;
+  height: 30px;
+  margin-top: 10px;
+}
+
+.slider-track {
+  position: absolute;
+  border-radius: 3px;
+  height: 4px;
+  /* Slightly thinner for elegance */
+  background-color: #e0e0e0;
+  width: 100%;
+  z-index: 1;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.slider-range {
+  position: absolute;
+  border-radius: 3px;
+  height: 4px;
+  background-color: #212529;
+  /* Black active line */
+  z-index: 2;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Thumbs: Pointer Events Logic is crucial for smoothness */
+.thumb {
+  position: absolute;
+  height: 0;
+  width: 100%;
+  outline: none;
+  z-index: 3;
+  -webkit-appearance: none;
+  background: none;
+  top: 50%;
+  transform: translateY(-50%);
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    pointer-events: all;
+    /* Re-enable pointer for the knob */
+    width: 20px;
+    /* Slightly larger target */
+    height: 20px;
+    border-radius: 50%;
+    background-color: #212529;
+    cursor: pointer;
+    margin-top: -8px;
+    /* Vertically center */
+    border: 3px solid #fff;
+    /* White border to separate from track */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s;
+  }
+
+  /* Hover effect for feedback */
+  &::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+
+  /* Firefox */
+  &::-moz-range-thumb {
+    pointer-events: all;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #212529;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s;
+  }
+}
+
+/* Fix Z-Index issue when handles overlap */
+.thumb--left {
+  z-index: 4;
+}
+
+.thumb--right {
+  z-index: 5;
+}
+
+/* =========================================
+   3. OTHER ELEMENTS (Sidebar, Pagination)
+   ========================================= */
+
+/* Pagination */
+.custom-pagination {
+  .page-item .page-link {
+    color: #333;
+    border: 1px solid #ddd;
+    margin: 0 3px;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: #f8f9fa;
+    }
+  }
+
+  .page-item.active .page-link {
+    background-color: #eef2ff;
+    /* Light blue bg */
+    border-color: #0033a0;
+    color: #0033a0;
+    font-weight: bold;
+  }
+}
+
+/* Category Description Box */
+.category-desc-box {
+  border: 1px solid #dee2e6;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 4px;
+  margin-top: 50px;
+}
+
+/* Filter Sidebar (Make sure this exists if you use it) */
+.filter-sidebar {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #eee;
+}
+
+.filter-title {
+  font-weight: 600;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-apply-filter {
+  background-color: #0033a0;
+  color: white;
+  width: 100%;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 20px;
+  border: none;
+
+  &:hover {
+    background-color: #002270;
+    color: white;
+  }
+}
