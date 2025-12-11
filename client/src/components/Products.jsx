@@ -38,7 +38,7 @@ const Products = () => {
       // Add 'inStock' property: 80% chance of being true
       inStock: Math.random() > 0.2,
       image: index % 3 === 0
-        ? "https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=600&auto=format&fit=crop"
+        ? "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=600&auto=format&fit=crop"
         : "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=600&auto=format&fit=crop"
     }));
     setProducts(dummyData);
@@ -116,7 +116,7 @@ const Products = () => {
 
   // --- SUB COMPONENT: PRODUCT CARD ---
   const ProductCard = ({ product }) => (
-    <div className="col-md-3 col-sm-6 col-6 mb-4">
+    <div className="col-md-3 col-sm-6 col-6 mb-4 px-1">
       <div className="custom-card">
         <div className="card-img-wrapper">
           <Link to={`/product/${product.id}`}>
@@ -134,6 +134,7 @@ const Products = () => {
           <div className="d-flex justify-content-between align-items-center mt-2">
             <span className="card-price">${product.price}</span>
             <button
+              // variant="warning"
               className="cart-icon-btn"
               disabled={!product.inStock} // Disable if out of stock
               style={{ opacity: !product.inStock ? 0.5 : 1 }}
@@ -245,8 +246,8 @@ const Products = () => {
             <div className="col-12 col-md-6 d-flex justify-content-end align-items-center">
               <span className="text-muted small me-2">Sort by:</span>
               <select
-                className="form-select form-select-sm border-primary"
-                style={{ width: '160px', boxShadow: 'none' }}
+                className="form-select form-select-sm "
+                style={{ width: '160px', boxShadow: 'none', border: '1px solid #d4b86a' }}
                 onChange={handleSort}
                 value={sortOption}
               >
