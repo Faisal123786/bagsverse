@@ -3,15 +3,16 @@
 /* Add to src/styles/main.scss */
 
 .hero-section {
-  height: auto; 
-  overflow: hidden; 
-  padding-bottom: 3rem; 
+  height: auto;
+  overflow: hidden;
+  padding-bottom: 3rem;
 }
+
 .hero-img-wrapper {
   overflow: hidden;
   position: relative;
   transition: transform 0.3s ease;
-  min-height: 200px; 
+  min-height: 200px;
 
   img {
     object-fit: cover;
@@ -22,6 +23,7 @@
     transform: scale(1.05);
   }
 }
+
 .object-fit-cover {
   object-fit: cover;
 }
@@ -30,40 +32,34 @@
 /* --- Promo Card Styles --- */
 
 .promo-card {
-  height: 160px; /* Fixed height for consistency */
+  height: 160px;
   width: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  border-radius: 12px; /* Rounded corners */
-  padding: 0 30px; /* Space inside the card */
+  border-radius: 12px;
+  padding: 0 30px;
   position: relative;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  /* Optional: Mild shadow for depth */
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 
   &:hover {
-    transform: translateY(-5px); /* Lift effect on hover */
-    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
   }
 }
 
 /* Section Title Styling */
 .section-title {
-  font-weight: 500;      
-  font-size: 1.5rem;       
-  color: #000;            
+  font-weight: 500;
+  font-size: 1.5rem;
+  color: #000;
   position: relative;
   display: inline-block;
 }
+
 .promo-content {
-  /* Using a subtle background behind text ensures readability if image is busy 
-     (Optional - remove background-color if you want transparent like screenshot) */
-  /* background-color: rgba(255, 255, 255, 0.5); */
-  /* padding: 10px; */
-  /* border-radius: 8px; */
   z-index: 2;
   text-align: left;
 }
@@ -79,7 +75,7 @@
 .promo-title {
   font-size: 1.5rem;
   color: #000;
-  font-weight: 800; /* Extra bold */
+  font-weight: 800;
   text-transform: uppercase;
   margin: 0;
   line-height: 1.1;
@@ -94,28 +90,29 @@
 
   &:hover {
     .img-wrapper img {
-      transform: scale(1.1); /* Zoom effect on hover */
+      transform: scale(1.1);
     }
+
     .collection-title {
-      color: $primary; /* Uses your primary variable */
+      color: $primary;
     }
   }
 }
 
 .img-wrapper {
-  width: 150px;       /* Fixed size for desktop */
+  width: 150px;
   height: 150px;
-  margin: 0 auto;     /* Center align */
-  border-radius: 50%; /* Makes it circular */
-  overflow: hidden;   /* Hides the zoomed part */
-  border: 2px solid transparent; /* Optional border space */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  margin: 0 auto;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease; /* Smooth Zoom */
+    transition: transform 0.4s ease;
   }
 
   /* Responsive sizes */
@@ -131,50 +128,43 @@
   color: #333;
 }
 
-/* Customizing the arrows (optional) */
 .react-multiple-carousel__arrow {
   background: rgba(0, 0, 0, 0.5) !important;
   margin-bottom: 30px !important;
+
   &:hover {
     background: rgba(0, 0, 0, 0.8) !important;
   }
 }
 
 /* --- Trending Products Card --- */
-
-/* 1. The Container Card */
 .product-card {
   background: #fff;
-  border-radius: 16px; /* Rounded corners */
-  border: 1.5px solid transparent; /* Invisible border by default prevents layout jump */
-  transition: all 0.3s ease-in-out; /* Smooth transition for hover */
+  border-radius: 16px;
+  border: 1.5px solid transparent;
+  transition: all 0.3s ease-in-out;
   cursor: pointer;
 
-  /* 2. HOVER EFFECT (The "Magic") */
   &:hover {
-    border-color: #c5a95f; /* Gold/Amber color from screenshot */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08); /* Soft shadow */
-    
-    /* Optional: Scale up slightly */
+    border-color: #c5a95f;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
     transform: translateY(-2px);
   }
 }
 
-/* 3. Image Styling */
 .product-img-wrapper {
   border-radius: 12px;
   overflow: hidden;
-  height: 250px; /* Fixed height for uniformity */
+  height: 250px;
   background-color: #f8f9fa;
 
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensures image fills box */
+    object-fit: cover;
   }
 }
 
-/* 4. Text Styling */
 .product-category {
   font-size: 0.9rem;
   font-weight: 500;
@@ -187,9 +177,12 @@
   color: #212529;
 }
 
-/* 5. Cart Button Styling */
+.no-focus:focus {
+  box-shadow: none !important;
+}
+
 .cart-btn {
-  background-color: #d4b86a !important; /* Gold color */
+  background-color: #d4b86a !important;
   border: none !important;
   width: 45px;
   height: 45px;
@@ -199,11 +192,146 @@
   transition: transform 0.2s ease;
 
   &:hover {
-    background-color: #bfa04d !important; /* Darker gold on hover */
-    transform: scale(1.1); /* Button pops slightly */
+    background-color: #bfa04d !important;
+    transform: scale(1.1);
   }
-  
+
   i {
     font-size: 1.2rem;
+  }
+}
+
+/* --- Custom Accordion Styles --- */
+.accordion-button {
+  font-weight: 600;
+  color: #212529;
+  background-color: transparent;
+  box-shadow: none !important;
+  padding-left: 0;
+
+  &:not(.collapsed) {
+    color: #000;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  &::after {
+    background-size: 1rem;
+  }
+}
+
+.accordion-item {
+  border: none;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+
+/* --- Custom Product Tabs --- */
+.custom-tabs {
+  border-bottom: 1px solid #dee2e6;
+
+  .nav-link {
+    /* Desktop Font Size (Default) */
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #6c757d;
+    background: transparent;
+    border: none;
+    padding-bottom: 15px;
+    margin-right: 20px;
+
+    /* --- ADD THIS MEDIA QUERY FOR MOBILE --- */
+    @media (max-width: 576px) {
+      font-size: 0.75rem;
+      /* Smaller font on mobile */
+      margin-right: 10px;
+      /* Less space between tabs */
+      padding-bottom: 10px;
+    }
+
+    &:hover {
+      color: #000;
+      border: none;
+    }
+
+    &.active {
+      color: #000;
+      border-bottom: 3px solid #000;
+      font-weight: 700;
+    }
+  }
+}
+
+.tab-content-wrapper {
+  padding-top: 20px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+
+  strong {
+    color: #222;
+  }
+}
+
+.product-details-list {
+  list-style-type: disc;
+  padding-left: 20px;
+
+  li::marker {
+    color: #000;
+  }
+}
+
+
+/* --- Review Section Styles --- */
+.btn-red {
+  background-color: #ff0000 !important;
+  border-color: #ff0000 !important;
+  color: white !important;
+  border-radius: 0 !important;
+
+  &:hover {
+    background-color: #cc0000 !important;
+  }
+}
+
+.btn-outline-danger {
+  border-radius: 0 !important;
+  color: #ff0000;
+  border-color: #ff0000;
+
+  &:hover {
+    background-color: #ff0000;
+    color: white;
+  }
+}
+
+.upload-box {
+  width: 100px;
+  height: 100px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #f8f9fa;
+  transition: background 0.2s;
+
+  &:hover {
+    background-color: #e9ecef;
+  }
+}
+
+.review-form-container {
+  .form-control {
+    border-radius: 0;
+    border: 1px solid #ced4da;
+
+    &:focus {
+      box-shadow: none;
+      border-color: #333;
+    }
+  }
+
+  ::placeholder {
+    font-size: 0.9rem;
+    color: #adb5bd;
   }
 }

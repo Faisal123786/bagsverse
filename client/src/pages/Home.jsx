@@ -1,11 +1,11 @@
-import { Navbar, HeroSection,PromoSection, CategoryCarousel,TrendingProducts,Main, Product, Footer } from "../components";
+import { Navbar, HeroSection, PromoSection, CategoryCarousel, TrendingProducts, Product, Footer } from "../components";
 
 function Home() {
-   
+
   return (
     <>
       <Navbar />
-      <HeroSection  />
+      <HeroSection />
       <PromoSection />
       <CategoryCarousel />
       <TrendingProducts />
