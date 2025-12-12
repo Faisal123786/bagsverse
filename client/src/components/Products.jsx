@@ -20,7 +20,7 @@ const Products = () => {
   const [maxVal, setMaxVal] = useState(5000);
   const maxLimit = 5000;
   const minGap = 200;
-  const [sortOption, setSortOption] = useState("default");
+  const [sortOption, setSortOption] = useState("Newest");
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -122,10 +122,15 @@ const Products = () => {
           <Link to={`/product/${product.id}`}>
             <img src={product.image} alt={product.title} />
           </Link>
-          {/* Show Out of Stock Badge */}
+
+          {/* --- UPDATED SOLD OUT BADGE --- */}
           {!product.inStock && (
-            <span className="position-absolute top-0 start-0 m-2 badge bg-secondary">Out of Stock</span>
+            <div className="sold-out-circle">
+              <span> SOLD</span>
+              <span>OUT</span>
+            </div>
           )}
+
         </div>
         <div className="card-body">
           <Link to={`/product/${product.id}`} className="text-decoration-none">
@@ -134,9 +139,8 @@ const Products = () => {
           <div className="d-flex justify-content-between align-items-center mt-2">
             <span className="card-price">${product.price}</span>
             <button
-              // variant="warning"
               className="cart-icon-btn"
-              disabled={!product.inStock} // Disable if out of stock
+              disabled={!product.inStock}
               style={{ opacity: !product.inStock ? 0.5 : 1 }}
               onClick={() => { dispatch(addCart(product)); toast.success("Added to cart"); }}
             >
@@ -246,12 +250,12 @@ const Products = () => {
             <div className="col-12 col-md-6 d-flex justify-content-end align-items-center">
               <span className="text-muted small me-2">Sort by:</span>
               <select
-                className="form-select form-select-sm "
-                style={{ width: '160px', boxShadow: 'none', border: '1px solid #d4b86a' }}
+                className="form-select form-select-sm py-1 px-2 "
+                style={{ width: '165px', boxShadow: 'none', border: '1px solid #d4b86a' }}
                 onChange={handleSort}
                 value={sortOption}
               >
-                <option value="default">Default</option>
+                {/* <option value="default">Default</option> */}
                 <option value="Newest">Newest</option>
                 <option value="lowToHigh">Price Low to High</option>
                 <option value="highToLow">Price High to Low</option>

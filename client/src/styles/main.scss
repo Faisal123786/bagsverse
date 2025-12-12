@@ -2,6 +2,7 @@
 @import 'bootstrap/scss/bootstrap';
 
 $font-family-base: 'Montserrat', sans-serif;
+
 body,
 html,
 h1,
@@ -91,12 +92,12 @@ textarea {
 }
 
 .promo-title {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   color: #000;
-  font-weight: 800;
+  font-weight: 500;
   text-transform: uppercase;
   margin: 0;
-  line-height: 1.1;
+  line-height: 0.3;
 }
 
 /* --- Shop by Collections (Carousel) --- */
@@ -157,21 +158,19 @@ textarea {
 /* --- Trending Products Card --- */
 .product-card {
   background: #fff;
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 5px;
   border: 1.5px solid transparent;
   transition: all 0.3s ease-in-out;
   cursor: pointer;
 
   &:hover {
     border-color: #c5a95f;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
   }
 }
 
 .product-img-wrapper {
-  border-radius: 12px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   overflow: hidden;
   height: 250px;
   background-color: #f8f9fa;
@@ -506,7 +505,46 @@ textarea {
     // box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
     // transform: translateY(-2px);
     /* Slight lift */
+
+
   }
+}
+
+/* --- Circular Sold Out Badge --- */
+.sold-out-circle {
+  background-color: #d4b86a;
+  /* Your Gold Color */
+  color: #000;
+  /* Black Text */
+  font-weight: 500;
+  /* Extra Bold */
+  font-size: 0.55rem;
+  line-height: 1;
+  /* Tighter line spacing */
+
+  /* FIXED SIZE for Perfect Circle */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+
+  /* Centering & Stacking Text */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  /* Matches your screenshot */
+
+  /* Positioning */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Centers it perfectly in the image */
+  z-index: 10;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Optional: adds a little pop */
 }
 
 /* Responsive adjustment for mobile */
@@ -590,14 +628,11 @@ textarea {
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     pointer-events: all;
-    /* Re-enable pointer for the knob */
     width: 20px;
-    /* Slightly larger target */
     height: 20px;
     border-radius: 50%;
     background-color: #212529;
     cursor: pointer;
-    margin-top: -8px;
     /* Vertically center */
     border: 3px solid #fff;
     /* White border to separate from track */
@@ -632,6 +667,8 @@ textarea {
 .thumb--right {
   z-index: 5;
 }
+
+
 
 /* =========================================
    3. OTHER ELEMENTS (Sidebar, Pagination)
@@ -701,5 +738,458 @@ textarea {
   &:hover {
     background-color: #d4b86a !important;
     color: white;
+  }
+}
+
+/* --- Contact Page Styling --- */
+
+/* The White Card containing the form */
+.contact-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  /* Soft shadow */
+  padding: 40px;
+  border: 1px solid #f0f0f0;
+}
+
+/* Custom Input Styling (Black & White Theme) */
+.form-control,
+.form-select {
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  padding: 12px 15px;
+  font-size: 0.95rem;
+  background-color: #fff;
+  transition: all 0.3s ease;
+
+  /* Change focus border to BLACK, remove blue glow */
+  &:focus {
+    border-color: #000 !important;
+    box-shadow: 0 0 0 1px #000 !important;
+    /* Thin black ring */
+  }
+
+  /* Placeholder color */
+  &::placeholder {
+    color: #aaa;
+    font-size: 0.9rem;
+  }
+}
+
+/* Label Styling */
+.form-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+/* The Submit Button (Full Width, Black) */
+.btn-submit-contact {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px;
+  font-weight: 600;
+  width: 100%;
+  transition: background 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+
+  &:hover {
+    background-color: #333;
+    /* Dark Gray on hover */
+  }
+}
+
+
+/* --- Policy & Content Pages --- */
+.policy-wrapper {
+  max-width: 900px;
+  /* Restricts width for better readability */
+  margin: 0 auto;
+  font-family: 'Poppins', sans-serif;
+  /* Or your main font */
+  color: #333;
+  line-height: 1.8;
+  /* Improves reading flow */
+
+  h1.page-title {
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: #000;
+  }
+
+  h2.section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #000;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1rem;
+  }
+
+  /* List Styling */
+  ul,
+  ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+
+    li {
+      margin-bottom: 0.75rem;
+      color: #444;
+    }
+  }
+
+  /* Specific Highlight Box for the "Tax Tip" */
+  .tip-box {
+    background-color: #fff;
+    border-left: 4px solid #d4b86a;
+    /* Gold accent */
+    padding: 15px 20px;
+    margin: 20px 0;
+    background: #f9f9f9;
+    border-radius: 0 8px 8px 0;
+
+    .tip-header {
+      font-weight: bold;
+      color: #000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  }
+
+  a {
+    color: #000;
+    text-decoration: underline;
+    font-weight: 600;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #555;
+    }
+  }
+}
+
+/* --- Sell With Us Page --- */
+
+/* 1. Hero Banner */
+.sell-hero {
+  position: relative;
+  /* Dark textured background or image */
+  background: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600&auto=format&fit=crop') no-repeat center center;
+  background-size: cover;
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  margin-bottom: 3rem;
+
+  /* Dark Overlay for readability */
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+  }
+}
+
+/* 2. Benefit Cards */
+.benefit-card {
+  text-align: center;
+  padding: 30px 20px;
+  transition: transform 0.3s ease;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  .icon-wrapper {
+    width: 70px;
+    height: 70px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px auto;
+    color: #d4b86a;
+    /* Gold Accent */
+    font-size: 1.8rem;
+    border: 1px solid #eee;
+  }
+
+  h5 {
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+
+  p {
+    color: #666;
+    font-size: 0.95rem;
+  }
+}
+
+/* 3. Steps (1 -> 2 -> 3) */
+.step-number {
+  font-size: 4rem;
+  font-weight: 900;
+  color: #f0f0f0;
+  /* Very light gray */
+  line-height: 1;
+  position: absolute;
+  top: -20px;
+  left: 20px;
+  z-index: -1;
+}
+
+.step-card {
+  position: relative;
+  z-index: 1;
+  padding-top: 20px;
+}
+
+/* --- Order History Page Updates --- */
+
+/* 1. Filter Tabs (Pills) */
+.status-tabs-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  overflow-x: auto;
+  /* Allows scrolling on mobile */
+  padding-bottom: 5px;
+
+  /* Hide scrollbar for cleaner look */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.status-tab {
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 8px 20px;
+  border-radius: 30px;
+  /* Pill shape */
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f9f9f9;
+    border-color: #ddd;
+  }
+
+  &.active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+  }
+}
+
+/* 2. New Order Card Layout */
+.order-card-modern {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 20px;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Top Row: ID, Status, Total */
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 5px;
+  }
+
+  .order-id {
+    font-size: 1.1rem;
+    font-weight: 800;
+    /* Extra bold like screenshot */
+    color: #000;
+    margin-right: 10px;
+  }
+
+  .order-total-label {
+    font-size: 0.75rem;
+    color: #888;
+    text-align: right;
+    display: block;
+  }
+
+  .order-total-amount {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #000;
+    text-align: right;
+  }
+
+  /* Sub Row: Date & Items */
+  .order-meta {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 20px;
+  }
+
+  /* Bottom Row: Images & Buttons */
+  .card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    /* Wraps on mobile */
+    gap: 15px;
+  }
+
+  /* Image Group */
+  .img-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid #f0f0f0;
+      background: #f8f9fa;
+    }
+
+    .more-count {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #555;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+/* 3. Action Buttons */
+.btn-gold {
+  background-color: #d4b86a;
+  /* Theme Gold */
+  color: #000;
+  font-weight: 600;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+
+  &:hover {
+    background-color: #c5a95f;
+  }
+}
+
+.btn-outline-custom {
+  background: transparent;
+  border: 1px solid #ddd;
+  color: #000;
+  font-weight: 500;
+  padding: 8px 15px;
+  border-radius: 6px;
+
+  &:hover {
+    border-color: #000;
+    background: #fff;
+  }
+}
+
+/* 4. Filter Input (Top Right) */
+.order-filter-input {
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  width: 200px;
+
+  &:focus {
+    background: #fff;
+    border-color: #ccc;
+    outline: none;
+  }
+}
+
+
+/* --- Account Pages --- */
+
+/* --- Account Sidebar (Vertical) --- */
+.account-sidebar {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  /* Keeps corners rounded */
+
+  .sidebar-link {
+    display: block;
+    padding: 15px 20px;
+    color: #666;
+    text-decoration: none;
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: #f9f9f9;
+      color: #000;
+      padding-left: 25px;
+      /* Slight movement effect */
+    }
+
+    /* Active State (Black Background) */
+    &.active {
+      background-color: #000;
+      color: #fff;
+      border-color: #000;
+    }
+
+    /* Icon styling */
+    i {
+      width: 20px;
+    }
   }
 }

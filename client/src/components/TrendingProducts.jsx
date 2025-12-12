@@ -22,7 +22,7 @@ const ProductCard = ({ image, category, price }) => {
       </div>
 
       {/* Info Area */}
-      <div className="d-flex justify-content-between align-items-end">
+      <div className="d-flex justify-content-between align-items-end p-3">
         <div className="product-info text-start">
           <span className="product-category text-muted d-block mb-1">{category}</span>
           <h5 className="product-price mb-0">{price}</h5>

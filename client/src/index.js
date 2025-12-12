@@ -17,9 +17,12 @@ import {
   Register,
   Checkout,
   PageNotFound,
-  MerchantDashboard
+  MerchantDashboard,
+  ShippingPage,
+  SellWithUs,
+  AccountDetails,
+  OrderPage
 } from './pages';
-
 import ScrollToTop from './components/ScrollToTop';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -54,6 +57,10 @@ root.render(
           <Route path='/product/:id' element={<Product />} />
           <Route path='/about' element={<AboutPage />} />
           <Route path='/contact' element={<ContactPage />} />
+          <Route path='/shipping' element={<ShippingPage />} />
+          <Route path='/sell' element={<SellWithUs />} />
+          <Route path='/account-details' element={<AccountDetails />} />
+          <Route path='/orders' element={<OrderPage />} />
           <Route path='/cart' element={<Cart />} />
 
           <Route
