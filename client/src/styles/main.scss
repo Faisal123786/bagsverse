@@ -1,4 +1,23 @@
-@import "bootstrap/scss/bootstrap";
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import 'bootstrap/scss/bootstrap';
+
+$font-family-base: 'Montserrat', sans-serif;
+body,
+html,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+a,
+button,
+input,
+textarea {
+  font-family: 'Montserrat', sans-serif !important;
+}
 
 /* Add to src/styles/main.scss */
 
@@ -27,7 +46,6 @@
 .object-fit-cover {
   object-fit: cover;
 }
-
 
 /* --- Promo Card Styles --- */
 
@@ -80,7 +98,6 @@
   margin: 0;
   line-height: 1.1;
 }
-
 
 /* --- Shop by Collections (Carousel) --- */
 
@@ -226,7 +243,6 @@
   border-bottom: 1px solid #e5e5e5;
 }
 
-
 /* --- Custom Product Tabs --- */
 .custom-tabs {
   border-bottom: 1px solid #dee2e6;
@@ -282,7 +298,6 @@
   }
 }
 
-
 /* --- Review Section Styles --- */
 .btn-red {
   background-color: #ff0000 !important;
@@ -336,7 +351,6 @@
     color: #adb5bd;
   }
 }
-
 
 /* --- Product Page Layout --- */
 
@@ -395,7 +409,6 @@
 /* =========================================
    1. PRODUCT CARD STYLING (Merged)
    ========================================= */
-
 
 /* --- Updated Custom Card (Trending Style) --- */
 .custom-card {
@@ -493,8 +506,6 @@
     // box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
     // transform: translateY(-2px);
     /* Slight lift */
-
-
   }
 }
 
