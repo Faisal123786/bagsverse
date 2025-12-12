@@ -9,8 +9,8 @@ const Footer = () => {
   ];
 
   const accountLinks = [
-    { id: 0, name: 'Account Details', to: '/dashboard' },
-    { id: 1, name: 'Orders', to: '/dashboard/orders' }
+    { id: 0, name: 'Account Details', to: '/account-details' },
+    { id: 1, name: 'Orders', to: '/orders' }
   ];
 
   const footerStyle = {
@@ -56,6 +56,27 @@ const Footer = () => {
     textDecoration: 'none'
   };
 
+  // Specific styles for the Newsletter to match the screenshot
+  const inputStyle = {
+    height: '45px',
+    borderRadius: '4px',
+    border: '1px solid #ddd',
+    fontSize: '0.95rem',
+    boxShadow: 'none'
+  };
+
+  const buttonStyle = {
+    backgroundColor: '#121212', // Dark black like screenshot
+    color: '#ffffff',
+    border: '1px solid #ffffff', // Added white border so it's visible on dark footer
+    padding: '10px 24px',
+    borderRadius: '4px',
+    fontWeight: '600',
+    fontSize: '0.95rem',
+    marginTop: '10px',
+    transition: 'all 0.3s ease'
+  };
+
   return (
     <footer style={footerStyle}>
       <div style={overlayStyle}></div>
@@ -89,9 +110,30 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* Newsletter Section */}
           <div className='col-md-4 mb-4' style={lastColumnStyle}>
-            <h5 className='text-uppercase'>Newsletter</h5>
+            <h5 className='text-uppercase mb-3'>Newsletter</h5>
+
+            {/* Description Text */}
+            <p style={{ color: '#ccc', fontSize: '0.9rem', marginBottom: '1.2rem', lineHeight: '1.6' }} className='px-3 px-sm-0'>
+              Sign up to get updates on new arrivals, discounts, exclusive content, events and more!
+            </p>
+
+            {/* Form */}
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div className="mb-2 px-3 px-sm-0">
+                <input
+                  type="email"
+                  className="form-control"
+                  placeholder="Enter your email"
+                  style={inputStyle}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn" style={buttonStyle}>
+                Subscribe now
+              </button>
+            </form>
           </div>
         </div>
 
