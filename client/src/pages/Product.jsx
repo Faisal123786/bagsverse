@@ -9,7 +9,7 @@ import ProductTabs from '../components/ProductTabs';
 import ProductReviews from '../components/ProductReviews';
 import { Footer, Navbar } from '../components';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { fetchProductById } from '../api';
+import { fetchProductById, fetchProducts } from '../api';
 
 const Product = () => {
   const { id } = useParams();
@@ -43,11 +43,9 @@ const Product = () => {
       setThumbnails(thumbnailImages);
 
       setLoading(false);
-      const response2 = await fetch(
-        `https://fakestoreapi.com/products/category/${data.category}`
-      );
-      const data2 = await response2.json();
-      setSimilarProducts(data2);
+      const response = await fetchProducts();
+      const allProducts = response.products || response || [];
+      setSimilarProducts(allProducts);
       setLoading2(false);
     };
     getProduct();
@@ -315,48 +313,61 @@ const Product = () => {
   };
 
   const ShowSimilarProduct = () => {
+    if (similarProducts.length === 0) {
+      return <p className="text-center text-muted my-5">No similar products found.</p>;
+    }
+
     return (
-      <>
-        <div className='py-4 my-4'>
-          <div className='d-flex'>
-            {similarProducts.map(item => {
-              return (
-                <div key={item.id} className='card mx-4 text-center'>
-                  <img
-                    className='card-img-top p-3'
-                    src={item.image}
-                    alt='Card'
-                    height={300}
-                    width={300}
-                  />
-                  <div className='card-body'>
-                    <h5 className='card-title'>
-                      {item.title.substring(0, 15)}...
-                    </h5>
-                  </div>
-                  {/* <ul className="list-group list-group-flush">
-                    <li className="list-group-item lead">${product.price}</li>
-                  </ul> */}
-                  <div className='card-body'>
-                    <Link
-                      to={'/product/' + item.id}
-                      className='btn btn-dark m-1'
-                    >
-                      Buy Now
-                    </Link>
-                    <button
-                      className='btn btn-dark m-1'
-                      onClick={() => addProduct(item)}
-                    >
-                      Add to Cart
-                    </button>
-                  </div>
+      <div className="py-4 my-4">
+        <div className="d-flex">
+          {similarProducts.map((item) => {
+            // Safety check for image
+            const imgUrl = item.images && item.images.length > 0
+              ? item.images[0].imageUrl
+              : "https://via.placeholder.com/300?text=No+Image";
+
+            return (
+              <div key={item._id} className="card mx-4 text-center" style={{ minWidth: '280px' }}>
+                {/* Image */}
+                <img
+                  className="card-img-top p-3"
+                  src={imgUrl}
+                  alt={item.name}
+                  height={300}
+                  width={300}
+                  style={{ objectFit: 'contain' }}
+                />
+
+                {/* Body */}
+                <div className="card-body">
+                  <h5 className="card-title">
+                    {item.name.substring(0, 20)}...
+                  </h5>
+                  <p className="fw-bold">Rs. {item.price}</p>
                 </div>
-              );
-            })}
-          </div>
+
+                {/* Actions */}
+                <div className="card-body">
+                  <Link
+                    to={"/product/" + item._id}
+                    className="btn btn-dark m-1"
+                    // Force scroll to top when clicking similar product
+                    onClick={() => window.scrollTo(0, 0)}
+                  >
+                    Buy Now
+                  </Link>
+                  <button
+                    className="btn btn-dark m-1"
+                    onClick={() => dispatch(addCart(item))}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </>
+      </div>
     );
   };
   return (

@@ -39,18 +39,16 @@ const ProductCard = ({ image, title, price, onClick }) => {
         </div>
 
         {/* Cart Button */}
-        <Button
+        {/* <Button
           variant="warning"
           className="cart-btn rounded-circle text-white"
-          // Stop propagation so clicking button doesn't trigger card navigation (optional)
           onClick={(e) => {
             e.stopPropagation();
-            // Add cart logic here if needed
             console.log("Add to cart clicked");
           }}
         >
           <i className="fa fa-cart-plus"></i>
-        </Button>
+        </Button> */}
       </div>
     </div>
   );
