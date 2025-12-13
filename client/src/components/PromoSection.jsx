@@ -1,12 +1,23 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import '../styles/main.scss';
-
+import { useNavigate } from "react-router-dom";
 // 1. The Reusable Single Card Component
 const PromoCard = ({ image, subtitle, title }) => {
+  const navigate = useNavigate();
+
+  // Extract numeric value only
+  const priceValue = title.replace("Under ", "");
+
+  const handleClick = () => {
+    navigate("/product", {
+      state: { price: priceValue }
+    });
+  };
   return (
-    <div 
-      className="promo-card d-flex align-items-center" 
+    <div
+      className="promo-card d-flex align-items-center"
+      onClick={handleClick}
       style={{ backgroundImage: `url(${image})` }}
     >
       <div className="promo-content">
@@ -43,7 +54,7 @@ const PromoSection = () => {
 
   return (
     <Container fluid="lg" className="py-3">
-         <div className="mb-4">
+      <div className="mb-4">
         <h2 className="section-title">Shop by Budget</h2>
       </div>
       <Row className="g-2">
@@ -52,10 +63,10 @@ const PromoSection = () => {
           // xs={12} -> Mobile: Full Width (1 per row)
           // lg={4}  -> Large Screen: 33% Width (3 per row)
           <Col xs={12} lg={4} key={card.id}>
-            <PromoCard 
-              image={card.image} 
-              subtitle={card.subtitle} 
-              title={card.title} 
+            <PromoCard
+              image={card.image}
+              subtitle={card.subtitle}
+              title={card.title}
             />
           </Col>
         ))}
