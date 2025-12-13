@@ -260,14 +260,8 @@ const Navbar = () => {
           <div className='container py-1'>
             <ul className='d-flex list-unstyled gap-4 mb-0 py-2 justify-content-center flex-wrap'>
               {categories.map((item, index) => (
-                <li key={index}>
-                  <NavLink
-                    to={`/category/${item.id || item.name}`}
-                    className='text-white text-decoration-none'
-                    style={{ fontSize: '0.95rem', whiteSpace: 'nowrap' }}
-                  >
-                    {item.name}
-                  </NavLink>
+                <li key={index} className="cursor-pointer" onClick={() => navigate('/product', { state: { category: item.name } })}>
+                  {item.name}
                 </li>
               ))}
             </ul>

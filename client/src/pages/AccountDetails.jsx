@@ -79,25 +79,6 @@ const AccountDetails = () => {
                                     <label className="form-label">Email Address *</label>
                                     <input type="email" className="form-control" defaultValue="john.doe@example.com" required />
                                 </div>
-
-                                {/* Password Change Divider */}
-                                <h5 className="mt-5 mb-3 pb-2 border-bottom">Password Change</h5>
-
-                                <div className="mb-3">
-                                    <label className="form-label">Current Password (leave blank to leave unchanged)</label>
-                                    <input type="password" className="form-control" />
-                                </div>
-
-                                <div className="mb-3">
-                                    <label className="form-label">New Password (leave blank to leave unchanged)</label>
-                                    <input type="password" className="form-control" />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="form-label">Confirm New Password</label>
-                                    <input type="password" className="form-control" />
-                                </div>
-
                                 {/* Submit */}
                                 <button className="btn-submit-contact mt-2 w-auto px-5" type="submit">
                                     Save Changes

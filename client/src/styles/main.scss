@@ -20,6 +20,10 @@ textarea {
   font-family: 'Montserrat', sans-serif !important;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 /* Add to src/styles/main.scss */
 
 .hero-section {
@@ -247,7 +251,6 @@ textarea {
   border-bottom: 1px solid #dee2e6;
 
   .nav-link {
-    /* Desktop Font Size (Default) */
     font-size: 1.1rem;
     font-weight: 500;
     color: #6c757d;
@@ -256,12 +259,9 @@ textarea {
     padding-bottom: 15px;
     margin-right: 20px;
 
-    /* --- ADD THIS MEDIA QUERY FOR MOBILE --- */
     @media (max-width: 576px) {
       font-size: 0.75rem;
-      /* Smaller font on mobile */
       margin-right: 10px;
-      /* Less space between tabs */
       padding-bottom: 10px;
     }
 
@@ -390,7 +390,6 @@ textarea {
 
 .btn-apply-filter {
   background-color: #d4b86a !important;
-  /* Dark Blue from screenshot */
   color: white;
   width: 100%;
   font-weight: 600;
@@ -423,7 +422,6 @@ textarea {
   border: 1.5px solid transparent;
   cursor: pointer;
 
-  /* Image Area */
   .card-img-wrapper {
     height: 256px;
     overflow: hidden;
@@ -436,7 +434,7 @@ textarea {
     img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       transition: transform 0.3s ease;
     }
   }
@@ -459,23 +457,19 @@ textarea {
     margin-bottom: 10px;
     line-height: 1.4;
     font-weight: 400;
-
-    /* Limit to 2 lines */
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    /* Added this to make the limit work */
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
-  /* Price: Bold and Black */
   .card-price {
     font-weight: 700;
     font-size: 1.15rem;
     color: #212529;
   }
 
-  /* Cart Button: Blue Circle */
+  /* Cart Button*/
   .cart-icon-btn {
     border-radius: 50%;
     background-color: #d4b86a !important;
@@ -501,57 +495,35 @@ textarea {
   /* --- HOVER EFFECT (The "Trending" Look) --- */
   &:hover {
     border-color: #c5a95f;
-    /* Gold Border */
-    // box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-    // transform: translateY(-2px);
-    /* Slight lift */
-
-
   }
 }
 
 /* --- Circular Sold Out Badge --- */
 .sold-out-circle {
   background-color: #d4b86a;
-  /* Your Gold Color */
   color: #000;
-  /* Black Text */
   font-weight: 500;
-  /* Extra Bold */
   font-size: 0.55rem;
   line-height: 1;
-  /* Tighter line spacing */
-
-  /* FIXED SIZE for Perfect Circle */
   width: 50px;
   height: 50px;
   border-radius: 50%;
-
-  /* Centering & Stacking Text */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-
-  /* Matches your screenshot */
-
-  /* Positioning */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* Centers it perfectly in the image */
   z-index: 10;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  /* Optional: adds a little pop */
 }
 
-/* Responsive adjustment for mobile */
 @media (max-width: 576px) {
   .custom-card .card-img-wrapper {
     height: 140px;
-    /* Adjusted slightly so images aren't too small */
   }
 }
 
@@ -561,7 +533,6 @@ textarea {
 /* --- Availability Checkbox Styling --- */
 .form-check-input {
   border-radius: 0;
-  /* Square checkbox */
   border-color: #dee2e6;
   cursor: pointer;
 
@@ -582,7 +553,6 @@ textarea {
   color: #555;
 }
 
-/* --- OPTIMIZED SLIDER CSS (For Smoothness) --- */
 .slider-container {
   position: relative;
   width: 100%;
@@ -594,7 +564,6 @@ textarea {
   position: absolute;
   border-radius: 3px;
   height: 4px;
-  /* Slightly thinner for elegance */
   background-color: #e0e0e0;
   width: 100%;
   z-index: 1;
@@ -607,13 +576,11 @@ textarea {
   border-radius: 3px;
   height: 4px;
   background-color: #212529;
-  /* Black active line */
   z-index: 2;
   top: 50%;
   transform: translateY(-50%);
 }
 
-/* Thumbs: Pointer Events Logic is crucial for smoothness */
 .thumb {
   position: absolute;
   height: 0;
@@ -633,19 +600,15 @@ textarea {
     border-radius: 50%;
     background-color: #212529;
     cursor: pointer;
-    /* Vertically center */
     border: 3px solid #fff;
-    /* White border to separate from track */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     transition: transform 0.1s;
   }
 
-  /* Hover effect for feedback */
   &::-webkit-slider-thumb:hover {
     transform: scale(1.1);
   }
 
-  /* Firefox */
   &::-moz-range-thumb {
     pointer-events: all;
     width: 20px;
@@ -659,7 +622,6 @@ textarea {
   }
 }
 
-/* Fix Z-Index issue when handles overlap */
 .thumb--left {
   z-index: 4;
 }
@@ -673,7 +635,6 @@ textarea {
 /* =========================================
    3. OTHER ELEMENTS (Sidebar, Pagination)
    ========================================= */
-
 /* Pagination */
 .custom-pagination {
   .page-item .page-link {
@@ -693,7 +654,6 @@ textarea {
 
   .page-item.active .page-link {
     background-color: #eef2ff;
-    /* Light blue bg */
     border-color: #d4b86a !important;
     color: #d4b86a !important;
     font-weight: bold;
@@ -709,7 +669,6 @@ textarea {
   margin-top: 50px;
 }
 
-/* Filter Sidebar (Make sure this exists if you use it) */
 .filter-sidebar {
   background-color: #fff;
   border-radius: 8px;
@@ -742,18 +701,14 @@ textarea {
 }
 
 /* --- Contact Page Styling --- */
-
-/* The White Card containing the form */
 .contact-card {
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  /* Soft shadow */
   padding: 40px;
   border: 1px solid #f0f0f0;
 }
 
-/* Custom Input Styling (Black & White Theme) */
 .form-control,
 .form-select {
   border-radius: 6px;
@@ -763,28 +718,23 @@ textarea {
   background-color: #fff;
   transition: all 0.3s ease;
 
-  /* Change focus border to BLACK, remove blue glow */
   &:focus {
     border-color: #000 !important;
     box-shadow: 0 0 0 1px #000 !important;
-    /* Thin black ring */
   }
 
-  /* Placeholder color */
   &::placeholder {
     color: #aaa;
     font-size: 0.9rem;
   }
 }
 
-/* Label Styling */
 .form-label {
   font-size: 0.9rem;
   color: #666;
   margin-bottom: 6px;
 }
 
-/* The Submit Button (Full Width, Black) */
 .btn-submit-contact {
   background-color: #000;
   color: #fff;
@@ -800,7 +750,6 @@ textarea {
 
   &:hover {
     background-color: #333;
-    /* Dark Gray on hover */
   }
 }
 
@@ -808,13 +757,10 @@ textarea {
 /* --- Policy & Content Pages --- */
 .policy-wrapper {
   max-width: 900px;
-  /* Restricts width for better readability */
   margin: 0 auto;
   font-family: 'Poppins', sans-serif;
-  /* Or your main font */
   color: #333;
   line-height: 1.8;
-  /* Improves reading flow */
 
   h1.page-title {
     font-weight: 400;
@@ -853,7 +799,6 @@ textarea {
   .tip-box {
     background-color: #fff;
     border-left: 4px solid #d4b86a;
-    /* Gold accent */
     padding: 15px 20px;
     margin: 20px 0;
     background: #f9f9f9;
@@ -882,10 +827,8 @@ textarea {
 
 /* --- Sell With Us Page --- */
 
-/* 1. Hero Banner */
 .sell-hero {
   position: relative;
-  /* Dark textured background or image */
   background: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600&auto=format&fit=crop') no-repeat center center;
   background-size: cover;
   height: 350px;
@@ -896,7 +839,6 @@ textarea {
   color: white;
   margin-bottom: 3rem;
 
-  /* Dark Overlay for readability */
   &::before {
     content: "";
     position: absolute;
@@ -935,7 +877,6 @@ textarea {
     justify-content: center;
     margin: 0 auto 20px auto;
     color: #d4b86a;
-    /* Gold Accent */
     font-size: 1.8rem;
     border: 1px solid #eee;
   }
@@ -951,12 +892,10 @@ textarea {
   }
 }
 
-/* 3. Steps (1 -> 2 -> 3) */
 .step-number {
   font-size: 4rem;
   font-weight: 900;
   color: #f0f0f0;
-  /* Very light gray */
   line-height: 1;
   position: absolute;
   top: -20px;
@@ -971,17 +910,13 @@ textarea {
 }
 
 /* --- Order History Page Updates --- */
-
-/* 1. Filter Tabs (Pills) */
 .status-tabs-container {
   display: flex;
   gap: 10px;
   margin-bottom: 25px;
   overflow-x: auto;
-  /* Allows scrolling on mobile */
   padding-bottom: 5px;
 
-  /* Hide scrollbar for cleaner look */
   &::-webkit-scrollbar {
     display: none;
   }
@@ -992,7 +927,6 @@ textarea {
   border: 1px solid #eee;
   padding: 8px 20px;
   border-radius: 30px;
-  /* Pill shape */
   font-size: 0.9rem;
   font-weight: 500;
   color: #666;
@@ -1024,7 +958,6 @@ textarea {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
   }
 
-  /* Top Row: ID, Status, Total */
   .card-top {
     display: flex;
     justify-content: space-between;
@@ -1035,7 +968,6 @@ textarea {
   .order-id {
     font-size: 1.1rem;
     font-weight: 800;
-    /* Extra bold like screenshot */
     color: #000;
     margin-right: 10px;
   }
@@ -1054,24 +986,20 @@ textarea {
     text-align: right;
   }
 
-  /* Sub Row: Date & Items */
   .order-meta {
     font-size: 0.85rem;
     color: #666;
     margin-bottom: 20px;
   }
 
-  /* Bottom Row: Images & Buttons */
   .card-bottom {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    /* Wraps on mobile */
     gap: 15px;
   }
 
-  /* Image Group */
   .img-group {
     display: flex;
     align-items: center;
@@ -1104,7 +1032,6 @@ textarea {
 /* 3. Action Buttons */
 .btn-gold {
   background-color: #d4b86a;
-  /* Theme Gold */
   color: #000;
   font-weight: 600;
   border: none;
@@ -1155,7 +1082,6 @@ textarea {
   border: 1px solid #eee;
   border-radius: 8px;
   overflow: hidden;
-  /* Keeps corners rounded */
 
   .sidebar-link {
     display: block;
@@ -1177,17 +1103,14 @@ textarea {
       background-color: #f9f9f9;
       color: #000;
       padding-left: 25px;
-      /* Slight movement effect */
     }
 
-    /* Active State (Black Background) */
     &.active {
       background-color: #000;
       color: #fff;
       border-color: #000;
     }
 
-    /* Icon styling */
     i {
       width: 20px;
     }
