@@ -21,7 +21,7 @@ import {
   ShippingPage,
   SellWithUs,
   AccountDetails,
-  OrderPage
+  OrderPage, OrderPlaced
 } from './pages';
 import ScrollToTop from './components/ScrollToTop';
 import { Toaster } from 'react-hot-toast';
@@ -62,7 +62,7 @@ root.render(
           <Route path='/account-details' element={<AccountDetails />} />
           <Route path='/orders' element={<OrderPage />} />
           <Route path='/cart' element={<Cart />} />
-
+          <Route path="/order-placed" element={<OrderPlaced />} />
           <Route
             path='/checkout'
             element={
