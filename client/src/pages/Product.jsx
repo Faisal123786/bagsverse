@@ -8,8 +8,7 @@ import { addCart } from '../redux/action';
 import ProductTabs from '../components/ProductTabs';
 import ProductReviews from '../components/ProductReviews';
 import { Footer, Navbar } from '../components';
-import InnerImageZoom from 'react-inner-image-zoom';
-import 'react-inner-image-zoom/lib/InnerImageZoom/styles.css';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { fetchProductById } from '../api';
 
 const Product = () => {
@@ -144,19 +143,19 @@ const Product = () => {
                   style={{ maxWidth: '100%' }}
                 >
                   <div style={{ maxHeight: '600px', width: '450px' }}>
-                    <InnerImageZoom
-                      src={mainImage || product.image}
-                      alt={product.title}
-                      zoomSrc={
-                        mainImage ||
-                        product.image ||
-                        'https://via.placeholder.com/1000x1000?text=No+Image'
-                      }
-                      zoomType='hover'
-                      zoomPreload
-                      fadeDuration={150}
-                      zoomScale={1.8}
-                    />
+                    <TransformWrapper>
+                      <TransformComponent>
+                        <img
+                          src={mainImage || product.image}
+                          alt='Product'
+                          style={{
+                            width: '100%',
+                            height: 'auto',
+                            objectFit: 'contain'
+                          }}
+                        />
+                      </TransformComponent>
+                    </TransformWrapper>
                   </div>
                 </div>
               </div>
