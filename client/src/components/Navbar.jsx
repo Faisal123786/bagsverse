@@ -421,8 +421,12 @@ const Navbar = () => {
 
         {/* Cart Footer */}
         {cartItems.length > 0 && (
-          <div className='position-absolute bottom-0 w-100 p-3 border-top bg-light'>
-            <button className='btn btn-dark w-100 mb-2'>Checkout</button>
+          <div className='position-absolute bottom-0 w-100 p-3 border-top bg-light '>
+            <button className='btn btn-dark w-100 mb-2'
+              onClick={() => {
+                setCartSidebar(false);
+                navigate('/checkout');
+              }}>Checkout</button>
             <button
               className='btn btn-outline-dark w-100 no-focus'
               onClick={() => {
