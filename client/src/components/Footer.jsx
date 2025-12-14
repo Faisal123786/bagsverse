@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { subscribeToNewsletter } from '../api'; // Import the new API
+import toast from 'react-hot-toast'; // For notifications
 
 const Footer = () => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const infoLinks = [
     { id: 0, name: 'Contact Us', to: '/contact' },
     // { id: 1, name: 'Sell With Us', to: '/sell' },
@@ -13,6 +18,29 @@ const Footer = () => {
     { id: 1, name: 'Orders', to: '/orders' }
   ];
 
+  // --- API HANDLER ---
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await subscribeToNewsletter(email);
+      toast.success(response.message || "Subscribed successfully!");
+      setEmail(""); // Clear input on success
+    } catch (error) {
+      console.error("Newsletter Error:", error);
+      toast.error(error.message || "Subscription failed. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- STYLES ---
   const footerStyle = {
     position: 'relative',
     backgroundImage:
@@ -56,7 +84,6 @@ const Footer = () => {
     textDecoration: 'none'
   };
 
-  // Specific styles for the Newsletter to match the screenshot
   const inputStyle = {
     height: '45px',
     borderRadius: '4px',
@@ -66,15 +93,17 @@ const Footer = () => {
   };
 
   const buttonStyle = {
-    backgroundColor: '#121212', // Dark black like screenshot
+    backgroundColor: '#121212',
     color: '#ffffff',
-    border: '1px solid #ffffff', // Added white border so it's visible on dark footer
+    border: '1px solid #ffffff',
     padding: '10px 24px',
     borderRadius: '4px',
     fontWeight: '600',
     fontSize: '0.95rem',
     marginTop: '10px',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
+    opacity: loading ? 0.7 : 1,
+    cursor: loading ? 'not-allowed' : 'pointer'
   };
 
   return (
@@ -82,6 +111,7 @@ const Footer = () => {
       <div style={overlayStyle}></div>
       <div className='container text-center text-md-start' style={contentStyle}>
         <div className='row'>
+
           {/* Customer Service Links */}
           <div className='col-md-4 mb-4' style={columnStyle}>
             <h5 className='text-uppercase'>Customer Service</h5>
@@ -114,13 +144,12 @@ const Footer = () => {
           <div className='col-md-4 mb-4' style={lastColumnStyle}>
             <h5 className='text-uppercase mb-3'>Newsletter</h5>
 
-            {/* Description Text */}
             <p style={{ color: '#ccc', fontSize: '0.9rem', marginBottom: '1.2rem', lineHeight: '1.6' }} className='px-3 px-sm-0'>
               Sign up to get updates on new arrivals, discounts, exclusive content, events and more!
             </p>
 
-            {/* Form */}
-            <form onSubmit={(e) => e.preventDefault()}>
+            {/* API Integration Form */}
+            <form onSubmit={handleSubscribe}>
               <div className="mb-2 px-3 px-sm-0">
                 <input
                   type="email"
@@ -128,10 +157,13 @@ const Footer = () => {
                   placeholder="Enter your email"
                   style={inputStyle}
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
                 />
               </div>
-              <button type="submit" className="btn" style={buttonStyle}>
-                Subscribe now
+              <button type="submit" className="btn" style={buttonStyle} disabled={loading}>
+                {loading ? 'Subscribing...' : 'Subscribe now'}
               </button>
             </form>
           </div>

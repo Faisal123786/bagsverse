@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../redux/action/userAction';
-import { addCart, delCart } from '../redux/action'; // Added these imports for sidebar functionality
-import { fetchCategories } from '../api';
+import { addCart, delCart } from '../redux/action';
+import { fetchCategories, searchProducts } from '../api'; // Import the new search API
 import { GoSearch } from 'react-icons/go';
 import { FiUser } from 'react-icons/fi';
 import { RiShoppingCartLine } from 'react-icons/ri';
@@ -23,6 +23,11 @@ const Navbar = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const [categories, setCategories] = useState([]);
 
+  // --- SEARCH STATES ---
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+
   // Update mobile state on resize
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 992);
@@ -30,21 +35,49 @@ const Navbar = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Fetch Categories
   useEffect(() => {
     const loadCategories = async () => {
       try {
         const res = await fetchCategories();
-        if (Array.isArray(res)) {
-          setCategories(res);
-        } else if (Array.isArray(res?.data)) {
-          setCategories(res.data);
-        }
+        if (Array.isArray(res)) setCategories(res);
+        else if (Array.isArray(res?.data)) setCategories(res.data);
       } catch (err) {
         console.error('Failed to fetch categories:', err);
       }
     };
     loadCategories();
   }, []);
+
+  // --- DEBOUNCED SEARCH LOGIC ---
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (searchTerm.trim().length > 0) {
+        setIsSearching(true);
+        try {
+          // Call the API
+          const results = await searchProducts(searchTerm);
+          setSearchResults(results);
+        } catch (error) {
+          console.error("Search Error:", error);
+        } finally {
+          setIsSearching(false);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    }, 500); // Wait 500ms after user stops typing
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
+
+  // --- HANDLE CLICKING A SUGGESTION ---
+  const handleSuggestionClick = (productId) => {
+    setSearchTerm(""); // Clear input
+    setSearchResults([]); // Clear results
+    setSearchDrawer(false); // Close mobile drawer
+    navigate(`/product/${productId}`); // Go to product page
+  };
 
   // Calculate Subtotal for the Sidebar Button
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
@@ -54,9 +87,9 @@ const Navbar = () => {
     setCartSidebar(false);
     setUserDropdown(false);
     setCategoryDrawer(false);
+    // Note: Search drawer has its own close logic usually, but we can close it here too if needed
   };
 
-  // Logout
   const handleLogout = () => {
     dispatch(logoutUser());
     setUserDropdown(false);
@@ -83,19 +116,56 @@ const Navbar = () => {
             />
           </NavLink>
 
-          {/* DESKTOP SEARCH BAR */}
+          {/* --- DESKTOP SEARCH BAR --- */}
           {!isMobile && (
-            <div className='d-flex flex-grow-1 mx-3'>
+            <div className='d-flex flex-grow-1 mx-3 position-relative'>
               <div className='input-group w-100 shadow-sm rounded-pill overflow-hidden border'>
                 <input
                   type='text'
                   className='form-control border-0 ps-4 py-2'
                   placeholder='Search for products...'
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <button className='btn btn-dark px-3'>
-                  <i className='fa fa-search text-white'></i>
+                  {isSearching ? (
+                    <i className='fa fa-spinner fa-spin text-white'></i>
+                  ) : (
+                    <i className='fa fa-search text-white'></i>
+                  )}
                 </button>
               </div>
+
+              {/* --- DESKTOP SEARCH SUGGESTIONS DROPDOWN --- */}
+              {searchResults.length > 0 && (
+                <div
+                  className="position-absolute w-100 bg-white shadow rounded-3 overflow-hidden"
+                  style={{ top: '100%', marginTop: '5px', zIndex: 1100, border: '1px solid #eee' }}
+                >
+                  <ul className="list-group list-group-flush text-start">
+                    {searchResults.map((prod) => (
+                      <li
+                        key={prod._id || prod.id}
+                        className="list-group-item list-group-item-action cursor-pointer px-3 py-2 d-flex align-items-center"
+                        onClick={() => handleSuggestionClick(prod._id || prod.id)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {/* Image */}
+                        <img
+                          src={prod.images && prod.images.length > 0 ? prod.images[0].imageUrl : "https://via.placeholder.com/40"}
+                          alt={prod.name}
+                          style={{ width: '40px', height: '40px', objectFit: 'contain', marginRight: '15px', border: '1px solid #f0f0f0', borderRadius: '4px' }}
+                        />
+                        {/* Text Info */}
+                        <div>
+                          <div className="fw-bold text-dark" style={{ fontSize: '0.9rem', lineHeight: '1.2' }}>{prod.name}</div>
+                          <div className="text-muted small">Rs {prod.price}</div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
 
@@ -151,37 +221,17 @@ const Navbar = () => {
                     <>
                       <li className='dropdown-item'>Hi, {user.firstName}</li>
                       {user.role === 'ROLE ADMIN' && (
-                        <li>
-                          <NavLink className='dropdown-item' to='/admin' onClick={() => setUserDropdown(false)}>
-                            <i className='fa fa-tachometer-alt me-2'></i> Admin Dashboard
-                          </NavLink>
-                        </li>
+                        <li><NavLink className='dropdown-item' to='/admin' onClick={() => setUserDropdown(false)}><i className='fa fa-tachometer-alt me-2'></i> Admin Dashboard</NavLink></li>
                       )}
                       {user.role === 'ROLE MERCHANT' && (
-                        <li>
-                          <NavLink className='dropdown-item' to='/merchant-dashboard' onClick={() => setUserDropdown(false)}>
-                            <i className='fa fa-briefcase me-2'></i> Merchant Dashboard
-                          </NavLink>
-                        </li>
+                        <li><NavLink className='dropdown-item' to='/merchant-dashboard' onClick={() => setUserDropdown(false)}><i className='fa fa-briefcase me-2'></i> Merchant Dashboard</NavLink></li>
                       )}
-                      <li>
-                        <button className='dropdown-item' onClick={handleLogout}>
-                          <i className='fa fa-sign-out-alt me-2'></i> Logout
-                        </button>
-                      </li>
+                      <li><button className='dropdown-item' onClick={handleLogout}><i className='fa fa-sign-out-alt me-2'></i> Logout</button></li>
                     </>
                   ) : (
                     <>
-                      <li>
-                        <NavLink className='dropdown-item' to='/login' onClick={() => setUserDropdown(false)}>
-                          <i className='fa fa-sign-in-alt me-2'></i> Sign In
-                        </NavLink>
-                      </li>
-                      <li>
-                        <NavLink className='dropdown-item' to='/register' onClick={() => setUserDropdown(false)}>
-                          <FiUser /> Sign Up
-                        </NavLink>
-                      </li>
+                      <li><NavLink className='dropdown-item' to='/login' onClick={() => setUserDropdown(false)}><i className='fa fa-sign-in-alt me-2'></i> Sign In</NavLink></li>
+                      <li><NavLink className='dropdown-item' to='/register' onClick={() => setUserDropdown(false)}><FiUser /> Sign Up</NavLink></li>
                     </>
                   )}
                 </ul>
@@ -265,16 +315,15 @@ const Navbar = () => {
           }}
         >
           <div className='d-flex justify-content-between p-2 align-items-centerborder-bottom'>
-            <button className='btn btn-sm text-dark w-fit ml-auto no-focus' onClick={() => setCategoryDrawer(false)}>
-              <i className='fa fa-times'></i>
-            </button>
+            <button className='btn btn-sm text-dark w-fit ml-auto no-focus' onClick={() => setCategoryDrawer(false)}><i className='fa fa-times'></i></button>
           </div>
           <h5 className='px-4'>Categories</h5>
           <ul className='list-group list-group-flush'>
             {categories.map((item, index) => (
               <li key={index} className='list-group-item border-0 p-0'>
                 <NavLink
-                  to={`/category/${item.id || item.name}`}
+                  to={`/product`}
+                  state={{ category: item.name }}
                   className='d-block text-decoration-none text-dark py-3 px-4'
                   onClick={() => setCategoryDrawer(false)}
                 >
@@ -287,7 +336,7 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* MOBILE SEARCH FULLSCREEN */}
+      {/* --- MOBILE SEARCH FULLSCREEN (UPDATED) --- */}
       {isMobile && searchDrawer && (
         <div
           className='position-fixed top-0 start-0 w-100 vh-100 bg-white d-flex flex-column'
@@ -299,100 +348,94 @@ const Navbar = () => {
               <i className='fa fa-times'></i>
             </button>
           </div>
-          <div className='input-group w-100' style={{ maxWidth: '500px' }}>
-            <input type='text' className='form-control ps-4 py-3' placeholder='Search for products...' />
-            <button className='btn btn-dark px-3 no-focus' onClick={() => setSearchDrawer(false)}>
-              <i className='fa fa-search text-white'></i>
+
+          {/* Mobile Input */}
+          <div className='input-group w-100 mb-3'>
+            <input
+              type='text'
+              className='form-control ps-4 py-3'
+              placeholder='Search for products...'
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              autoFocus
+            />
+            <button className='btn btn-dark px-3 no-focus'>
+              {isSearching ? <i className='fa fa-spinner fa-spin text-white'></i> : <i className='fa fa-search text-white'></i>}
             </button>
+          </div>
+
+          {/* Mobile Search Results List */}
+          <div className="flex-grow-1 overflow-auto">
+            {searchResults.length > 0 && (
+              <ul className="list-group list-group-flush">
+                {searchResults.map((prod) => (
+                  <li
+                    key={prod._id || prod.id}
+                    className="list-group-item px-0 py-3 d-flex align-items-center"
+                    onClick={() => handleSuggestionClick(prod._id || prod.id)}
+                  >
+                    <img
+                      src={prod.images && prod.images.length > 0 ? prod.images[0].imageUrl : "https://via.placeholder.com/50"}
+                      alt={prod.name}
+                      style={{ width: '50px', height: '50px', objectFit: 'cover', marginRight: '15px', borderRadius: '4px' }}
+                    />
+                    <div>
+                      <div className="fw-bold text-dark">{prod.name}</div>
+                      <div className="text-muted small">Rs {prod.price}</div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {searchTerm && !isSearching && searchResults.length === 0 && (
+              <p className="text-center text-muted mt-3">No products found.</p>
+            )}
           </div>
         </div>
       )}
 
-      {/* --- CART SIDEBAR (UPDATED DESIGN) --- */}
+      {/* --- CART SIDEBAR (UNCHANGED) --- */}
       <div
         className='position-fixed top-0 end-0 vh-100 bg-white shadow-lg d-flex flex-column'
         style={{
-          width: isMobile ? '300px' : '380px', // Slightly wider for better layout
+          width: isMobile ? '300px' : '380px',
           zIndex: 1050,
           transform: cartSidebar ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.3s ease-in-out',
         }}
       >
-        {/* 1. Header */}
         <div className='d-flex justify-content-between align-items-center p-4 border-bottom'>
-          <h5 className='mb-0 fw-bold' style={{ color: '#000' }}>
-            <i className="fa fa-shopping-bag me-2"></i>
-            {cartItems.length} item(s)
-          </h5>
-          <button
-            className='btn btn-sm text-muted no-focus'
-            style={{ fontSize: '1.2rem' }}
-            onClick={() => setCartSidebar(false)}
-          >
-            <i className="fa fa-times"></i>
-          </button>
+          <h5 className='mb-0 fw-bold' style={{ color: '#000' }}><i className="fa fa-shopping-bag me-2"></i>{cartItems.length} item(s)</h5>
+          <button className='btn btn-sm text-muted no-focus' style={{ fontSize: '1.2rem' }} onClick={() => setCartSidebar(false)}><i className="fa fa-times"></i></button>
         </div>
-
-        {/* 2. Scrollable Cart Items */}
         <div className='flex-grow-1 overflow-auto p-3'>
           {cartItems.length === 0 ? (
             <div className='text-center py-5 mt-5'>
               <RiShoppingCartLine style={{ fontSize: '3rem', color: '#eee' }} />
               <p className='text-muted mt-3'>Your cart is empty</p>
-              <button
-                className='btn btn-dark btn-sm mt-2'
-                onClick={() => { setCartSidebar(false); navigate('/product') }}
-              >
-                Start Shopping
-              </button>
+              <button className='btn btn-dark btn-sm mt-2' onClick={() => { setCartSidebar(false); navigate('/product') }}>Start Shopping</button>
             </div>
           ) : (
             <ul className='list-unstyled mb-0'>
               {cartItems.map((item, index) => (
                 <li key={index} className='mb-4 d-flex align-items-start border-bottom pb-4'>
-
-                  {/* Image */}
                   <div className="flex-shrink-0 border rounded p-1 bg-light" style={{ width: '80px', height: '80px' }}>
-                    <img
-                      src={item.image || (item.images && item.images.length > 0 ? item.images[0].imageUrl : "https://via.placeholder.com/80?text=No+Image")}
-                      alt={item.name}
-                      className="w-100 h-100 object-fit-contain"
-                    />
+                    <img src={item.image || (item.images && item.images.length > 0 ? item.images[0].imageUrl : "https://via.placeholder.com/80?text=No+Image")} alt={item.name} className="w-100 h-100 object-fit-contain" />
                   </div>
-
-                  {/* Details */}
                   <div className="flex-grow-1 ms-3">
                     <div className="d-flex justify-content-between">
                       <h6 className='fw-semibold mb-1 text-truncate' style={{ maxWidth: '160px' }}>{item.name || item.title}</h6>
-                      <button
-                        className="btn btn-link text-muted p-0 text-decoration-none"
-                        onClick={() => dispatch(delCart(item))}
-                      >
-                        <i className="fa fa-times"></i>
-                      </button>
+                      <button className="btn btn-link text-muted p-0 text-decoration-none" onClick={() => dispatch(delCart(item))}><i className="fa fa-times"></i></button>
                     </div>
-
-                    {/* Price */}
-                    <div className="mb-2">
-                      {/* <span className="text-muted text-decoration-line-through small me-2">Rs {Math.round(item.price * 1.2)}</span> */}
-                      <span className="fw-bold text-dark">Rs {item.price}</span>
-                    </div>
-
-                    {/* Quantity Control */}
+                    <div className="mb-2"><span className="fw-bold text-dark">Rs {item.price}</span></div>
                     <div className="d-flex align-items-center">
                       <div className="btn-group btn-group-sm border rounded" role="group">
-                        <button
-                          className="btn btn-white text-dark py-0 border-end"
-                          onClick={() => dispatch(delCart(item))}
-                        >
-                          -
-                        </button>
-                        <span className="px-3 d-flex align-items-center bg-white text-dark small fw-bold">
-                          {item.qty}
-                        </span>
+                        <button className="btn btn-white text-dark py-0 border-end" onClick={() => dispatch(delCart(item))}>-</button>
+                        <span className="px-3 d-flex align-items-center bg-white text-dark small fw-bold">{item.qty}</span>
                         <button
                           className="btn btn-white text-dark py-0 border-start"
-                          onClick={() => dispatch(addCart(item))}
+                          // FIX: Force qty to 1 so it increments by 1 instead of doubling
+                          onClick={() => dispatch(addCart({ ...item, qty: 1 }))}
                         >
                           +
                         </button>
@@ -404,33 +447,11 @@ const Navbar = () => {
             </ul>
           )}
         </div>
-
-        {/* 3. Footer */}
         {cartItems.length > 0 && (
           <div className='p-4 bg-white border-top shadow-sm'>
-            <div className="d-flex justify-content-between mb-2">
-              <span className="text-muted small">Excluding Shipping</span>
-            </div>
-
-            <button
-              className='btn btn-dark w-100 mb-2 py-2 fw-bold'
-              onClick={() => {
-                setCartSidebar(false);
-                navigate('/checkout');
-              }}
-            >
-              Checkout Now (Rs {Math.round(subtotal)})
-            </button>
-
-            <button
-              className='btn btn-outline-dark w-100 py-2 fw-bold'
-              onClick={() => {
-                setCartSidebar(false);
-                navigate('/cart');
-              }}
-            >
-              View Cart
-            </button>
+            <div className="d-flex justify-content-between mb-2"><span className="text-muted small">Excluding Shipping</span></div>
+            <button className='btn btn-dark w-100 mb-2 py-2 fw-bold' onClick={() => { setCartSidebar(false); navigate('/checkout'); }}>Checkout Now (Rs {Math.round(subtotal)})</button>
+            <button className='btn btn-outline-dark w-100 py-2 fw-bold' onClick={() => { setCartSidebar(false); navigate('/cart'); }}>View Cart</button>
           </div>
         )}
       </div>
