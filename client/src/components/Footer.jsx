@@ -173,7 +173,7 @@ const Footer = () => {
         <div className='d-flex justify-content-center align-items-center my-4'>
           <Link to='/'>
             <img
-              src='./assets/logo2.png'
+              src='/assets/logo2.png'
               alt='BagsVerse'
               style={{ width: '150px', height: '150px', objectFit: 'contain' }}
             />

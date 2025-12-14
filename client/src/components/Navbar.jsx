@@ -110,7 +110,7 @@ const Navbar = () => {
             to='/'
           >
             <img
-              src='./assets/logo2.png'
+              src='/assets/logo2.png'
               alt='BagVerse'
               style={{ width: '50px', height: '50px', marginRight: '8px' }}
             />
