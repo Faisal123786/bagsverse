@@ -1,4 +1,4 @@
-// Retrieve initial state from localStorage if available
+// Retrieve initial state from localStorage
 const getInitialCart = () => {
   const storedCart = localStorage.getItem("cart");
   return storedCart ? JSON.parse(storedCart) : [];
@@ -6,36 +6,58 @@ const getInitialCart = () => {
 
 const handleCart = (state = getInitialCart(), action) => {
   const product = action.payload;
-  let updatedCart;
 
   switch (action.type) {
     case "ADDITEM":
-      // Check if product already in cart
-      const exist = state.find((x) => x.id === product.id);
+      // 1. Normalize ID
+      const productId = product.id || product._id;
+
+      // 2. Check if product exists
+      const exist = state.find((x) => (x.id || x._id) === productId);
+
+      // 3. Get the quantity being added (default to 1 if not provided)
+      const qtyToAdd = product.qty || 1;
+
+      let updatedCartAdd;
+
       if (exist) {
-        // Increase the quantity
-        updatedCart = state.map((x) =>
-          x.id === product.id ? { ...x, qty: x.qty + 1 } : x
+        // UPDATE: Add the incoming quantity (qtyToAdd) instead of just 1
+        updatedCartAdd = state.map((x) =>
+          (x.id || x._id) === productId
+            ? { ...x, qty: x.qty + qtyToAdd }
+            : x
         );
       } else {
-        updatedCart = [...state, { ...product, qty: 1 }];
+        // NEW: Use the quantity passed from the product page
+        updatedCartAdd = [
+          ...state,
+          {
+            ...product,
+            id: productId,
+            qty: qtyToAdd
+          }
+        ];
       }
-      // Update localStorage
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-      return updatedCart;
+
+      localStorage.setItem("cart", JSON.stringify(updatedCartAdd));
+      return updatedCartAdd;
 
     case "DELITEM":
-      const exist2 = state.find((x) => x.id === product.id);
+      const delId = product.id || product._id;
+      const exist2 = state.find((x) => (x.id || x._id) === delId);
+
+      let updatedCartDel;
+
       if (exist2.qty === 1) {
-        updatedCart = state.filter((x) => x.id !== exist2.id);
+        updatedCartDel = state.filter((x) => (x.id || x._id) !== delId);
       } else {
-        updatedCart = state.map((x) =>
-          x.id === product.id ? { ...x, qty: x.qty - 1 } : x
+        updatedCartDel = state.map((x) =>
+          (x.id || x._id) === delId ? { ...x, qty: x.qty - 1 } : x
         );
       }
-      // Update localStorage
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-      return updatedCart;
+
+      localStorage.setItem("cart", JSON.stringify(updatedCartDel));
+      return updatedCartDel;
 
     default:
       return state;

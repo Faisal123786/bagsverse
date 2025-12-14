@@ -186,6 +186,12 @@ textarea {
   }
 }
 
+@media (max-width: 576px) {
+  .product-img-wrapper {
+    height: 180px;
+  }
+}
+
 .product-category {
   font-size: 0.9rem;
   font-weight: 500;
@@ -1167,4 +1173,305 @@ textarea {
   justify-content: center;
   margin: 0 auto 20px auto;
   font-size: 2.5rem;
+}
+
+/* --- Modern Cart Styles --- */
+
+.cart-container-wrapper {
+  background-color: #f9f9f9;
+  min-height: 80vh;
+}
+
+/* --- Updated Cart Layout (Single Card Style) --- */
+
+/* 1. The Main White Box for the Left Side */
+.cart-container-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  /* Match Summary Card border */
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 20px;
+}
+
+/* 2. Items as ROWS inside the card (not separate cards) */
+.cart-item-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-bottom: 25px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #f0f0f0;
+  /* Separator line between items */
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .cart-img-box {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #f0f0f0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .cart-item-details {
+    flex: 1;
+    min-width: 200px;
+
+    h5 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: #000;
+    }
+
+    p {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 0;
+    }
+  }
+}
+
+/* (Keep existing Qty Selector, Delete Icon, Summary styles as they were) */
+.cart-qty-selector {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  height: 40px;
+
+  button {
+    background: #fff;
+    border: none;
+    width: 35px;
+    height: 100%;
+    color: #333;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #f0f0f0;
+    }
+  }
+
+  span {
+    padding: 0 10px;
+    font-weight: 600;
+    min-width: 30px;
+    text-align: center;
+  }
+}
+
+.btn-remove-item {
+  color: #999;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-size: 1.1rem;
+
+  &:hover {
+    color: #dc3545;
+  }
+}
+
+/* 2. Right Side: Summary */
+.summary-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 25px;
+  position: sticky;
+  top: 100px;
+  /* Sticks when scrolling */
+
+  h5 {
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    color: #555;
+
+    &.total {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #000;
+      border-top: 1px solid #eee;
+      padding-top: 15px;
+      margin-top: 15px;
+    }
+  }
+
+  .shipping-text {
+    color: #dc3545;
+    /* Red text for shipping notice */
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+}
+
+/* Trust Badges in Summary */
+.trust-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+
+  .trust-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: start;
+
+    i {
+      color: #0033a0;
+      /* Blue icons like screenshot */
+      font-size: 1.1rem;
+      margin-top: 3px;
+    }
+
+    div {
+      font-size: 0.85rem;
+      color: #666;
+      line-height: 1.4;
+
+      strong {
+        display: block;
+        color: #000;
+        margin-bottom: 2px;
+      }
+    }
+  }
+}
+
+/* --- Order Details & Tracking --- */
+
+/* Tracking Timeline */
+.tracking-wrapper {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 40px;
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 50px;
+  padding-bottom: 40px;
+
+  &:last-child {
+    padding-bottom: 0;
+
+    /* Remove vertical line for last item */
+    &::before {
+      display: none;
+    }
+  }
+
+  /* Vertical Line */
+  &::before {
+    content: "";
+    position: absolute;
+    left: 15px;
+    /* Center of the dot */
+    top: 10px;
+    height: 100%;
+    width: 2px;
+    background-color: #e0e0e0;
+  }
+
+  /* The Dot */
+  .timeline-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    color: #ccc;
+    font-size: 0.9rem;
+  }
+
+  /* Active/Completed State */
+  &.active {
+    &::before {
+      background-color: #000;
+      /* Black line for active path */
+    }
+
+    .timeline-icon {
+      background-color: #000;
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  &.completed {
+    &::before {
+      background-color: #000;
+    }
+
+    .timeline-icon {
+      background-color: #d4b86a;
+      /* Gold for completed */
+      color: #fff;
+    }
+  }
+}
+
+/* Order Details Card */
+.detail-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 20px;
+
+  h5 {
+    font-weight: 700;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+  }
+}
+
+.item-row {
+  display: flex;
+  gap: 15px;
+  border-bottom: 1px solid #f9f9f9;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #eee;
+  }
 }

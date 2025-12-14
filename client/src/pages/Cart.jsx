@@ -3,171 +3,143 @@ import { Footer, Navbar } from "../components";
 import { useSelector, useDispatch } from "react-redux";
 import { addCart, delCart } from "../redux/action";
 import { Link } from "react-router-dom";
+import '../styles/main.scss';
 
 const Cart = () => {
   const state = useSelector((state) => state.handleCart);
   const dispatch = useDispatch();
 
-  const EmptyCart = () => {
-    return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12 py-5 bg-light text-center">
-            <h4 className="p-3 display-5">Your Cart is Empty</h4>
-            <Link to="/" className="btn  btn-outline-dark mx-4">
-              <i className="fa fa-arrow-left"></i> Continue Shopping
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  const addItem = (product) => dispatch(addCart(product));
+  const removeItem = (product) => dispatch(delCart(product));
 
-  const addItem = (product) => {
-    dispatch(addCart(product));
-  };
-  const removeItem = (product) => {
-    dispatch(delCart(product));
-  };
+  const EmptyCart = () => (
+    <div className="container py-5 text-center" style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div className="mb-4">
+        <i className="fa fa-shopping-basket fa-4x text-muted opacity-25"></i>
+      </div>
+      <h3 className="fw-bold mb-3">Your Cart is Empty</h3>
+      <p className="text-muted mb-4">Looks like you haven't added anything to your cart yet.</p>
+      <Link to="/" className="btn btn-dark px-5 py-2 mx-auto">
+        <i className="fa fa-arrow-left me-2"></i> Continue Shopping
+      </Link>
+    </div>
+  );
 
   const ShowCart = () => {
     let subtotal = 0;
-    let shipping = 30.0;
     let totalItems = 0;
-    state.map((item) => {
-      return (subtotal += item.price * item.qty);
+
+    state.forEach((item) => {
+      subtotal += item.price * item.qty;
+      totalItems += item.qty;
     });
 
-    state.map((item) => {
-      return (totalItems += item.qty);
-    });
     return (
-      <>
-        <section className="h-100 gradient-custom">
-          <div className="container py-5">
-            <div className="row d-flex justify-content-center my-4">
-              <div className="col-md-8">
-                <div className="card mb-4">
-                  <div className="card-header py-3">
-                    <h5 className="mb-0">Item List</h5>
-                  </div>
-                  <div className="card-body">
-                    {state.map((item) => {
-                      return (
-                        <div key={item.id}>
-                          <div className="row d-flex align-items-center">
-                            <div className="col-lg-3 col-md-12">
-                              <div
-                                className="bg-image rounded"
-                                data-mdb-ripple-color="light"
-                              >
-                                <img
-                                  src={item.image}
-                                  // className="w-100"
-                                  alt={item.title}
-                                  width={100}
-                                  height={75}
-                                />
-                              </div>
-                            </div>
+      <div className="row">
 
-                            <div className="col-lg-5 col-md-6">
-                              <p>
-                                <strong>{item.title}</strong>
-                              </p>
-                              {/* <p>Color: blue</p>
-                              <p>Size: M</p> */}
-                            </div>
+        {/* --- LEFT COLUMN: SINGLE CARD CONTAINER --- */}
+        <div className="col-lg-8">
+          {/* This wrapper makes it one big white box like the screenshot */}
+          <div className="cart-container-card">
 
-                            <div className="col-lg-4 col-md-6">
-                              <div
-                                className="d-flex mb-4"
-                                style={{ maxWidth: "300px" }}
-                              >
-                                <button
-                                  className="btn px-3"
-                                  onClick={() => {
-                                    removeItem(item);
-                                  }}
-                                >
-                                  <i className="fas fa-minus"></i>
-                                </button>
+            {/* Header inside the box */}
+            <h4 className="fw-bold mb-3">Cart ({totalItems})</h4>
+            <p className="text-muted mb-4 small">
+              Store Name: <strong className="text-dark">BagsVerse</strong>
+            </p>
 
-                                <p className="mx-5">{item.qty}</p>
+            {/* Items List */}
+            {state.map((item) => (
+              <div key={item.id} className="cart-item-row">
 
-                                <button
-                                  className="btn px-3"
-                                  onClick={() => {
-                                    addItem(item);
-                                  }}
-                                >
-                                  <i className="fas fa-plus"></i>
-                                </button>
-                              </div>
+                {/* Image */}
+                <div className="cart-img-box">
+                  <img src={item.image || (item.images && item.images.length > 0 ? item.images[0].imageUrl : "https://via.placeholder.com/80?text=No+Image")} alt={item.title} />
+                </div>
 
-                              <p className="text-start text-md-center">
-                                <strong>
-                                  <span className="text-muted">{item.qty}</span>{" "}
-                                  x ${item.price}
-                                </strong>
-                              </p>
-                            </div>
-                          </div>
+                {/* Details */}
+                <div className="cart-item-details">
+                  <h5>{item.title || item.name}</h5>
+                  <p>Color: <span className="text-dark">Standard</span> | Size: <span className="text-dark">One Size</span></p>
+                </div>
 
-                          <hr className="my-4" />
-                        </div>
-                      );
-                    })}
-                  </div>
+                {/* Quantity */}
+                <div className="cart-qty-selector">
+                  <button onClick={() => removeItem(item)}>-</button>
+                  <span>{item.qty}</span>
+                  <button onClick={() => addItem(item)}>+</button>
+                </div>
+
+                {/* Remove Icon */}
+                <div className="btn-remove-item" onClick={() => removeItem(item)} title="Remove Item">
+                  <i className="fa fa-trash-o"></i>
+                </div>
+
+                {/* Price */}
+                <div className="fw-bold fs-5 text-end" style={{ minWidth: '80px' }}>
+                  Rs {item.price * item.qty}
+                </div>
+
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* --- RIGHT COLUMN: SUMMARY --- */}
+        <div className="col-lg-4">
+          <div className="summary-card">
+            <h5>Summary</h5>
+
+            <div className="summary-row">
+              <span>Subtotal</span>
+              <span className="fw-bold">Rs {subtotal}</span>
+            </div>
+
+            <div className="summary-row">
+              <span>Shipping</span>
+              <span className="shipping-text">Calculated at checkout</span>
+            </div>
+
+            <div className="summary-row total">
+              <span>Estimated Total</span>
+              <span>Rs {subtotal}</span>
+            </div>
+
+            <Link to="/checkout" className="btn btn-dark w-100 py-2 fw-bold mt-3">
+              Checkout
+            </Link>
+
+            <div className="trust-section">
+              <div className="trust-row">
+                <i className="fa fa-truck"></i>
+                <div>
+                  <strong>Ships in 3-7 Business Days</strong>
+                  Reliable delivery across the country.
                 </div>
               </div>
-              <div className="col-md-4">
-                <div className="card mb-4">
-                  <div className="card-header py-3 bg-light">
-                    <h5 className="mb-0">Order Summary</h5>
-                  </div>
-                  <div className="card-body">
-                    <ul className="list-group list-group-flush">
-                      <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                        Products ({totalItems})<span>${Math.round(subtotal)}</span>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                        Shipping
-                        <span>${shipping}</span>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
-                        <div>
-                          <strong>Total amount</strong>
-                        </div>
-                        <span>
-                          <strong>${Math.round(subtotal + shipping)}</strong>
-                        </span>
-                      </li>
-                    </ul>
-
-                    <Link
-                      to="/checkout"
-                      className="btn btn-dark btn-lg btn-block"
-                    >
-                      Go to checkout
-                    </Link>
-                  </div>
+              <div className="trust-row mt-3">
+                <i className="fa fa-shield"></i>
+                <div>
+                  <strong>Security & Privacy</strong>
+                  Safe Payments: We use Cash on Delivery for secure and reliable transactions.
                 </div>
               </div>
             </div>
+
           </div>
-        </section>
-      </>
+        </div>
+
+      </div>
     );
   };
 
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
-        <h1 className="text-center">Cart</h1>
-        <hr />
-        {state.length > 0 ? <ShowCart /> : <EmptyCart />}
+      <div className="cart-container-wrapper py-5">
+        <div className="container">
+          {state.length > 0 ? <ShowCart /> : <EmptyCart />}
+        </div>
       </div>
       <Footer />
     </>

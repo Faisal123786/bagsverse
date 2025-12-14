@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Footer, Navbar } from "../components";
 import { Link, useLocation } from "react-router-dom";
+import { fetchMyOrders } from "../api";
+import Skeleton from "react-loading-skeleton";
 
 const OrderPage = () => {
     // Sidebar Active State
@@ -8,59 +10,55 @@ const OrderPage = () => {
     const currentPath = location.pathname;
 
     // --- STATE ---
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("All Orders");
+    const [searchQuery, setSearchQuery] = useState(""); // <--- NEW STATE FOR SEARCH
 
-    // --- MOCK DATA ---
-    const allOrders = [
-        {
-            id: "LUX-9928-XA",
-            date: "Nov 24, 2024",
-            itemCount: 2,
-            total: 12400,
-            status: "Processing",
-            items: [
-                "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=200", // Bag
-                "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=200"  // Watch
-            ]
-        },
-        {
-            id: "LUX-8210-BC",
-            date: "Oct 12, 2024",
-            itemCount: 1,
-            total: 4500,
-            status: "Delivered",
-            items: [
-                "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=200" // Sunglasses
-            ]
-        },
-        {
-            id: "LUX-7763-MM",
-            date: "Sep 04, 2024",
-            itemCount: 3,
-            total: 28900,
-            status: "Delivered",
-            items: [
-                "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=200", // Shoes
-                "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=200", // Bag
-                "https://images.unsplash.com/photo-1627123424574-724758594e93?q=80&w=200"  // Wallet
-            ]
-        },
-        {
-            id: "LUX-1102-RR",
-            date: "Aug 15, 2024",
-            itemCount: 1,
-            total: 3355,
-            status: "Returns",
-            items: [
-                "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=200" // Gadget
-            ]
-        }
-    ];
+    // --- FETCH ORDERS FROM API ---
+    useEffect(() => {
+        const loadOrders = async () => {
+            setLoading(true);
+            try {
+                const data = await fetchMyOrders();
 
-    // --- FILTER LOGIC ---
-    const filteredOrders = activeTab === "All Orders"
-        ? allOrders
-        : allOrders.filter(order => order.status === activeTab);
+                // Transform Backend Data to UI Structure
+                const formattedOrders = data.map(order => ({
+                    id: order._id,
+                    // Format Date
+                    date: new Date(order.created).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'short', day: 'numeric'
+                    }),
+                    total: order.total,
+                    status: order.status === 'Not processed' ? 'Processing' : (order.status || 'Processing'),
+                    itemCount: order.products.length,
+                    items: order.products.map(item =>
+                        item.product?.imageUrl || item.product?.images?.[0]?.imageUrl || "https://via.placeholder.com/60?text=No+Image"
+                    )
+                }));
+
+                setOrders(formattedOrders.reverse());
+            } catch (error) {
+                console.error("Failed to load orders:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadOrders();
+    }, []);
+
+    // --- UPDATED FILTER LOGIC ---
+    const filteredOrders = orders.filter(order => {
+        // 1. Check Tab Match
+        const matchTab = activeTab === "All Orders" || order.status === activeTab;
+
+        // 2. Check Search Match (Case insensitive)
+        const matchSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase());
+
+        // Return true only if BOTH match
+        return matchTab && matchSearch;
+    });
 
     // Status Badge Helper
     const getBadgeStyle = (status) => {
@@ -68,10 +66,24 @@ const OrderPage = () => {
             case 'Processing': return 'bg-primary bg-opacity-10 text-primary';
             case 'Shipped': return 'bg-info bg-opacity-10 text-info';
             case 'Delivered': return 'bg-success bg-opacity-10 text-success';
-            case 'Returns': return 'bg-danger bg-opacity-10 text-danger';
+            case 'Cancelled': return 'bg-danger bg-opacity-10 text-danger';
             default: return 'bg-secondary bg-opacity-10 text-secondary';
         }
     };
+
+    // --- LOADING COMPONENT ---
+    const OrderSkeleton = () => (
+        <div className="order-card-modern mb-3">
+            <div className="p-3">
+                <Skeleton height={20} width={200} className="mb-2" />
+                <Skeleton height={15} width={150} />
+                <div className="d-flex mt-3 gap-3">
+                    <Skeleton height={60} width={60} />
+                    <Skeleton height={60} width={60} />
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <>
@@ -89,7 +101,7 @@ const OrderPage = () => {
 
                 <div className="row">
 
-                    {/* --- LEFT SIDEBAR (Consistent with Account Page) --- */}
+                    {/* --- LEFT SIDEBAR --- */}
                     <div className="col-lg-3 col-md-4 mb-4">
                         <div className="account-sidebar shadow-sm">
                             <Link
@@ -122,7 +134,7 @@ const OrderPage = () => {
 
                             {/* Tabs */}
                             <div className="status-tabs-container">
-                                {["All Orders", "Processing", "Shipped", "Delivered", "Returns"].map(tab => (
+                                {["All Orders", "Processing", "Shipped", "Delivered", "Cancelled"].map(tab => (
                                     <button
                                         key={tab}
                                         className={`status-tab ${activeTab === tab ? 'active' : ''}`}
@@ -133,21 +145,34 @@ const OrderPage = () => {
                                 ))}
                             </div>
 
-                            {/* Filter Input (Visual only) */}
+                            {/* Filter Input (NOW FUNCTIONAL) */}
                             <div className="mb-3 mb-md-0">
-                                <input type="text" placeholder="Filter by order #" className="order-filter-input" />
+                                <input
+                                    type="text"
+                                    placeholder="Filter by order #"
+                                    className="order-filter-input"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
                             </div>
                         </div>
 
                         {/* --- ORDERS LIST --- */}
-                        {filteredOrders.length > 0 ? (
+                        {loading ? (
+                            <>
+                                <OrderSkeleton />
+                                <OrderSkeleton />
+                                <OrderSkeleton />
+                            </>
+                        ) : filteredOrders.length > 0 ? (
                             filteredOrders.map((order) => (
                                 <div key={order.id} className="order-card-modern">
 
                                     {/* Top Row */}
                                     <div className="card-top">
                                         <div className="d-flex align-items-center flex-wrap gap-2">
-                                            <span className="order-id">Order #{order.id}</span>
+                                            {/* Show only first 8 chars of ID visually, but search works on full ID */}
+                                            <span className="order-id">Order #{order.id.substring(0, 8).toUpperCase()}</span>
                                             <span className={`badge rounded-pill ${getBadgeStyle(order.status)} px-3 py-2`}>
                                                 {order.status}
                                             </span>
@@ -169,7 +194,12 @@ const OrderPage = () => {
                                         {/* Images */}
                                         <div className="img-group">
                                             {order.items.slice(0, 2).map((img, i) => (
-                                                <img key={i} src={img} alt="Product" />
+                                                <img
+                                                    key={i}
+                                                    src={img}
+                                                    alt="Product"
+                                                    onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/60?text=?" }}
+                                                />
                                             ))}
                                             {/* Show counter if more than 2 items */}
                                             {order.items.length > 2 && (
@@ -177,17 +207,26 @@ const OrderPage = () => {
                                             )}
                                         </div>
 
-                                        {/* Buttons */}
+                                        {/* Buttons inside OrderPage.jsx */}
                                         <div className="d-flex gap-2">
                                             {order.status === 'Delivered' ? (
                                                 <>
-                                                    <button className="btn-outline-custom">View Invoice</button>
+                                                    <Link to={`/order/${order.id}`} className="btn-outline-custom text-decoration-none">
+                                                        View Invoice
+                                                    </Link>
                                                     <button className="btn-gold">Buy Again</button>
                                                 </>
                                             ) : (
                                                 <>
-                                                    <button className="btn-outline-custom">View Details</button>
-                                                    <button className="btn-outline-custom">Track Order</button>
+                                                    {/* View Details Link */}
+                                                    <Link to={`/order/${order.id}`} className="btn-outline-custom text-decoration-none">
+                                                        View Details
+                                                    </Link>
+
+                                                    {/* Track Order Link */}
+                                                    <Link to={`/order/track/${order.id}`} className="btn-outline-custom text-decoration-none">
+                                                        Track Order
+                                                    </Link>
                                                 </>
                                             )}
                                         </div>
@@ -199,7 +238,18 @@ const OrderPage = () => {
                             <div className="text-center py-5 border rounded bg-white">
                                 <i className="fa fa-search fa-2x text-muted mb-3"></i>
                                 <h5>No orders found</h5>
-                                <p className="text-muted">Try changing the filter.</p>
+                                <p className="text-muted">
+                                    {searchQuery ? `No orders match #${searchQuery}` : "You haven't placed any orders yet."}
+                                </p>
+                                {searchQuery && (
+                                    <button
+                                        className="btn btn-sm btn-outline-dark mt-2"
+                                        onClick={() => setSearchQuery("")}
+                                    >
+                                        Clear Search
+                                    </button>
+                                )}
+                                {!searchQuery && <Link to="/products" className="btn btn-dark mt-3">Start Shopping</Link>}
                             </div>
                         )}
 

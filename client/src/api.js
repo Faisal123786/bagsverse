@@ -92,7 +92,9 @@ export const deleteProduct = async id => {
   }
 };
 
-// category
+// =========================
+//  CATEGORY APIs
+// =========================
 
 export const fetchCategories = async () => {
   const response = await API.get('/category');
@@ -130,5 +132,51 @@ export const deleteCategory = async id => {
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.error || 'Failed to delete category');
+  }
+};
+
+// =========================
+//  ORDER APIs (NEW)
+// =========================
+
+export const placeOrder = async (orderData) => {
+  try {
+    // Now expects { cartId: "...", total: 1234 }
+    const response = await API.post('/order/add', orderData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to place order');
+  }
+};
+
+export const fetchMyOrders = async () => {
+  try {
+    const response = await API.get('/order/me');
+    return response.data.orders || response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch orders');
+  }
+};
+
+// 3. Fetch Single Order Details (For View Invoice/Details)
+export const fetchOrderById = async (id) => {
+  try {
+    const response = await API.get(`/order/${id}`);
+    return response.data.order;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch order details');
+  }
+};
+
+// =========================
+//  CART APIs (NEW - Add this)
+// =========================
+export const syncCartToDB = async (cartData) => {
+  try {
+    // Expects { products: [...] }
+    const response = await API.post('/cart/add', cartData);
+    return response.data; // This will return { success: true, cartId: "..." }
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to sync cart');
   }
 };

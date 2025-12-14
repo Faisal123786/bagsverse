@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../redux/action/userAction';
+import { addCart, delCart } from '../redux/action'; // Added these imports for sidebar functionality
 import { fetchCategories } from '../api';
 import { GoSearch } from 'react-icons/go';
 import { FiUser } from 'react-icons/fi';
@@ -14,7 +15,6 @@ const Navbar = () => {
 
   const cartItems = useSelector(state => state.handleCart);
   const user = useSelector(state => state.handleUser.user);
-  console.log(user);
 
   const [userDropdown, setUserDropdown] = useState(false);
   const [cartSidebar, setCartSidebar] = useState(false);
@@ -38,8 +38,6 @@ const Navbar = () => {
           setCategories(res);
         } else if (Array.isArray(res?.data)) {
           setCategories(res.data);
-        } else {
-          console.error('Unexpected category format:', res);
         }
       } catch (err) {
         console.error('Failed to fetch categories:', err);
@@ -47,6 +45,9 @@ const Navbar = () => {
     };
     loadCategories();
   }, []);
+
+  // Calculate Subtotal for the Sidebar Button
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
 
   // Close overlays
   const handleOverlayClick = () => {
@@ -149,38 +150,22 @@ const Navbar = () => {
                   {user ? (
                     <>
                       <li className='dropdown-item'>Hi, {user.firstName}</li>
-
-                      {/* Role-based dashboard */}
                       {user.role === 'ROLE ADMIN' && (
                         <li>
-                          <NavLink
-                            className='dropdown-item'
-                            to='/admin'
-                            onClick={() => setUserDropdown(false)}
-                          >
-                            <i className='fa fa-tachometer-alt me-2'></i> Admin
-                            Dashboard
+                          <NavLink className='dropdown-item' to='/admin' onClick={() => setUserDropdown(false)}>
+                            <i className='fa fa-tachometer-alt me-2'></i> Admin Dashboard
                           </NavLink>
                         </li>
                       )}
                       {user.role === 'ROLE MERCHANT' && (
                         <li>
-                          <NavLink
-                            className='dropdown-item'
-                            to='/merchant-dashboard'
-                            onClick={() => setUserDropdown(false)}
-                          >
-                            <i className='fa fa-briefcase me-2'></i> Merchant
-                            Dashboard
+                          <NavLink className='dropdown-item' to='/merchant-dashboard' onClick={() => setUserDropdown(false)}>
+                            <i className='fa fa-briefcase me-2'></i> Merchant Dashboard
                           </NavLink>
                         </li>
                       )}
-
                       <li>
-                        <button
-                          className='dropdown-item'
-                          onClick={handleLogout}
-                        >
+                        <button className='dropdown-item' onClick={handleLogout}>
                           <i className='fa fa-sign-out-alt me-2'></i> Logout
                         </button>
                       </li>
@@ -188,20 +173,12 @@ const Navbar = () => {
                   ) : (
                     <>
                       <li>
-                        <NavLink
-                          className='dropdown-item'
-                          to='/login'
-                          onClick={() => setUserDropdown(false)}
-                        >
+                        <NavLink className='dropdown-item' to='/login' onClick={() => setUserDropdown(false)}>
                           <i className='fa fa-sign-in-alt me-2'></i> Sign In
                         </NavLink>
                       </li>
                       <li>
-                        <NavLink
-                          className='dropdown-item'
-                          to='/register'
-                          onClick={() => setUserDropdown(false)}
-                        >
+                        <NavLink className='dropdown-item' to='/register' onClick={() => setUserDropdown(false)}>
                           <FiUser /> Sign Up
                         </NavLink>
                       </li>
@@ -251,12 +228,9 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* DESKTOP CATEGORIES BAR - Sticky (below navbar) */}
+      {/* DESKTOP CATEGORIES BAR */}
       {!isMobile && (
-        <div
-          className='bg-dark text-white sticky-top'
-          style={{ top: '72px', zIndex: 1020 }}
-        >
+        <div className='bg-dark text-white sticky-top' style={{ top: '72px', zIndex: 1020 }}>
           <div className='container py-1'>
             <ul className='d-flex list-unstyled gap-4 mb-0 py-2 justify-content-center flex-wrap'>
               {categories.map((item, index) => (
@@ -269,7 +243,7 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* OVERLAY for cart and dropdowns */}
+      {/* OVERLAY */}
       {(cartSidebar || categoryDrawer) && (
         <div
           className='position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50'
@@ -278,7 +252,7 @@ const Navbar = () => {
         />
       )}
 
-      {/* MOBILE CATEGORY SIDE DRAWER (LEFT) */}
+      {/* MOBILE CATEGORY SIDE DRAWER */}
       {isMobile && (
         <div
           className='position-fixed top-0 start-0 vh-100 bg-white shadow-lg'
@@ -290,38 +264,19 @@ const Navbar = () => {
             overflowY: 'auto'
           }}
         >
-          {/* Drawer Header */}
           <div className='d-flex justify-content-between p-2 align-items-centerborder-bottom'>
-            <button
-              className='btn btn-sm text-dark w-fit ml-auto no-focus'
-              style={{
-                border: 'none',
-                background: 'transparent',
-                fontSize: '1rem',
-                fontWeight: 'thick'
-              }}
-              onClick={() => setCategoryDrawer(false)}
-            >
+            <button className='btn btn-sm text-dark w-fit ml-auto no-focus' onClick={() => setCategoryDrawer(false)}>
               <i className='fa fa-times'></i>
             </button>
           </div>
           <h5 className='px-4'>Categories</h5>
-
-          {/* Category List */}
           <ul className='list-group list-group-flush'>
             {categories.map((item, index) => (
               <li key={index} className='list-group-item border-0 p-0'>
                 <NavLink
                   to={`/category/${item.id || item.name}`}
                   className='d-block text-decoration-none text-dark py-3 px-4'
-                  style={{ transition: 'background-color 0.2s' }}
                   onClick={() => setCategoryDrawer(false)}
-                  onMouseEnter={e =>
-                    (e.target.style.backgroundColor = '#f8f9fa')
-                  }
-                  onMouseLeave={e =>
-                    (e.target.style.backgroundColor = 'transparent')
-                  }
                 >
                   <i className='fa fa-chevron-right me-2 text-muted'></i>
                   {item.name}
@@ -340,95 +295,135 @@ const Navbar = () => {
         >
           <div className='d-flex justify-content-between align-items-center mb-3'>
             <h5 className='mb-0'>Search Products</h5>
-            <button
-              className='btn no-focus'
-              style={{
-                fontSize: '1.5rem',
-                border: 'none',
-                background: 'transparent'
-              }}
-              onClick={() => setSearchDrawer(false)}
-            >
+            <button className='btn no-focus' onClick={() => setSearchDrawer(false)} style={{ fontSize: '1.5rem' }}>
               <i className='fa fa-times'></i>
             </button>
           </div>
-          <div className='flex-grow-1 d-flex justify-content-center align-items-start'>
-            <div className='input-group w-100' style={{ maxWidth: '500px' }}>
-              <input
-                type='text'
-                className='form-control ps-4 py-3'
-                placeholder='Search for products...'
-              />
-              <button
-                className='btn btn-dark px-3 no-focus'
-                onClick={() => setSearchDrawer(false)}
-              >
-                <i className='fa fa-search text-white'></i>
-              </button>
-            </div>
+          <div className='input-group w-100' style={{ maxWidth: '500px' }}>
+            <input type='text' className='form-control ps-4 py-3' placeholder='Search for products...' />
+            <button className='btn btn-dark px-3 no-focus' onClick={() => setSearchDrawer(false)}>
+              <i className='fa fa-search text-white'></i>
+            </button>
           </div>
         </div>
       )}
 
-      {/* CART SIDEBAR (RIGHT) */}
+      {/* --- CART SIDEBAR (UPDATED DESIGN) --- */}
       <div
-        className='position-fixed top-0 end-0 vh-100 bg-white shadow-lg'
+        className='position-fixed top-0 end-0 vh-100 bg-white shadow-lg d-flex flex-column'
         style={{
-          width: isMobile ? '280px' : '320px',
+          width: isMobile ? '300px' : '380px', // Slightly wider for better layout
           zIndex: 1050,
           transform: cartSidebar ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.3s ease-in-out',
-          overflowY: 'auto'
         }}
       >
-        {/* Cart Header */}
-        <div className='d-flex justify-content-between align-items-center p-3 border-bottom'>
-          <h5 className='mb-0'>Your Cart</h5>
+        {/* 1. Header */}
+        <div className='d-flex justify-content-between align-items-center p-4 border-bottom'>
+          <h5 className='mb-0 fw-bold' style={{ color: '#000' }}>
+            <i className="fa fa-shopping-bag me-2"></i>
+            {cartItems.length} item(s)
+          </h5>
           <button
-            className='btn btn-outline-dark btn-sm no-focus'
+            className='btn btn-sm text-muted no-focus'
+            style={{ fontSize: '1.2rem' }}
             onClick={() => setCartSidebar(false)}
           >
-            Close
+            <i className="fa fa-times"></i>
           </button>
         </div>
 
-        {/* Cart Content */}
-        <div className='p-3'>
+        {/* 2. Scrollable Cart Items */}
+        <div className='flex-grow-1 overflow-auto p-3'>
           {cartItems.length === 0 ? (
-            <div className='text-center py-5'>
-              <RiShoppingCartLine />
-              <p className='text-muted'>Your cart is empty</p>
+            <div className='text-center py-5 mt-5'>
+              <RiShoppingCartLine style={{ fontSize: '3rem', color: '#eee' }} />
+              <p className='text-muted mt-3'>Your cart is empty</p>
+              <button
+                className='btn btn-dark btn-sm mt-2'
+                onClick={() => { setCartSidebar(false); navigate('/product') }}
+              >
+                Start Shopping
+              </button>
             </div>
           ) : (
-            <ul className='list-group'>
+            <ul className='list-unstyled mb-0'>
               {cartItems.map((item, index) => (
-                <li
-                  key={index}
-                  className='list-group-item d-flex justify-content-between align-items-center'
-                >
-                  <div>
-                    <div className='fw-bold'>{item.name}</div>
-                    <small className='text-muted'>Qty: {item.qty}</small>
+                <li key={index} className='mb-4 d-flex align-items-start border-bottom pb-4'>
+
+                  {/* Image */}
+                  <div className="flex-shrink-0 border rounded p-1 bg-light" style={{ width: '80px', height: '80px' }}>
+                    <img
+                      src={item.image || (item.images && item.images.length > 0 ? item.images[0].imageUrl : "https://via.placeholder.com/80?text=No+Image")}
+                      alt={item.name}
+                      className="w-100 h-100 object-fit-contain"
+                    />
                   </div>
-                  <span className='badge bg-dark rounded-pill'>
-                    ${item.price * item.qty}
-                  </span>
+
+                  {/* Details */}
+                  <div className="flex-grow-1 ms-3">
+                    <div className="d-flex justify-content-between">
+                      <h6 className='fw-semibold mb-1 text-truncate' style={{ maxWidth: '160px' }}>{item.name || item.title}</h6>
+                      <button
+                        className="btn btn-link text-muted p-0 text-decoration-none"
+                        onClick={() => dispatch(delCart(item))}
+                      >
+                        <i className="fa fa-times"></i>
+                      </button>
+                    </div>
+
+                    {/* Price */}
+                    <div className="mb-2">
+                      {/* <span className="text-muted text-decoration-line-through small me-2">Rs {Math.round(item.price * 1.2)}</span> */}
+                      <span className="fw-bold text-dark">Rs {item.price}</span>
+                    </div>
+
+                    {/* Quantity Control */}
+                    <div className="d-flex align-items-center">
+                      <div className="btn-group btn-group-sm border rounded" role="group">
+                        <button
+                          className="btn btn-white text-dark py-0 border-end"
+                          onClick={() => dispatch(delCart(item))}
+                        >
+                          -
+                        </button>
+                        <span className="px-3 d-flex align-items-center bg-white text-dark small fw-bold">
+                          {item.qty}
+                        </span>
+                        <button
+                          className="btn btn-white text-dark py-0 border-start"
+                          onClick={() => dispatch(addCart(item))}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </div>
 
-        {/* Cart Footer */}
+        {/* 3. Footer */}
         {cartItems.length > 0 && (
-          <div className='position-absolute bottom-0 w-100 p-3 border-top bg-light '>
-            <button className='btn btn-dark w-100 mb-2'
+          <div className='p-4 bg-white border-top shadow-sm'>
+            <div className="d-flex justify-content-between mb-2">
+              <span className="text-muted small">Excluding Shipping</span>
+            </div>
+
+            <button
+              className='btn btn-dark w-100 mb-2 py-2 fw-bold'
               onClick={() => {
                 setCartSidebar(false);
                 navigate('/checkout');
-              }}>Checkout</button>
+              }}
+            >
+              Checkout Now (Rs {Math.round(subtotal)})
+            </button>
+
             <button
-              className='btn btn-outline-dark w-100 no-focus'
+              className='btn btn-outline-dark w-100 py-2 fw-bold'
               onClick={() => {
                 setCartSidebar(false);
                 navigate('/cart');

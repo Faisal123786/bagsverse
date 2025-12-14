@@ -252,7 +252,7 @@ router.post(
 router.get(
   '/',
   auth,
-  role.check(ROLES.Admin, ROLES.Merchant),
+  // role.check(ROLES.Admin, ROLES.Merchant),
   async (req, res) => {
     try {
       let products = [];
@@ -298,7 +298,7 @@ router.get(
 router.get(
   '/:id',
   auth,
-  role.check(ROLES.Admin, ROLES.Merchant),
+  // role.check(ROLES.Admin, ROLES.Merchant),
   async (req, res) => {
     try {
       const productId = req.params.id;

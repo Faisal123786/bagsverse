@@ -11,13 +11,13 @@ const responsive = {
   superLargeDesktop: { breakpoint: { max: 4000, min: 1200 }, items: 4 },
   desktop: { breakpoint: { max: 1200, min: 992 }, items: 3 },
   tablet: { breakpoint: { max: 992, min: 576 }, items: 2 },
-  mobile: { breakpoint: { max: 576, min: 0 }, items: 1 }
+  mobile: { breakpoint: { max: 576, min: 0 }, items: 2 }
 };
 
 // 2. The Product Card Component (Updated to accept onClick and title)
 const ProductCard = ({ image, title, price, onClick }) => {
   return (
-    <div className="product-card" onClick={onClick} style={{ cursor: 'pointer' }}>
+    <div className="product-card mb-4" onClick={onClick} style={{ cursor: 'pointer' }}>
       {/* Image Area */}
       <div className="product-img-wrapper mb-3">
         <img
@@ -30,28 +30,26 @@ const ProductCard = ({ image, title, price, onClick }) => {
       </div>
 
       {/* Info Area */}
-      <div className="d-flex justify-content-between align-items-end p-3">
-        <div className="product-info text-start">
-          <span className="product-category text-muted d-block mb-1 text-truncate" style={{ maxWidth: '150px' }}>
-            {title}
-          </span>
-          <h5 className="product-price mb-0">{price}</h5>
-        </div>
+      {/* <div className="d-flex justify-content-between align-items-end p-3"> */}
+      <div className="product-info text-start px-3 py-2 ">
+        <span className="product-category text-muted d-block mb-1 text-truncate" style={{ maxWidth: '150px' }}>
+          {title}
+        </span>
+        <h5 className="product-price mb-0">{price}</h5>
+      </div>
 
-        {/* Cart Button */}
-        <Button
+      {/* Cart Button */}
+      {/* <Button
           variant="warning"
           className="cart-btn rounded-circle text-white"
-          // Stop propagation so clicking button doesn't trigger card navigation (optional)
           onClick={(e) => {
             e.stopPropagation();
-            // Add cart logic here if needed
             console.log("Add to cart clicked");
           }}
         >
           <i className="fa fa-cart-plus"></i>
-        </Button>
-      </div>
+        </Button> */}
+      {/* </div> */}
     </div>
   );
 };
