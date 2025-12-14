@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Accordion } from 'react-bootstrap';
 import Skeleton from 'react-loading-skeleton';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import Marquee from 'react-fast-marquee';
 import { useDispatch } from 'react-redux';
 import { addCart } from '../redux/action';
@@ -13,44 +13,81 @@ import { fetchProductById, fetchProducts } from '../api';
 
 const Product = () => {
   const { id } = useParams();
-  const [product, setProduct] = useState([]);
-  console.log(product);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [product, setProduct] = useState({});
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
+
+  // State for image handling
   const [mainImage, setMainImage] = useState('');
   const [thumbnails, setThumbnails] = useState([]);
 
-  const dispatch = useDispatch();
+  // --- ADD TO CART LOGIC ---
+  const addProductToCart = (productItem, specificImage = null, quantity = 1) => {
+    // 1. Determine which image to use (Selected one > First one > Default)
+    const imageToUse = specificImage
+      || (productItem.images && productItem.images.length > 0 ? productItem.images[0].imageUrl : '')
+      || productItem.image;
 
-  const addProduct = product => {
-    dispatch(addCart(product));
+    // 2. Prepare Payload
+    const productData = {
+      ...productItem,
+      image: imageToUse,
+      qty: quantity // IMPORTANT: Pass the specific quantity selected
+    };
+
+    dispatch(addCart(productData));
   };
 
+  // --- FETCH DATA ---
   useEffect(() => {
-    const getProduct = async () => {
+    const getProductData = async () => {
       setLoading(true);
       setLoading2(true);
-      const data = await fetchProductById(id);
-      setProduct(data);
-      // Initialize main image with product image
-      setMainImage(data.images[0].imageUrl);
+      try {
+        // 1. Fetch Main Product
+        const data = await fetchProductById(id);
+        setProduct(data);
 
-      // Create thumbnail array (you can replace these URLs with actual product images)
-      const thumbnailImages = Array.from({ length: data.images.length }).map(
-        (_, index) => data.images[index].imageUrl
-      );
-      setThumbnails(thumbnailImages);
+        // Initialize Images
+        if (data.images && data.images.length > 0) {
+          setMainImage(data.images[0].imageUrl);
+          setThumbnails(data.images.map(img => img.imageUrl));
+        } else {
+          setMainImage("https://via.placeholder.com/400");
+          setThumbnails([]);
+        }
 
-      setLoading(false);
-      const response = await fetchProducts();
-      const allProducts = response.products || response || [];
-      setSimilarProducts(allProducts);
-      setLoading2(false);
+        setLoading(false);
+
+        // 2. Fetch Similar Products (Filter by Category)
+        const response = await fetchProducts();
+        const allProducts = response.products || response || [];
+
+        // Handle category whether it's a string or object
+        const currentCategoryName = typeof data.category === 'object' ? data.category?.name : data.category;
+
+        const related = allProducts.filter(item => {
+          const itemCatName = typeof item.category === 'object' ? item.category?.name : item.category;
+          return itemCatName === currentCategoryName && item._id !== data._id;
+        });
+
+        setSimilarProducts(related);
+        setLoading2(false);
+
+      } catch (error) {
+        console.error("Error loading product:", error);
+        setLoading(false);
+        setLoading2(false);
+      }
     };
-    getProduct();
+    getProductData();
   }, [id]);
 
+  // Handle Thumbnail Click
   const handleImage = index => {
     const selectedImage = thumbnails[index];
     if (selectedImage) {
@@ -60,24 +97,16 @@ const Product = () => {
 
   const Loading = () => {
     return (
-      <>
-        <div className='container my-5 py-2'>
-          <div className='row'>
-            <div className='col-md-6 py-3'>
-              <Skeleton height={400} width={400} />
-            </div>
-            <div className='col-md-6 py-5'>
-              <Skeleton height={30} width={250} />
-              <Skeleton height={90} />
-              <Skeleton height={40} width={70} />
-              <Skeleton height={50} width={110} />
-              <Skeleton height={120} />
-              <Skeleton height={40} width={110} inline={true} />
-              <Skeleton className='mx-3' height={40} width={110} />
-            </div>
+      <div className='container my-5 py-2'>
+        <div className='row'>
+          <div className='col-md-6 py-3'>
+            <Skeleton height={400} width={400} />
+          </div>
+          <div className='col-md-6 py-5'>
+            <Skeleton count={6} height={40} />
           </div>
         </div>
-      </>
+      </div>
     );
   };
 
@@ -85,281 +114,182 @@ const Product = () => {
     const [qty, setQty] = useState(1);
 
     const handleQty = type => {
-      if (type === 'dec' && qty > 1) {
-        setQty(qty - 1);
-      }
-      if (type === 'inc') {
-        setQty(qty + 1);
-      }
+      if (type === 'dec' && qty > 1) setQty(qty - 1);
+      if (type === 'inc') setQty(qty + 1);
+    };
+
+    const handleBuyNow = () => {
+      // Pass 'qty' state to addProductToCart
+      addProductToCart(product, mainImage, qty);
+      navigate('/checkout');
     };
 
     return (
-      <>
-        <div className='container my-2 py-2'>
-          <div className='row'>
-            {/* --- LEFT SIDE: IMAGE --- */}
-            <div className='col-12 col-md-6 py-3 border px-3'>
-              <div className='d-flex flex-column flex-md-row gap-3 justify-content-center align-items-start'>
-                {/* Thumbnails */}
-                <div
-                  className='d-flex flex-row flex-sm-column gap-2 overflow-auto'
-                  style={{
-                    maxHeight: '600px',
-                    maxWidth: '100%',
-                    scrollbarWidth: 'none'
-                  }}
-                >
-                  {thumbnails.map((thumbnail, index) => (
-                    <div
-                      key={index}
-                      className='border rounded flex-shrink-0'
-                      style={{
-                        width: '80px',
-                        height: '80px',
-                        cursor: 'pointer',
-                        border:
-                          mainImage === thumbnail
-                            ? '2px solid #000'
-                            : '1px solid #ddd'
-                      }}
-                      onClick={() => handleImage(index)}
-                      onMouseEnter={() => handleImage(index)}
-                    >
-                      <img
-                        src={thumbnail}
-                        alt={`Thumbnail ${index + 1}`}
-                        className='img-fluid w-100 h-100 rounded'
-                        style={{ objectFit: 'cover' }}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Main Image */}
-                <div
-                  className='flex-grow-1 d-flex justify-content-center align-items-center'
-                  style={{ maxWidth: '100%' }}
-                >
-                  <div style={{ maxHeight: '600px', width: '450px' }}>
-                    <TransformWrapper>
-                      <TransformComponent>
-                        <img
-                          src={mainImage || product.image}
-                          alt='Product'
-                          style={{
-                            width: '100%',
-                            height: 'auto',
-                            objectFit: 'contain'
-                          }}
-                        />
-                      </TransformComponent>
-                    </TransformWrapper>
+      <div className='container my-2 py-2'>
+        <div className='row'>
+          {/* --- LEFT SIDE: IMAGES --- */}
+          <div className='col-12 col-md-6 py-3 border px-3'>
+            <div className='d-flex flex-column flex-md-row gap-3 justify-content-center align-items-start'>
+              {/* Thumbnails */}
+              <div
+                className='d-flex flex-row flex-sm-column gap-2 overflow-auto'
+                style={{ maxHeight: '600px', maxWidth: '100%', scrollbarWidth: 'none' }}
+              >
+                {thumbnails.map((thumbnail, index) => (
+                  <div
+                    key={index}
+                    className='border rounded flex-shrink-0'
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      cursor: 'pointer',
+                      border: mainImage === thumbnail ? '2px solid #000' : '1px solid #ddd'
+                    }}
+                    onClick={() => handleImage(index)}
+                    onMouseEnter={() => handleImage(index)}
+                  >
+                    <img
+                      src={thumbnail}
+                      alt={`Thumbnail ${index + 1}`}
+                      className='img-fluid w-100 h-100 rounded'
+                      style={{ objectFit: 'cover' }}
+                    />
                   </div>
+                ))}
+              </div>
+
+              {/* Main Image Zoom */}
+              <div className='flex-grow-1 d-flex justify-content-center align-items-center' style={{ maxWidth: '100%' }}>
+                <div style={{ maxHeight: '600px', width: '450px' }}>
+                  <TransformWrapper>
+                    <TransformComponent>
+                      <img
+                        src={mainImage}
+                        alt={product.name}
+                        className='img-fluid'
+                        style={{ width: '100%', height: 'auto', maxHeight: '600px', objectFit: 'contain' }}
+                        onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/400?text=No+Image" }}
+                      />
+                    </TransformComponent>
+                  </TransformWrapper>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* --- RIGHT SIDE: DETAILS --- */}
-            <div className='col-md-6 col-sm-12 py-3'>
-              {/* 1. Header: Title + Heart Icon */}
-              <div className='d-flex justify-content-between align-items-start'>
-                <div>
-                  <h2 className='display-6 fw-normal mb-0'>{product.title}</h2>
-                  {/* Category below title like screenshot */}
-                  {/* <span className="text-muted small">{product.category}</span> */}
+          {/* --- RIGHT SIDE: DETAILS --- */}
+          <div className='col-md-6 col-sm-12 py-3'>
+            <div className='d-flex justify-content-between align-items-start'>
+              <div>
+                <h2 className='display-6 fw-normal mb-0'>{product.name}</h2>
+              </div>
+              <button className='btn btn-light border rounded-circle d-flex align-items-center justify-content-center' style={{ width: '40px', height: '40px' }}>
+                <i className='fa fa-heart-o'></i>
+              </button>
+            </div>
+
+            <h3 className='my-3 fw-bold'>Rs. {product.price} PKR</h3>
+
+            <div className='mb-4 d-flex align-items-center'>
+              <span className='text-danger me-2'>
+                <i className='fa fa-star'></i><i className='fa fa-star'></i><i className='fa fa-star'></i><i className='fa fa-star'></i><i className='fa fa-star'></i>
+              </span>
+              <span className='text-muted small'>5 reviews</span>
+            </div>
+
+            <div className='mb-3'>
+              <p className='mb-2 small fw-bold'>Quantity</p>
+              <div className='d-flex gap-3'>
+                <div className='d-flex align-items-center justify-content-between border rounded-0' style={{ width: '120px', height: '48px' }}>
+                  <button className='btn border-0 px-3 no-focus' onClick={() => handleQty('dec')}>-</button>
+                  <span className='fw-bold'>{qty}</span>
+                  <button className='btn border-0 px-3 no-focus' onClick={() => handleQty('inc')}>+</button>
                 </div>
-                {/* Heart Icon Button */}
+
+                {/* Add to Cart Button: Passes QTY */}
                 <button
-                  className='btn btn-light border rounded-circle d-flex align-items-center justify-content-center'
-                  style={{ width: '40px', height: '40px' }}
+                  className='btn btn-outline-dark flex-grow-1 text-uppercase fw-bold rounded-0'
+                  style={{ height: '48px' }}
+                  onClick={() => addProductToCart(product, mainImage, qty)}
                 >
-                  <i className='fa fa-heart-o'></i>
+                  Add to cart
                 </button>
               </div>
+            </div>
 
-              {/* Price */}
-              <h3 className='my-3 fw-bold'>Rs. {product.price} PKR</h3>
+            {/* Buy Now Button */}
+            <button
+              onClick={handleBuyNow}
+              className='btn btn-dark w-100 py-2 mb-4 text-uppercase fw-bold rounded-0'
+              style={{ height: '48px' }}
+            >
+              Buy it now
+            </button>
 
-              {/* Reviews */}
-              <div className='mb-4 d-flex align-items-center'>
-                <span className='text-danger me-2'>
-                  {' '}
-                  {/* Red stars per screenshot */}
-                  <i className='fa fa-star'></i>
-                  <i className='fa fa-star'></i>
-                  <i className='fa fa-star'></i>
-                  <i className='fa fa-star'></i>
-                  <i className='fa fa-star'></i>
-                </span>
-                <span className='text-muted small'>
-                  {product.rating && product.rating.count} reviews
-                </span>
+            <div className='mb-3'>
+              <div className='d-flex align-items-center gap-2 cursor-pointer text-muted'>
+                <i className='fa fa-share-alt'></i>
+                <span className='small'>Share</span>
               </div>
+            </div>
 
-              {/* 2. Quantity & Add to Cart (SAME LINE) */}
-              <div className='mb-3'>
-                <p className='mb-2 small fw-bold'>Quantity</p>
-                <div className='d-flex gap-3'>
-                  {/* Quantity Box */}
-                  <div
-                    className='d-flex align-items-center justify-content-between border rounded-0'
-                    style={{ width: '120px', height: '48px' }} // Fixed height
-                  >
-                    <button
-                      className='btn  border-0 px-3 no-focus '
-                      onClick={() => handleQty('dec')}
-                    >
-                      -
-                    </button>
-                    <span className='fw-bold'>{qty}</span>
-                    <button
-                      className='btn  border-0 px-3 no-focus '
-                      onClick={() => handleQty('inc')}
-                    >
-                      +
-                    </button>
-                  </div>
+            <hr />
+            <div className='d-flex align-items-center gap-3 text-muted my-4' style={{ fontSize: '0.9rem' }}>
+              <i className='fa fa-cube fa-lg'></i>
+              <span>Free Shipping on all orders above Rs. 7,999 PKR!</span>
+            </div>
 
-                  {/* Add to Cart Button (Takes remaining space) */}
-                  <button
-                    className='btn btn-outline-dark flex-grow-1 text-uppercase fw-bold rounded-0'
-                    style={{ height: '48px' }} // Matches height of qty box
-                    onClick={() => addProduct(product)}
-                  >
-                    Add to cart
-                  </button>
-                </div>
-              </div>
-
-              {/* 3. Buy It Now (Full width below) */}
-              <Link
-                to='/cart'
-                className='btn btn-dark w-100 py-2 mb-4 text-uppercase fw-bold rounded-0'
-                style={{
-                  height: '48px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                Buy it now
-              </Link>
-
-              {/* Share */}
-              <div className='mb-3'>
-                <div className='d-flex align-items-center gap-2 cursor-pointer text-muted'>
-                  <i className='fa fa-share-alt'></i>
-                  <span className='small'>Share</span>
-                </div>
-              </div>
-
-              {/* Shipping Info with Divider */}
-              <hr />
-              <div
-                className='d-flex align-items-center gap-3 text-muted my-4'
-                style={{ fontSize: '0.9rem' }}
-              >
-                <i className='fa fa-cube fa-lg'></i>
-                <span>Free Shipping on all orders above Rs. 7,999 PKR!</span>
-              </div>
-
-              {/* 4. Accordions (Closed by default - removed defaultActiveKey) */}
-              <div className='mt-4'>
-                <Accordion flush>
-                  <Accordion.Item eventKey='0'>
-                    <Accordion.Header>Disclaimer</Accordion.Header>
-                    <Accordion.Body className='text-muted small'>
-                      Actual colors may vary. This is due to computer monitors
-                      displaying colors differently.
-                    </Accordion.Body>
-                  </Accordion.Item>
-                  <Accordion.Item eventKey='1'>
-                    <Accordion.Header>Cleaning Instruction</Accordion.Header>
-                    <Accordion.Body className='text-muted small'>
-                      To clean this product, wipe with a soft, dry cloth. Avoid
-                      using harsh chemicals.
-                    </Accordion.Body>
-                  </Accordion.Item>
-                </Accordion>
-              </div>
+            <div className='mt-4'>
+              <Accordion flush>
+                <Accordion.Item eventKey='0'>
+                  <Accordion.Header>Disclaimer</Accordion.Header>
+                  <Accordion.Body className='text-muted small'>Actual colors may vary.</Accordion.Body>
+                </Accordion.Item>
+                <Accordion.Item eventKey='1'>
+                  <Accordion.Header>Cleaning Instruction</Accordion.Header>
+                  <Accordion.Body className='text-muted small'>Wipe with a soft, dry cloth.</Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
             </div>
           </div>
         </div>
-      </>
+      </div>
     );
   };
 
-  const Loading2 = () => {
-    return (
-      <>
-        <div className='my-4 py-4'>
-          <div className='d-flex'>
-            <div className='mx-4'>
-              <Skeleton height={400} width={250} />
-            </div>
-            <div className='mx-4'>
-              <Skeleton height={400} width={250} />
-            </div>
-            <div className='mx-4'>
-              <Skeleton height={400} width={250} />
-            </div>
-            <div className='mx-4'>
-              <Skeleton height={400} width={250} />
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  };
+  const Loading2 = () => (
+    <div className='my-4 py-4 d-flex justify-content-center'>
+      <Skeleton height={300} width={200} count={4} inline={true} className="mx-3" />
+    </div>
+  );
 
   const ShowSimilarProduct = () => {
-    if (similarProducts.length === 0) {
-      return <p className="text-center text-muted my-5">No similar products found.</p>;
-    }
+    if (similarProducts.length === 0) return null;
 
     return (
       <div className="py-4 my-4">
         <div className="d-flex">
           {similarProducts.map((item) => {
-            // Safety check for image
             const imgUrl = item.images && item.images.length > 0
               ? item.images[0].imageUrl
-              : "https://via.placeholder.com/300?text=No+Image";
+              : "https://via.placeholder.com/300";
 
             return (
               <div key={item._id} className="card mx-4 text-center" style={{ minWidth: '280px' }}>
-                {/* Image */}
-                <img
-                  className="card-img-top p-3"
-                  src={imgUrl}
-                  alt={item.name}
-                  height={300}
-                  width={300}
-                  style={{ objectFit: 'contain' }}
-                />
-
-                {/* Body */}
+                <img className="card-img-top p-3" src={imgUrl} alt={item.name} height={300} style={{ objectFit: 'contain' }} />
                 <div className="card-body">
-                  <h5 className="card-title">
-                    {item.name.substring(0, 20)}...
-                  </h5>
-                  <p className="fw-bold">Rs. {item.price}</p>
+                  <h5 className="card-title">{item.name.substring(0, 20)}...</h5>
+                  <p className="fw-bold">Rs {item.price}</p>
                 </div>
-
-                {/* Actions */}
                 <div className="card-body">
                   <Link
                     to={"/product/" + item._id}
                     className="btn btn-dark m-1"
-                    // Force scroll to top when clicking similar product
                     onClick={() => window.scrollTo(0, 0)}
                   >
                     Buy Now
                   </Link>
-                  <button
-                    className="btn btn-dark m-1"
-                    onClick={() => dispatch(addCart(item))}
-                  >
+                  <button className="btn btn-dark m-1" onClick={() => dispatch(addCart(item))}>
                     Add to Cart
                   </button>
                 </div>
@@ -370,25 +300,25 @@ const Product = () => {
       </div>
     );
   };
+
   return (
     <>
       <Navbar />
       <div className='container-lg container-fluid'>
         <div className='row'>{loading ? <Loading /> : <ShowProduct />}</div>
-        <div className='row'>
-          <ProductTabs />
-        </div>
-        <div className='row'>
-          <ProductReviews />
-        </div>
-        <div className='row my-2 py-2'>
-          <div className='d-none d-md-block'>
-            <h2 className=''>You may also Like</h2>
-            <Marquee pauseOnHover={true} pauseOnClick={true} speed={50}>
-              {loading2 ? <Loading2 /> : <ShowSimilarProduct />}
-            </Marquee>
+        <div className='row'><ProductTabs /></div>
+        <div className='row'><ProductReviews /></div>
+
+        {similarProducts.length > 0 && (
+          <div className='row my-2 py-2'>
+            <div className='d-none d-md-block'>
+              <h2 className=''>You may also Like</h2>
+              <Marquee pauseOnHover={true} pauseOnClick={true} speed={50}>
+                {loading2 ? <Loading2 /> : <ShowSimilarProduct />}
+              </Marquee>
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <Footer />
     </>

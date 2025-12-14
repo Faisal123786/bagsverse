@@ -186,6 +186,12 @@ textarea {
   }
 }
 
+@media (max-width: 576px) {
+  .product-img-wrapper {
+    height: 180px;
+  }
+}
+
 .product-category {
   font-size: 0.9rem;
   font-weight: 500;
@@ -1349,5 +1355,123 @@ textarea {
         margin-bottom: 2px;
       }
     }
+  }
+}
+
+/* --- Order Details & Tracking --- */
+
+/* Tracking Timeline */
+.tracking-wrapper {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 40px;
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 50px;
+  padding-bottom: 40px;
+
+  &:last-child {
+    padding-bottom: 0;
+
+    /* Remove vertical line for last item */
+    &::before {
+      display: none;
+    }
+  }
+
+  /* Vertical Line */
+  &::before {
+    content: "";
+    position: absolute;
+    left: 15px;
+    /* Center of the dot */
+    top: 10px;
+    height: 100%;
+    width: 2px;
+    background-color: #e0e0e0;
+  }
+
+  /* The Dot */
+  .timeline-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    color: #ccc;
+    font-size: 0.9rem;
+  }
+
+  /* Active/Completed State */
+  &.active {
+    &::before {
+      background-color: #000;
+      /* Black line for active path */
+    }
+
+    .timeline-icon {
+      background-color: #000;
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  &.completed {
+    &::before {
+      background-color: #000;
+    }
+
+    .timeline-icon {
+      background-color: #d4b86a;
+      /* Gold for completed */
+      color: #fff;
+    }
+  }
+}
+
+/* Order Details Card */
+.detail-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 20px;
+
+  h5 {
+    font-weight: 700;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+  }
+}
+
+.item-row {
+  display: flex;
+  gap: 15px;
+  border-bottom: 1px solid #f9f9f9;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #eee;
   }
 }

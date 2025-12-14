@@ -54,12 +54,12 @@ const Cart = () => {
 
                 {/* Image */}
                 <div className="cart-img-box">
-                  <img src={item.image} alt={item.title} />
+                  <img src={item.image || (item.images && item.images.length > 0 ? item.images[0].imageUrl : "https://via.placeholder.com/80?text=No+Image")} alt={item.title} />
                 </div>
 
                 {/* Details */}
                 <div className="cart-item-details">
-                  <h5>{item.title}</h5>
+                  <h5>{item.title || item.name}</h5>
                   <p>Color: <span className="text-dark">Standard</span> | Size: <span className="text-dark">One Size</span></p>
                 </div>
 

@@ -354,7 +354,7 @@ const Navbar = () => {
                   {/* Image */}
                   <div className="flex-shrink-0 border rounded p-1 bg-light" style={{ width: '80px', height: '80px' }}>
                     <img
-                      src={item.image}
+                      src={item.image || (item.images && item.images.length > 0 ? item.images[0].imageUrl : "https://via.placeholder.com/80?text=No+Image")}
                       alt={item.name}
                       className="w-100 h-100 object-fit-contain"
                     />
@@ -363,7 +363,7 @@ const Navbar = () => {
                   {/* Details */}
                   <div className="flex-grow-1 ms-3">
                     <div className="d-flex justify-content-between">
-                      <h6 className='fw-semibold mb-1 text-truncate' style={{ maxWidth: '160px' }}>{item.name}</h6>
+                      <h6 className='fw-semibold mb-1 text-truncate' style={{ maxWidth: '160px' }}>{item.name || item.title}</h6>
                       <button
                         className="btn btn-link text-muted p-0 text-decoration-none"
                         onClick={() => dispatch(delCart(item))}

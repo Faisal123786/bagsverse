@@ -6,6 +6,8 @@ export { default as ContactPage } from './ContactPage';
 export { default as ShippingPage } from './ShippingPage';
 export { default as AccountDetails } from './AccountDetails';
 export { default as OrderPlaced } from './OrderPlaced';
+export { default as OrderDetails } from './OrderDetails';
+export { default as TrackOrder } from './TrackOrder';
 export { default as OrderPage } from './OrderPage';
 export { default as SellWithUs } from './SellWithUs';
 export { default as Cart } from './Cart';

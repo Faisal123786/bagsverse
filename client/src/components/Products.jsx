@@ -202,9 +202,9 @@ const Products = () => {
   const ProductCard = ({ product }) => (
     <div className="col-md-3 col-sm-6 col-6 mb-4 px-1">
       <div
-        className="custom-card"
-        onClick={() => navigate(`/product/${product.id}`)}
-        style={{ cursor: 'pointer' }}
+        className={`custom-card ${!product.inStock ? 'sold-out-card' : ''}`}
+        onClick={product.inStock ? () => navigate(`/product/${product.id}`) : undefined}
+        style={{ cursor: product.inStock ? 'pointer' : 'not-allowed' }}
       >
         <div className="card-img-wrapper">
           <img
