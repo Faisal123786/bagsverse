@@ -9,7 +9,10 @@ const Cart = () => {
   const state = useSelector((state) => state.handleCart);
   const dispatch = useDispatch();
 
-  const addItem = (product) => dispatch(addCart(product));
+  const addItem = (product) => {
+    // FIX: Force qty to 1
+    dispatch(addCart({ ...product, qty: 1 }));
+  };
   const removeItem = (product) => dispatch(delCart(product));
 
   const EmptyCart = () => (

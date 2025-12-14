@@ -1,13 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { Footer, Navbar } from "../components";
 import { Link } from "react-router-dom";
+import { submitContact } from "../api"; // Import the API
+import toast from "react-hot-toast";
 
 const ContactPage = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: ""
+  });
+  const [loading, setLoading] = useState(false);
+
+  // Handle Input Change
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  // Handle Form Submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await submitContact(formData);
+      toast.success(response.message || "Message sent successfully!");
+
+      // Clear form
+      setFormData({ name: "", email: "", message: "" });
+    } catch (error) {
+      console.error("Contact Error:", error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Navbar />
 
-      {/* Main Container */}
       <div className="container my-5 py-4">
         <div className="row">
 
@@ -24,40 +56,37 @@ const ContactPage = () => {
           {/* --- RIGHT COLUMN: THE FORM CARD --- */}
           <div className="col-md-7">
             <div className="contact-card">
-              <form onSubmit={(e) => e.preventDefault()}>
+              <form onSubmit={handleSubmit}>
 
-                {/* Row 1: First Name & Last Name */}
-                <div className="row mb-3">
-                  <div className="col-md-6 mb-3 mb-md-0">
-                    <label htmlFor="firstName" className="form-label">First Name*</label>
-                    <input type="text" className="form-control" id="firstName" placeholder="First Name" required />
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="lastName" className="form-label">Last Name</label>
-                    <input type="text" className="form-control" id="lastName" placeholder="Last Name" />
-                  </div>
+                {/* Name (Combined to match backend 'name') */}
+                <div className="mb-3">
+                  <label htmlFor="name" className="form-label">Full Name*</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="name"
+                    placeholder="Enter your full name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
 
-                {/* Row 2: Email */}
+                {/* Email */}
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label">Email*</label>
-                  <input type="email" className="form-control" id="email" placeholder="name@example.com" required />
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="email"
+                    placeholder="name@example.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
 
-                {/* Row 3: Support Type (Dropdown) */}
-                <div className="mb-3">
-                  <label htmlFor="supportType" className="form-label">Support Type*</label>
-                  <select className="form-select" id="supportType" defaultValue="" required>
-                    <option value="" disabled>Select an option</option>
-                    <option value="feature">Feature Request</option>
-                    <option value="technical">Technical Issue</option>
-                    <option value="order">Order Issue</option>
-                    <option value="support">Customer Support</option>
-                    <option value="delete">Account Deletion Request</option>
-                  </select>
-                </div>
-
-                {/* Row 4: Message */}
+                {/* Message */}
                 <div className="mb-4">
                   <label htmlFor="message" className="form-label">Message*</label>
                   <textarea
@@ -65,20 +94,30 @@ const ContactPage = () => {
                     id="message"
                     rows="5"
                     placeholder="Tell us more about your inquiry..."
+                    value={formData.message}
+                    onChange={handleChange}
                     required
                   ></textarea>
                 </div>
 
                 {/* Button */}
                 <div className="text-center">
-                  <button className="btn-submit-contact" type="submit">
-                    <i className="fa fa-paper-plane me-2"></i> Send Message
+                  <button
+                    className="btn-submit-contact"
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <span><i className="fa fa-spinner fa-spin me-2"></i> Sending...</span>
+                    ) : (
+                      <span><i className="fa fa-paper-plane me-2"></i> Send Message</span>
+                    )}
                   </button>
                 </div>
 
                 {/* Disclaimer Text */}
                 <p className="text-muted text-center mt-3" style={{ fontSize: "0.8rem" }}>
-                  By submitting this form, you agree to our <Link to="/privacy" className="text-dark text-decoration-underline">Privacy Policy</Link> and <Link to="/terms" className="text-dark text-decoration-underline">Terms of Service</Link>.
+                  By submitting this form, you agree to our <Link to="/privacy" className="text-dark text-decoration-underline">Privacy Policy</Link>.
                 </p>
 
               </form>

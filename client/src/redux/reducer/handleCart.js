@@ -15,20 +15,20 @@ const handleCart = (state = getInitialCart(), action) => {
       // 2. Check if product exists
       const exist = state.find((x) => (x.id || x._id) === productId);
 
-      // 3. Get the quantity being added (default to 1 if not provided)
+      // 3. Get the quantity being added (Use payload qty, or default to 1)
       const qtyToAdd = product.qty || 1;
 
       let updatedCartAdd;
 
       if (exist) {
-        // UPDATE: Add the incoming quantity (qtyToAdd) instead of just 1
+        // Increase quantity by the specific amount requested (1, or 5, etc.)
         updatedCartAdd = state.map((x) =>
           (x.id || x._id) === productId
             ? { ...x, qty: x.qty + qtyToAdd }
             : x
         );
       } else {
-        // NEW: Use the quantity passed from the product page
+        // Add new product
         updatedCartAdd = [
           ...state,
           {

@@ -180,3 +180,91 @@ export const syncCartToDB = async (cartData) => {
     throw new Error(error.response?.data?.error || 'Failed to sync cart');
   }
 };
+
+// =========================
+//  NEWSLETTER APIs
+// =========================
+
+export const subscribeToNewsletter = async (email) => {
+  try {
+    // Assuming your route prefix in server.js is '/newsletter'
+    const response = await API.post('/newsletter/subscribe', { email });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to subscribe');
+  }
+};
+
+// =========================
+//  USER PROFILE APIs
+// =========================
+
+// 1. Fetch Current User Details
+export const fetchProfile = async () => {
+  try {
+    const response = await API.get('/user/me');
+    return response.data.user;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch profile');
+  }
+};
+
+// 2. Update User Profile
+export const updateProfile = async (profileData) => {
+  try {
+    // Backend expects req.body.profile
+    const payload = { profile: profileData };
+
+    const response = await API.put('/user', payload);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to update profile');
+  }
+};
+
+// =========================
+//  CONTACT APIs
+// =========================
+
+export const submitContact = async (data) => {
+  try {
+    // Matches router.post('/add', ...) mounted at /contact
+    const response = await API.post('/contact/add', data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to send message');
+  }
+};
+
+// =========================
+//  SEARCH APIs
+// =========================
+
+export const searchProducts = async (keyword) => {
+  try {
+    // Option 1: If you have a specific backend route (e.g. /product/search?q=...) use that.
+    // Option 2 (Implemented here): Fetch all and filter client-side (Robust for now)
+
+    const response = await API.get('/product');
+    const allProducts = response.data.products || response.data || [];
+
+    if (!keyword) return [];
+
+    // Filter logic: Match Name or Category (Case Insensitive)
+    const lowerKeyword = keyword.toLowerCase();
+
+    const filtered = allProducts.filter(item => {
+      const nameMatch = item.name.toLowerCase().includes(lowerKeyword);
+      // Handle category if it's an object or string
+      const categoryName = typeof item.category === 'object' ? item.category?.name : item.category;
+      const catMatch = categoryName ? categoryName.toLowerCase().includes(lowerKeyword) : false;
+
+      return nameMatch || catMatch;
+    });
+
+    return filtered.slice(0, 5); // Return top 5 matches
+  } catch (error) {
+    console.error("Search API Error", error);
+    return [];
+  }
+};
