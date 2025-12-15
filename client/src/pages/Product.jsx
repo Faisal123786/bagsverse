@@ -215,7 +215,7 @@ const Product = () => {
 
         {similarProducts.length > 0 && (
           <div className='row my-2 py-2'>
-            <div className='d-none d-md-block'>
+            <div className='d-flex justify-content-center align-items-center flex-column w-100'>
               <h2 className=''>You may also Like</h2>
               <Marquee pauseOnHover={true} pauseOnClick={true} speed={50}>{loading2 ? <Loading2 /> : <ShowSimilarProduct />}</Marquee>
             </div>
