@@ -268,3 +268,83 @@ export const searchProducts = async (keyword) => {
     return [];
   }
 };
+
+// =========================
+//  REVIEW APIs
+// =========================
+
+export const addReview = async (reviewData) => {
+  try {
+    const response = await API.post('/review/add', reviewData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to add review');
+  }
+};
+
+export const fetchReviewsBySlug = async (slug) => {
+  try {
+    const response = await API.get(`/review/${slug}`);
+    return response.data.reviews;
+  } catch (error) {
+    // If 404 (no reviews yet or product not found), return empty array
+    return [];
+  }
+};
+
+// =========================
+//  ADMIN REVIEW APIs
+// =========================
+
+// Fetch all reviews (with pagination support if needed)
+export const fetchAllReviews = async (page = 1) => {
+  try {
+    const response = await API.get(`/review?page=${page}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch reviews');
+  }
+};
+
+// Approve a review
+export const approveReview = async (reviewId) => {
+  try {
+    const response = await API.put(`/review/approve/${reviewId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to approve review');
+  }
+};
+
+// Reject a review
+export const rejectReview = async (reviewId) => {
+  try {
+    const response = await API.put(`/review/reject/${reviewId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to reject review');
+  }
+};
+
+// Delete a review
+export const deleteReview = async (reviewId) => {
+  try {
+    const response = await API.delete(`/review/delete/${reviewId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to delete review');
+  }
+};
+// =========================
+//  ADMIN USER APIs
+// =========================
+
+export const fetchAllUsers = async (page = 1) => {
+  try {
+    // Matches router.get('/', ...) in your backend user.js
+    const response = await API.get(`/user?page=${page}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch users');
+  }
+};
