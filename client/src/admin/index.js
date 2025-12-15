@@ -9,7 +9,8 @@ import ProductList from './ProductList';
 import CategoryList from './CategoryList';
 import AddCategory from './AddCategory';
 import EditCategory from './EditCategory';
-
+import ReviewList from './ReviewList';
+import UserList from './UserList';
 // Example: get user from localStorage
 const getUser = () => {
   const storedUser = localStorage.getItem('user');
@@ -21,15 +22,15 @@ const AdminLayout = () => {
 
   // Define sidebar links based on role
   let sidebarLinks = [
-    { name: 'My Account', path: '/admin/account' },
+    // { name: 'My Account', path: '/admin/account' },
     { name: 'Categories', path: '/admin/categories' },
-    { name: 'Address', path: '/admin/address' },
+    // { name: 'Address', path: '/admin/address' },
     { name: 'Products', path: '/admin/products' },
     { name: 'Users', path: '/admin/user' },
-    { name: 'Orders', path: '/admin/orders' },
+    // { name: 'Orders', path: '/admin/orders' },
     { name: 'Reviews', path: '/admin/reviews' },
-    { name: 'WishList', path: '/admin/wishlist' },
-    { name: 'Support', path: '/admin/support' }
+    // { name: 'WishList', path: '/admin/wishlist' },
+    // { name: 'Support', path: '/admin/support' }
   ];
 
   if (user?.role === 'ROLE ADMIN') {
@@ -46,7 +47,7 @@ const AdminLayout = () => {
         <div className='container-layout d-flex w-100'>
           {/* ===== Sidebar ===== */}
           <div className='sidebar bg-light text-dark p-0 shadow'>
-            <ul className='nav flex-column'>
+            <ul className='nav flex-row  gap-2 gap-md-0 flex-md-column justify-content-center p-3 p-md-0 justify-content-md-start'>
               {sidebarLinks.map((link, index) => (
                 <li key={index} className='nav-item mb-0 sidebar-item'>
                   <NavLink
@@ -75,6 +76,8 @@ const AdminLayout = () => {
                   <Route path='/categories' element={<CategoryList />} />
                   <Route path='/add-category' element={<AddCategory />} />
                   <Route path='/category/:id' element={<EditCategory />} />
+                  <Route path='/reviews' element={<ReviewList />} />
+                  <Route path='/user' element={<UserList />} />
                 </>
               )}
               {user?.role === 'ROLE MERCHANT' && (
@@ -111,7 +114,7 @@ const AdminLayout = () => {
         }
 
         .sidebar {
-          flex: 0 0 220px;
+          flex: 0 0 0;
           min-width: 180px;
           max-width: 250px;
           background-color: #f8f9fa;

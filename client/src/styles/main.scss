@@ -25,31 +25,72 @@ textarea {
 }
 
 /* Add to src/styles/main.scss */
+/* --- Hero Section Styling --- */
 
 .hero-section {
-  height: auto;
-  overflow: hidden;
-  padding-bottom: 3rem;
+  // @media (min-width: 992px) {
+  //   height: 550px;
+  // }
+
+  @media (max-width: 991px) {
+    height: auto; // Allow section to grow
+  }
+
+  padding-bottom: 2rem;
 }
 
 .hero-img-wrapper {
   overflow: hidden;
   position: relative;
-  transition: transform 0.3s ease;
-  min-height: 200px;
+  border-radius: 16px;
+  background-color: #f8f8f8; // Optional: adds a light bg if image is 'contained'
 
   img {
+    width: 100%;
+    height: 100%;
+    /* Desktop: Cover the area for the 'Bento' look */
     object-fit: cover;
+    object-position: center;
     transition: transform 0.5s ease;
-  }
 
-  &:hover img {
-    transform: scale(1.05);
+    /* MOBILE FIX: Show full image without cutting */
+    @media (max-width: 991px) {
+      object-fit: contain;
+      height: auto; // Let height be determined by image ratio
+    }
   }
 }
 
-.object-fit-cover {
-  object-fit: cover;
+/* --- DESKTOP LAYOUT RATIOS --- */
+@media (min-width: 992px) {
+  .img-tall {
+    flex: 2 !important;
+  }
+
+  .img-short {
+    flex: 1 !important;
+  }
+}
+
+/* --- MOBILE LAYOUT FIX --- */
+@media (max-width: 991px) {
+  .hero-img-wrapper {
+    /* Set height to auto so the container wraps the 'contained' image */
+    height: auto !important;
+    flex-grow: 0 !important;
+    display: block; // Reset flex behavior
+  }
+
+  .img-tall,
+  .img-short {
+    /* Remove forced heights that cause cropping */
+    height: auto !important;
+  }
+
+  // Add a bit of shadow so the 'contained' images look like cards
+  .hero-img-wrapper {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
 }
 
 /* --- Promo Card Styles --- */
