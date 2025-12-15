@@ -53,19 +53,19 @@ root.render(
             }
           />
 
-          <Route path='/' element={<Home />} />
-          <Route path='/product' element={<Products />} />
-          <Route path='/product/:id' element={<Product />} />
-          <Route path='/about' element={<AboutPage />} />
-          <Route path='/contact' element={<ContactPage />} />
-          <Route path='/shipping' element={<ShippingPage />} />
-          <Route path='/sell' element={<SellWithUs />} />
-          <Route path='/account-details' element={<AccountDetails />} />
-          <Route path='/orders' element={<OrderPage />} />
-          <Route path='/cart' element={<Cart />} />
-          <Route path="/order-placed" element={<OrderPlaced />} />
-          <Route path="/order/:id" element={<OrderDetails />} />
-          <Route path="/order/track/:id" element={<TrackOrder />} />
+          <Route path='/' element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path='/product' element={<ProtectedRoute><Products /> </ProtectedRoute>} />
+          <Route path='/product/:id' element={<ProtectedRoute><Product /></ProtectedRoute>} />
+          <Route path='/about' element={<ProtectedRoute><AboutPage /></ProtectedRoute>} />
+          <Route path='/contact' element={<ProtectedRoute><ContactPage /></ProtectedRoute>} />
+          <Route path='/shipping' element={<ProtectedRoute><ShippingPage /></ProtectedRoute>} />
+          <Route path='/sell' element={<ProtectedRoute><SellWithUs /></ProtectedRoute>} />
+          <Route path='/account-details' element={<ProtectedRoute><AccountDetails /></ProtectedRoute>} />
+          <Route path='/orders' element={<ProtectedRoute><OrderPage /></ProtectedRoute>} />
+          <Route path='/cart' element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+          <Route path="/order-placed" element={<ProtectedRoute><OrderPlaced /></ProtectedRoute>} />
+          <Route path="/order/:id" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>} />
+          <Route path="/order/track/:id" element={<ProtectedRoute><TrackOrder /></ProtectedRoute>} />
           <Route
             path='/checkout'
             element={
