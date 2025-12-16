@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Footer, Navbar } from "../components";
+
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { placeOrder, syncCartToDB } from "../api"; // Import BOTH apis
@@ -286,13 +286,13 @@ const Checkout = () => {
 
   return (
     <>
-      <Navbar />
+
       <div className="container my-3 py-3">
         <h1 className="text-center display-6 fw-bold">Checkout</h1>
         <hr />
         {state.length ? <ShowCheckout /> : <EmptyCart />}
       </div>
-      <Footer />
+
     </>
   );
 };

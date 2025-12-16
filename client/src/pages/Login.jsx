@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Footer, Navbar } from '../components';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -58,7 +57,7 @@ const Login = () => {
   return (
     <>
       <Toaster position='top-right' />
-      <Navbar />
+
       <div className='container my-3 py-3'>
         <h1 className='text-center'>Login</h1>
         <hr />
@@ -71,11 +70,10 @@ const Login = () => {
                 <input
                   type='email'
                   placeholder='name@example.com'
-                  className={`form-control ${
-                    formik.touched.email && formik.errors.email
-                      ? 'is-invalid'
-                      : ''
-                  }`}
+                  className={`form-control ${formik.touched.email && formik.errors.email
+                    ? 'is-invalid'
+                    : ''
+                    }`}
                   {...formik.getFieldProps('email')}
                 />
                 {formik.touched.email && formik.errors.email && (
@@ -89,11 +87,10 @@ const Login = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder='Password'
-                  className={`form-control ${
-                    formik.touched.password && formik.errors.password
-                      ? 'is-invalid'
-                      : ''
-                  }`}
+                  className={`form-control ${formik.touched.password && formik.errors.password
+                    ? 'is-invalid'
+                    : ''
+                    }`}
                   {...formik.getFieldProps('password')}
                 />
                 <span
@@ -133,7 +130,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <Footer />
+
     </>
   );
 };

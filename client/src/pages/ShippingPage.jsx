@@ -1,10 +1,10 @@
 import React from "react";
-import { Footer, Navbar } from "../components";
+
 
 const ShippingPage = () => {
     return (
         <>
-            <Navbar />
+
 
             <div className="container my-5 py-4">
                 <div className="policy-wrapper">
@@ -111,7 +111,7 @@ const ShippingPage = () => {
                 </div>
             </div>
 
-            <Footer />
+
         </>
     );
 };

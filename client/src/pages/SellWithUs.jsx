@@ -1,10 +1,9 @@
 import React from "react";
-import { Footer, Navbar } from "../components";
 
 const SellWithUs = () => {
     return (
         <>
-            <Navbar />
+
 
             {/* --- SECTION 1: HERO BANNER --- */}
             <div className="sell-hero">
@@ -141,7 +140,7 @@ const SellWithUs = () => {
                 </div>
 
             </div>
-            <Footer />
+
         </>
     );
 };

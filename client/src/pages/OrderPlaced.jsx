@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Footer, Navbar } from "../components";
+
 
 const OrderPlaced = () => {
     // Generate a random order ID for display
@@ -8,7 +8,7 @@ const OrderPlaced = () => {
 
     return (
         <>
-            <Navbar />
+
 
             <div className="container my-5 py-5 text-center">
                 <div className="row justify-content-center">
@@ -45,7 +45,6 @@ const OrderPlaced = () => {
                 </div>
             </div>
 
-            <Footer />
         </>
     );
 };

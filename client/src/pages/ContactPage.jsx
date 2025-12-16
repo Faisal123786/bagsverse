@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Footer, Navbar } from "../components";
+
 import { Link } from "react-router-dom";
 import { submitContact } from "../api"; // Import the API
 import toast from "react-hot-toast";
@@ -38,7 +38,7 @@ const ContactPage = () => {
 
   return (
     <>
-      <Navbar />
+
 
       <div className="container my-5 py-4">
         <div className="row">
@@ -127,7 +127,7 @@ const ContactPage = () => {
         </div>
       </div>
 
-      <Footer />
+
     </>
   );
 };

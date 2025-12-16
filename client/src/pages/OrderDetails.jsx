@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Footer, Navbar } from "../components";
+
 import { fetchOrderById } from "../api";
 import Skeleton from "react-loading-skeleton";
 
@@ -27,11 +27,11 @@ const OrderDetails = () => {
     if (loading) {
         return (
             <>
-                <Navbar />
+
                 <div className="container my-5">
                     <Skeleton height={400} />
                 </div>
-                <Footer />
+
             </>
         );
     }
@@ -39,19 +39,19 @@ const OrderDetails = () => {
     if (!order) {
         return (
             <>
-                <Navbar />
+
                 <div className="container my-5 text-center">
                     <h3>Order not found</h3>
                     <Link to="/orders" className="btn btn-dark mt-3">Back to Orders</Link>
                 </div>
-                <Footer />
+
             </>
         );
     }
 
     return (
         <>
-            <Navbar />
+
             <div className="container my-5 py-4">
 
                 {/* Header */}
@@ -142,7 +142,7 @@ const OrderDetails = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+
         </>
     );
 };

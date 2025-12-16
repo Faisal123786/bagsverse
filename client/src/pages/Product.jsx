@@ -7,10 +7,9 @@ import { useDispatch } from 'react-redux';
 import { addCart } from '../redux/action';
 import ProductTabs from '../components/ProductTabs';
 import ProductReviews from '../components/ProductReviews'; // Updated Component
-import { Footer, Navbar } from '../components';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { fetchProductById, fetchProducts } from '../api';
-
+import toast from "react-hot-toast";
 const Product = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -37,6 +36,7 @@ const Product = () => {
     };
 
     dispatch(addCart(productData));
+    toast.success("Product added to cart!");
   };
 
   // --- FETCH DATA ---
@@ -72,6 +72,7 @@ const Product = () => {
         setLoading2(false);
 
       } catch (error) {
+        toast.error("Failed to load product. Please try again later.");
         console.error("Error loading product:", error);
         setLoading(false);
         setLoading2(false);
@@ -199,7 +200,7 @@ const Product = () => {
 
   return (
     <>
-      <Navbar />
+
       <div className='container-lg container-fluid'>
         <div className='row'>{loading ? <Loading /> : <ShowProduct />}</div>
         <div className='row'><ProductTabs /></div>
@@ -222,7 +223,7 @@ const Product = () => {
           </div>
         )}
       </div>
-      <Footer />
+
     </>
   );
 };
