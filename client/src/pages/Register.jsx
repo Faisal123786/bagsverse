@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Footer, Navbar } from '../components';
+
 import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -53,7 +53,7 @@ const Register = () => {
       {/* Hot Toast Component */}
       <Toaster position='center' reverseOrder={false} />
 
-      <Navbar />
+
       <div className='container my-3 py-3'>
         <h1 className='text-center'>Register</h1>
         <hr />
@@ -67,11 +67,10 @@ const Register = () => {
                   type='text'
                   id='firstName'
                   placeholder='Enter Your First Name'
-                  className={`form-control ${
-                    formik.touched.firstName && formik.errors.firstName
-                      ? 'is-invalid'
-                      : ''
-                  }`}
+                  className={`form-control ${formik.touched.firstName && formik.errors.firstName
+                    ? 'is-invalid'
+                    : ''
+                    }`}
                   {...formik.getFieldProps('firstName')}
                 />
                 {formik.touched.firstName && formik.errors.firstName && (
@@ -88,11 +87,10 @@ const Register = () => {
                   type='text'
                   id='lastName'
                   placeholder='Enter Your Last Name'
-                  className={`form-control ${
-                    formik.touched.lastName && formik.errors.lastName
-                      ? 'is-invalid'
-                      : ''
-                  }`}
+                  className={`form-control ${formik.touched.lastName && formik.errors.lastName
+                    ? 'is-invalid'
+                    : ''
+                    }`}
                   {...formik.getFieldProps('lastName')}
                 />
                 {formik.touched.lastName && formik.errors.lastName && (
@@ -109,11 +107,10 @@ const Register = () => {
                   type='email'
                   id='email'
                   placeholder='name@example.com'
-                  className={`form-control ${
-                    formik.touched.email && formik.errors.email
-                      ? 'is-invalid'
-                      : ''
-                  }`}
+                  className={`form-control ${formik.touched.email && formik.errors.email
+                    ? 'is-invalid'
+                    : ''
+                    }`}
                   {...formik.getFieldProps('email')}
                 />
                 {formik.touched.email && formik.errors.email && (
@@ -128,11 +125,10 @@ const Register = () => {
                   type={showPassword ? 'text' : 'password'}
                   id='password'
                   placeholder='Password'
-                  className={`form-control ${
-                    formik.touched.password && formik.errors.password
-                      ? 'is-invalid'
-                      : ''
-                  }`}
+                  className={`form-control ${formik.touched.password && formik.errors.password
+                    ? 'is-invalid'
+                    : ''
+                    }`}
                   {...formik.getFieldProps('password')}
                 />
 
@@ -179,7 +175,7 @@ const Register = () => {
           </div>
         </div>
       </div>
-      <Footer />
+
     </>
   );
 };

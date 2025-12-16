@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Footer, Navbar } from "../components";
+
 import { fetchOrderById } from "../api";
 
 const TrackOrder = () => {
@@ -41,7 +41,7 @@ const TrackOrder = () => {
 
     return (
         <>
-            <Navbar />
+
             <div className="container my-5 py-5">
                 <div className="row justify-content-center">
                     <div className="col-lg-8">
@@ -106,7 +106,7 @@ const TrackOrder = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+
         </>
     );
 };

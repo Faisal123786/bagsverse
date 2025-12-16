@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Footer, Navbar } from "../components";
+
 import { Link, useLocation } from "react-router-dom";
 import { fetchProfile, updateProfile } from "../api"; // Import new APIs
 import toast from "react-hot-toast";
@@ -75,7 +75,7 @@ const AccountDetails = () => {
 
     return (
         <>
-            <Navbar />
+
 
             <div className="container my-5 py-4">
 
@@ -184,7 +184,7 @@ const AccountDetails = () => {
                 </div>
             </div>
 
-            <Footer />
+
         </>
     );
 };
