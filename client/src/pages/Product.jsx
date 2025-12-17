@@ -163,8 +163,8 @@ const Product = () => {
             <div className='d-flex align-items-center gap-3 text-muted my-4' style={{ fontSize: '0.9rem' }}><i className='fa fa-cube fa-lg'></i><span>Free Shipping on all orders above Rs. 7,999 PKR!</span></div>
             <div className='mt-4'>
               <Accordion flush>
-                <Accordion.Item eventKey='0'><Accordion.Header>Disclaimer</Accordion.Header><Accordion.Body className='text-muted small'>Actual colors may vary.</Accordion.Body></Accordion.Item>
-                <Accordion.Item eventKey='1'><Accordion.Header>Cleaning Instruction</Accordion.Header><Accordion.Body className='text-muted small'>Wipe with a soft, dry cloth.</Accordion.Body></Accordion.Item>
+                <Accordion.Item eventKey='0'><Accordion.Header>Disclaimer</Accordion.Header><Accordion.Body className='text-muted small'>{product.Disclaimer}</Accordion.Body></Accordion.Item>
+                <Accordion.Item eventKey='1'><Accordion.Header>Cleaning Instruction</Accordion.Header><Accordion.Body className='text-muted small'>{product.CleaningInstruction}</Accordion.Body></Accordion.Item>
               </Accordion>
             </div>
           </div>
@@ -203,7 +203,7 @@ const Product = () => {
 
       <div className='container-lg container-fluid'>
         <div className='row'>{loading ? <Loading /> : <ShowProduct />}</div>
-        <div className='row'><ProductTabs /></div>
+        <div className='row'><ProductTabs product={product} /></div>
 
         {/* --- REVIEW SECTION --- */}
         {/* We pass productId and productSlug so it can fetch/post reviews */}

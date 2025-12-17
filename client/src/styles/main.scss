@@ -200,6 +200,15 @@ textarea {
   }
 }
 
+.active-links {
+  background-color: #c5a95f !important;
+  color: black !important;
+  padding: 2px 3px;
+  border-radius: 2px;
+}
+
+
+
 /* --- Trending Products Card --- */
 .product-card {
   background: #fff;
@@ -219,6 +228,9 @@ textarea {
   overflow: hidden;
   height: 250px;
   background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   img {
     width: 100%;

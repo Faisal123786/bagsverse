@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../redux/action/userAction';
 import { addCart, delCart } from '../redux/action';
@@ -11,6 +11,7 @@ import { RxHamburgerMenu } from 'react-icons/rx';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   const cartItems = useSelector(state => state.handleCart);
@@ -106,7 +107,7 @@ const Navbar = () => {
         <div className='container d-flex align-items-center justify-content-between'>
           {/* LOGO */}
           <NavLink
-            className='navbar-brand d-flex align-items-center px-3'
+            className='navbar-brand d-flex align-items-center pl-3 pl-md-0  px-md-3'
             to='/'
           >
             <img
@@ -284,9 +285,21 @@ const Navbar = () => {
           <div className='container py-1'>
             <ul className='d-flex list-unstyled gap-4 mb-0 py-2 justify-content-center flex-wrap'>
               {categories.map((item, index) => (
-                <li key={index} className="cursor-pointer" onClick={() => navigate('/product', { state: { category: item.name } })}>
-                  {item.name}
-                </li>
+                <NavLink
+                  style={{ textDecoration: "none", color: "white" }}
+                  key={index}
+                  to="/product"
+                  state={{ category: item.name }}
+                  className={() =>
+                    location.pathname === '/product' && location.state?.category === item.name
+                      ? "active-links"
+                      : ""
+                  }
+                >
+                  <li className="cursor-pointer">
+                    {item.name}
+                  </li>
+                </NavLink>
               ))}
             </ul>
           </div>

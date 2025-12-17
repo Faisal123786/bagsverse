@@ -46,6 +46,8 @@ function AddProduct() {
       sku: '',
       name: '',
       description: '',
+      Disclaimer: '',
+      CleaningInstruction: '',
       quantity: '',
       price: '',
       taxable: false,
@@ -57,6 +59,8 @@ function AddProduct() {
       sku: Yup.string().required('SKU is required'),
       name: Yup.string().required('Name is required'),
       description: Yup.string().required('Description is required'),
+      Disclaimer: Yup.string().required('Disclaimer is required'),
+      CleaningInstruction: Yup.string().required('Cleaning Instruction is required'),
       quantity: Yup.number()
         .typeError('Quantity must be a number')
         .required('Quantity is required'),
@@ -76,6 +80,8 @@ function AddProduct() {
         formData.append('sku', values.sku);
         formData.append('name', values.name);
         formData.append('description', values.description);
+        formData.append('Disclaimer', values.Disclaimer);
+        formData.append('CleaningInstruction', values.CleaningInstruction);
         formData.append('quantity', values.quantity);
         formData.append('price', values.price);
         formData.append('taxable', values.taxable);
@@ -187,6 +193,53 @@ function AddProduct() {
                 />
                 <Form.Control.Feedback type='invalid'>
                   {formik.errors.description}
+                </Form.Control.Feedback>
+              </Col>
+            </Form.Group>
+            {/* Disclaimer */}
+            <Form.Group as={Row} className='mb-3' controlId='Disclaimer'>
+              <Form.Label column sm={2}>
+                Disclaimer
+              </Form.Label>
+              <Col sm={10}>
+                <Form.Control
+                  as='textarea'
+                  rows={2}
+                  name='Disclaimer'
+                  placeholder='Enter product disclaimer'
+                  value={formik.values.Disclaimer}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  isInvalid={
+                    formik.touched.Disclaimer && formik.errors.Disclaimer
+                  }
+                />
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.Disclaimer}
+                </Form.Control.Feedback>
+              </Col>
+            </Form.Group>
+            {/* Cleaning Instruction */}
+            <Form.Group as={Row} className='mb-3' controlId='CleaningInstruction'>
+              <Form.Label column sm={2}>
+                Cleaning Instruction
+              </Form.Label>
+              <Col sm={10}>
+                <Form.Control
+                  as='textarea'
+                  rows={2}
+                  name='CleaningInstruction'
+                  placeholder='Enter product cleaning instruction'
+                  value={formik.values.CleaningInstruction}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  isInvalid={
+                    formik.touched.CleaningInstruction &&
+                    formik.errors.CleaningInstruction
+                  }
+                />
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.CleaningInstruction}
                 </Form.Control.Feedback>
               </Col>
             </Form.Group>

@@ -34,6 +34,14 @@ const ProductSchema = new Schema({
     type: String,
     trim: true,
   },
+  Disclaimer: {
+    type: String,
+    trim: true,
+  },
+  CleaningInstruction: {
+    type: String,
+    trim: true,
+  },
   quantity: {
     type: Number,
   },
