@@ -348,3 +348,25 @@ export const fetchAllUsers = async (page = 1) => {
     throw new Error(error.response?.data?.error || 'Failed to fetch users');
   }
 };
+
+// =========================
+//  POLICY APIs
+// =========================
+
+export const fetchShippingPolicy = async () => {
+  try {
+    const response = await API.get('/policy/shipping');
+    return response.data.policy;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch policy');
+  }
+};
+
+export const saveShippingPolicy = async (content) => {
+  try {
+    const response = await API.post('/policy/shipping', { content });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to save policy');
+  }
+};

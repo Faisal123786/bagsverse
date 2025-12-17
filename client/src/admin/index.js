@@ -10,6 +10,9 @@ import CategoryList from './CategoryList';
 import AddCategory from './AddCategory';
 import EditCategory from './EditCategory';
 import ReviewList from './ReviewList';
+import ShippingPolicy from './ShippingPolicy';
+import Banner from './Banner';
+import Promocard from './Promocard';
 import UserList from './UserList';
 // Example: get user from localStorage
 const getUser = () => {
@@ -29,6 +32,9 @@ const AdminLayout = () => {
     { name: 'Users', path: '/admin/user' },
     // { name: 'Orders', path: '/admin/orders' },
     { name: 'Reviews', path: '/admin/reviews' },
+    { name: 'Shipping Policy', path: '/admin/shipping-policy' },
+    { name: 'Banner', path: '/admin/banner' },
+    { name: 'Promocard', path: '/admin/promocard' },
     // { name: 'WishList', path: '/admin/wishlist' },
     // { name: 'Support', path: '/admin/support' }
   ];
@@ -77,6 +83,9 @@ const AdminLayout = () => {
                   <Route path='/add-category' element={<AddCategory />} />
                   <Route path='/category/:id' element={<EditCategory />} />
                   <Route path='/reviews' element={<ReviewList />} />
+                  <Route path='/shipping-policy' element={<ShippingPolicy />} />
+                  <Route path='/banner' element={<Banner />} />
+                  <Route path='/promocard' element={<Promocard />} />
                   <Route path='/user' element={<UserList />} />
                 </>
               )}

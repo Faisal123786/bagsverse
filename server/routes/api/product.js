@@ -187,6 +187,8 @@ router.post(
         sku,
         name,
         description,
+        Disclaimer,
+        CleaningInstruction,
         quantity,
         price,
         taxable,
@@ -197,10 +199,10 @@ router.post(
 
       // Validations
       if (!sku) return res.status(400).json({ error: 'You must enter sku.' });
-      if (!name || !description)
+      if (!name || !description || !Disclaimer || !CleaningInstruction)
         return res
           .status(400)
-          .json({ error: 'You must enter name & description.' });
+          .json({ error: 'You must enter name, description, disclaimer & cleaning instruction.' });
       if (!quantity)
         return res.status(400).json({ error: 'You must enter a quantity.' });
       if (!price)
@@ -224,6 +226,8 @@ router.post(
         sku,
         name,
         description,
+        Disclaimer,
+        CleaningInstruction,
         quantity,
         price,
         taxable,

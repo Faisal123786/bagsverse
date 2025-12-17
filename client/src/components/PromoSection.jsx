@@ -36,19 +36,19 @@ const PromoSection = () => {
       id: 1,
       subtitle: "Handbags",
       title: "Under 1500",
-      image: "https://www.shutterstock.com/image-photo/woman-beaded-handbag-her-hand-260nw-2482639031.jpg" // Beige/Bag
+      image: "/assets/image.png" // Bag on Books
     },
     {
       id: 2,
       subtitle: "Handbags",
       title: "Under 2000",
-      image: "https://img.freepik.com/premium-photo/valentines-day-sale-shopping-concept-dall-with-shopping-bags-banner-with-copy-space_150893-6720.jpg" // Shopping Cart
+      image: "/assets/image.png" // Brown Bag
     },
     {
       id: 3,
       subtitle: "Handbags",
       title: "Under 2500",
-      image: "https://www.shutterstock.com/image-photo/fashion-spring-accessories-woman-banner-260nw-2133766287.jpg" // Pink/Bag
+      image: "/assets/image.png" // Pink/Bag
     }
   ];
 
