@@ -397,3 +397,21 @@ export const fetchBanners = async () => {
     throw new Error(error.response?.data?.error || 'Failed to fetch banners');
   }
 };
+
+export const getPromoCards = async () => {
+  const response = await API.get('/promo-cards');
+  return response.data;
+};
+
+export const savePromoCard = async formData => {
+  try {
+    const response = await API.post('/promo-cards/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to save promo card');
+  }
+};
