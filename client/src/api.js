@@ -139,7 +139,7 @@ export const deleteCategory = async id => {
 //  ORDER APIs (NEW)
 // =========================
 
-export const placeOrder = async (orderData) => {
+export const placeOrder = async orderData => {
   try {
     // Now expects { cartId: "...", total: 1234 }
     const response = await API.post('/order/add', orderData);
@@ -159,19 +159,21 @@ export const fetchMyOrders = async () => {
 };
 
 // 3. Fetch Single Order Details (For View Invoice/Details)
-export const fetchOrderById = async (id) => {
+export const fetchOrderById = async id => {
   try {
     const response = await API.get(`/order/${id}`);
     return response.data.order;
   } catch (error) {
-    throw new Error(error.response?.data?.error || 'Failed to fetch order details');
+    throw new Error(
+      error.response?.data?.error || 'Failed to fetch order details'
+    );
   }
 };
 
 // =========================
 //  CART APIs (NEW - Add this)
 // =========================
-export const syncCartToDB = async (cartData) => {
+export const syncCartToDB = async cartData => {
   try {
     // Expects { products: [...] }
     const response = await API.post('/cart/add', cartData);
@@ -185,7 +187,7 @@ export const syncCartToDB = async (cartData) => {
 //  NEWSLETTER APIs
 // =========================
 
-export const subscribeToNewsletter = async (email) => {
+export const subscribeToNewsletter = async email => {
   try {
     // Assuming your route prefix in server.js is '/newsletter'
     const response = await API.post('/newsletter/subscribe', { email });
@@ -210,7 +212,7 @@ export const fetchProfile = async () => {
 };
 
 // 2. Update User Profile
-export const updateProfile = async (profileData) => {
+export const updateProfile = async profileData => {
   try {
     // Backend expects req.body.profile
     const payload = { profile: profileData };
@@ -226,7 +228,7 @@ export const updateProfile = async (profileData) => {
 //  CONTACT APIs
 // =========================
 
-export const submitContact = async (data) => {
+export const submitContact = async data => {
   try {
     // Matches router.post('/add', ...) mounted at /contact
     const response = await API.post('/contact/add', data);
@@ -240,7 +242,7 @@ export const submitContact = async (data) => {
 //  SEARCH APIs
 // =========================
 
-export const searchProducts = async (keyword) => {
+export const searchProducts = async keyword => {
   try {
     // Option 1: If you have a specific backend route (e.g. /product/search?q=...) use that.
     // Option 2 (Implemented here): Fetch all and filter client-side (Robust for now)
@@ -256,15 +258,18 @@ export const searchProducts = async (keyword) => {
     const filtered = allProducts.filter(item => {
       const nameMatch = item.name.toLowerCase().includes(lowerKeyword);
       // Handle category if it's an object or string
-      const categoryName = typeof item.category === 'object' ? item.category?.name : item.category;
-      const catMatch = categoryName ? categoryName.toLowerCase().includes(lowerKeyword) : false;
+      const categoryName =
+        typeof item.category === 'object' ? item.category?.name : item.category;
+      const catMatch = categoryName
+        ? categoryName.toLowerCase().includes(lowerKeyword)
+        : false;
 
       return nameMatch || catMatch;
     });
 
     return filtered.slice(0, 5); // Return top 5 matches
   } catch (error) {
-    console.error("Search API Error", error);
+    console.error('Search API Error', error);
     return [];
   }
 };
@@ -273,7 +278,7 @@ export const searchProducts = async (keyword) => {
 //  REVIEW APIs
 // =========================
 
-export const addReview = async (reviewData) => {
+export const addReview = async reviewData => {
   try {
     const response = await API.post('/review/add', reviewData);
     return response.data;
@@ -282,7 +287,7 @@ export const addReview = async (reviewData) => {
   }
 };
 
-export const fetchReviewsBySlug = async (slug) => {
+export const fetchReviewsBySlug = async slug => {
   try {
     const response = await API.get(`/review/${slug}`);
     return response.data.reviews;
@@ -307,7 +312,7 @@ export const fetchAllReviews = async (page = 1) => {
 };
 
 // Approve a review
-export const approveReview = async (reviewId) => {
+export const approveReview = async reviewId => {
   try {
     const response = await API.put(`/review/approve/${reviewId}`);
     return response.data;
@@ -317,7 +322,7 @@ export const approveReview = async (reviewId) => {
 };
 
 // Reject a review
-export const rejectReview = async (reviewId) => {
+export const rejectReview = async reviewId => {
   try {
     const response = await API.put(`/review/reject/${reviewId}`);
     return response.data;
@@ -327,7 +332,7 @@ export const rejectReview = async (reviewId) => {
 };
 
 // Delete a review
-export const deleteReview = async (reviewId) => {
+export const deleteReview = async reviewId => {
   try {
     const response = await API.delete(`/review/delete/${reviewId}`);
     return response.data;
@@ -362,11 +367,33 @@ export const fetchShippingPolicy = async () => {
   }
 };
 
-export const saveShippingPolicy = async (content) => {
+export const saveShippingPolicy = async content => {
   try {
     const response = await API.post('/policy/shipping', { content });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.error || 'Failed to save policy');
+  }
+};
+
+export const addBanner = async formData => {
+  try {
+    const response = await API.post('/banner/add', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to upload banners');
+  }
+};
+
+export const fetchBanners = async () => {
+  try {
+    const response = await API.get('/banner/');
+    return response.data.banners;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch banners');
   }
 };
