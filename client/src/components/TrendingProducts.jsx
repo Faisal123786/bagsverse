@@ -9,7 +9,7 @@ import '../styles/main.scss';
 // 1. Responsive Settings
 const responsive = {
   superLargeDesktop: { breakpoint: { max: 4000, min: 1200 }, items: 4 },
-  desktop: { breakpoint: { max: 1200, min: 992 }, items: 3 },
+  desktop: { breakpoint: { max: 1200, min: 992 }, items: 4 },
   tablet: { breakpoint: { max: 992, min: 576 }, items: 2 },
   mobile: { breakpoint: { max: 576, min: 0 }, items: 2 }
 };
@@ -22,6 +22,7 @@ const ProductCard = ({ image, title, price, onClick }) => {
       <div className="product-img-wrapper mb-3">
         <img
           src={image}
+          // src="/assets/bagimage02.png"
           alt={title}
           className="img-fluid"
           // Fallback if image fails to load
