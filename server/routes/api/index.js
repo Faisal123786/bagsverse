@@ -14,6 +14,7 @@ const orderRoutes = require('./order');
 const reviewRoutes = require('./review');
 const wishlistRoutes = require('./wishlist');
 const policyRoutes = require('./policy');
+const bannerRoutes = require('./banner');
 
 // auth routes
 router.use('/auth', authRoutes);
@@ -55,5 +56,7 @@ router.use('/review', reviewRoutes);
 router.use('/wishlist', wishlistRoutes);
 // Policy routes
 router.use('/policy', policyRoutes);
+// banners
+router.use('/banner', bannerRoutes);
 
 module.exports = router;
