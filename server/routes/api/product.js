@@ -58,7 +58,7 @@ router.get('/list/search/:name', async (req, res) => {
 
     const productDoc = await Product.find(
       { name: { $regex: new RegExp(name), $options: 'is' }, isActive: true },
-      { name: 1, slug: 1, imageUrl: 1, price: 1, _id: 0 }
+      { name: 1, slug: 1, imageUrl: 1, price: 1, thumbnails: 1, _id: 0 }
     );
 
     if (productDoc.length < 0) {
@@ -175,12 +175,15 @@ router.get('/list/select', auth, async (req, res) => {
   }
 });
 
-// add product api
+// CHANGED: Add product api with thumbnail support
 router.post(
   '/add',
   auth,
   role.check(ROLES.Admin, ROLES.Merchant),
-  upload.array('image[]', 10), // max 10 images
+  upload.fields([
+    { name: 'image[]', maxCount: 10 }, // Main images
+    { name: 'thumbnail[]', maxCount: 2 } // Thumbnail images
+  ]),
   async (req, res) => {
     try {
       const {
@@ -195,14 +198,16 @@ router.post(
         isActive,
         brand
       } = req.body;
-      const files = req.files; // array of files
 
       // Validations
       if (!sku) return res.status(400).json({ error: 'You must enter sku.' });
       if (!name || !description || !Disclaimer || !CleaningInstruction)
         return res
           .status(400)
-          .json({ error: 'You must enter name, description, disclaimer & cleaning instruction.' });
+          .json({
+            error:
+              'You must enter name, description, disclaimer & cleaning instruction.'
+          });
       if (!quantity)
         return res.status(400).json({ error: 'You must enter a quantity.' });
       if (!price)
@@ -212,16 +217,35 @@ router.post(
       if (foundProduct)
         return res.status(400).json({ error: 'This sku is already in use.' });
 
-      // Upload multiple files to S3
+      // NEW: Upload thumbnail images to S3 (max 2)
+      const uploadedThumbnails = [];
+      if (req.files && req.files['thumbnail[]']) {
+        const thumbnailFiles = req.files['thumbnail[]'];
+
+        // Validate maximum 2 thumbnails
+        if (thumbnailFiles.length > 2) {
+          return res.status(400).json({
+            error: 'Maximum 2 thumbnail images allowed.'
+          });
+        }
+
+        for (const file of thumbnailFiles) {
+          const { imageUrl, imageKey } = await s3Upload(file);
+          uploadedThumbnails.push({ imageUrl, imageKey });
+        }
+      }
+
+      // Upload main images to S3
       const uploadedImages = [];
-      if (files && files.length > 0) {
-        for (const file of files) {
-          const { imageUrl, imageKey } = await s3Upload(file); // your existing s3Upload function
+      if (req.files && req.files['image[]']) {
+        const imageFiles = req.files['image[]'];
+        for (const file of imageFiles) {
+          const { imageUrl, imageKey } = await s3Upload(file);
           uploadedImages.push({ imageUrl, imageKey });
         }
       }
 
-      // Create product
+      // Create product with thumbnails
       const product = new Product({
         sku,
         name,
@@ -233,7 +257,8 @@ router.post(
         taxable,
         isActive,
         brand,
-        images: uploadedImages
+        images: uploadedImages,
+        thumbnails: uploadedThumbnails // NEW: Add thumbnails
       });
 
       const savedProduct = await product.save();
@@ -346,16 +371,21 @@ router.get(
   }
 );
 
+// CHANGED: Update product with thumbnail support
 router.put(
   '/:id',
   auth,
   role.check(ROLES.Admin, ROLES.Merchant),
+  upload.fields([
+    { name: 'image[]', maxCount: 10 },
+    { name: 'thumbnail[]', maxCount: 2 }
+  ]),
   async (req, res) => {
     try {
       const productId = req.params.id;
-      const update = req.body.product;
+      const update = req.body.product ? JSON.parse(req.body.product) : req.body;
       const query = { _id: productId };
-      const { sku, slug } = req.body.product;
+      const { sku, slug } = update;
 
       const foundProduct = await Product.findOne({
         $or: [{ slug }, { sku }]
@@ -367,6 +397,41 @@ router.put(
           .json({ error: 'Sku or slug is already in use.' });
       }
 
+      // Get existing product
+      const existingProduct = await Product.findById(productId);
+      if (!existingProduct) {
+        return res.status(404).json({ error: 'Product not found.' });
+      }
+
+      // Handle new thumbnail uploads
+      if (req.files && req.files['thumbnail[]']) {
+        const thumbnailFiles = req.files['thumbnail[]'];
+
+        if (thumbnailFiles.length > 2) {
+          return res.status(400).json({
+            error: 'Maximum 2 thumbnail images allowed.'
+          });
+        }
+
+        const uploadedThumbnails = [];
+        for (const file of thumbnailFiles) {
+          const { imageUrl, imageKey } = await s3Upload(file);
+          uploadedThumbnails.push({ imageUrl, imageKey });
+        }
+        update.thumbnails = uploadedThumbnails;
+      }
+
+      // Handle new main image uploads
+      if (req.files && req.files['image[]']) {
+        const imageFiles = req.files['image[]'];
+        const uploadedImages = [];
+        for (const file of imageFiles) {
+          const { imageUrl, imageKey } = await s3Upload(file);
+          uploadedImages.push({ imageUrl, imageKey });
+        }
+        update.images = uploadedImages;
+      }
+
       await Product.findOneAndUpdate(query, update, {
         new: true
       });
@@ -376,6 +441,7 @@ router.put(
         message: 'Product has been updated successfully!'
       });
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         error: 'Your request could not be processed. Please try again.'
       });

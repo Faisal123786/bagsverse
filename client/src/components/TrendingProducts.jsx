@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import { Container, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'; // Import for navigation
+import { useNavigate } from 'react-router-dom';
 import { fetchProducts } from '../api';
 import '../styles/main.scss';
 
@@ -14,25 +14,69 @@ const responsive = {
   mobile: { breakpoint: { max: 576, min: 0 }, items: 2 }
 };
 
-// 2. The Product Card Component (Updated to accept onClick and title)
-const ProductCard = ({ image, title, price, onClick }) => {
+// 2. The Product Card Component - UPDATED with hover functionality
+const ProductCard = ({ image, hoverImage, title, price, onClick }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
-    <div className="product-card mb-4" onClick={onClick} style={{ cursor: 'pointer' }}>
-      {/* Image Area */}
-      <div className="product-img-wrapper mb-3">
+    <div
+      className='product-card mb-4'
+      onClick={onClick}
+      style={{ cursor: 'pointer' }}
+    >
+      {/* Image Area - UPDATED with hover effect */}
+      <div
+        className='product-img-wrapper mb-3'
+        onMouseEnter={() => hoverImage && setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{ position: 'relative', overflow: 'hidden' }}
+      >
+        {/* Primary Image */}
         <img
           src={image}
-          // src="/assets/cardthumnailimage.png"
           alt={title}
-          // className="img-fluid"
-          onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/300?text=No+Image" }}
+          style={{
+            transition: 'opacity 0.4s ease-in-out',
+            opacity: isHovered && hoverImage ? 0 : 1,
+            width: '100%',
+            display: 'block'
+          }}
+          onError={e => {
+            e.target.onerror = null;
+            e.target.src = 'https://via.placeholder.com/300?text=No+Image';
+          }}
         />
+
+        {/* Hover Image (Second Thumbnail) - Only if exists */}
+        {hoverImage && (
+          <img
+            src={hoverImage}
+            alt={`${title} - alternate view`}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              transition: 'opacity 0.4s ease-in-out',
+              opacity: isHovered ? 1 : 0,
+              pointerEvents: 'none'
+            }}
+            onError={e => {
+              e.target.onerror = null;
+              e.target.src = image; // Fallback to primary image
+            }}
+          />
+        )}
       </div>
-      <div className="product-info text-start px-3 py-2 ">
-        <span className="product-category text-muted d-block mb-1 text-truncate" style={{ maxWidth: '150px' }}>
+
+      <div className='product-info text-start px-3 py-2'>
+        <span
+          className='product-category text-muted d-block mb-1 text-truncate'
+          style={{ maxWidth: '150px' }}
+        >
           {title}
         </span>
-        <h5 className="product-price mb-0">{price}</h5>
+        <h5 className='product-price mb-0'>{price}</h5>
       </div>
     </div>
   );
@@ -41,28 +85,26 @@ const ProductCard = ({ image, title, price, onClick }) => {
 // 3. Main Section
 const TrendingProducts = () => {
   const [products, setProducts] = useState([]);
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadProducts = async () => {
       try {
         const data = await fetchProducts();
-        // Assuming the API returns the array of products in 'data.products' or just 'data'
-        // Adjust this line based on your exact API response structure
         setProducts(data.products || data);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error('Error fetching products:', error);
       }
     };
 
     loadProducts();
   }, []);
 
-  if (!products || products.length === 0) return null; // Hide section if no data
+  if (!products || products.length === 0) return null;
 
   return (
-    <Container fluid="lg" className="py-3">
-      <h3 className="section-title mb-4">Trending on BagsVerse</h3>
+    <Container fluid='lg' className='py-3'>
+      <h3 className='section-title mb-4'>Trending on BagsVerse</h3>
 
       <Carousel
         responsive={responsive}
@@ -70,26 +112,34 @@ const TrendingProducts = () => {
         autoPlay={true}
         autoPlaySpeed={4000}
         keyBoardControl={true}
-        customTransition="transform 500ms ease-in-out"
+        customTransition='transform 500ms ease-in-out'
         transitionDuration={500}
-        itemClass="px-2 mt-3"
+        itemClass='px-2 mt-3'
       >
-        {products.map((item) => {
-          // 1. Get Image: Check if images array exists and has items
-          const imgUrl = item.images && item.images.length > 0
-            ? item.images[0].imageUrl
-            : "https://via.placeholder.com/300"; // Fallback image
+        {products.map(item => {
+          // 1. Get Primary Image (First Thumbnail)
+          const imgUrl =
+            item.thumbnails && item.thumbnails.length > 0
+              ? item.thumbnails[0].imageUrl
+              : 'https://via.placeholder.com/300';
 
-          // 2. Format Price
+          // 2. Get Hover Image (Second Thumbnail) - NEW
+          const hoverImgUrl =
+            item.thumbnails && item.thumbnails.length > 1
+              ? item.thumbnails[1].imageUrl
+              : null;
+
+          // 3. Format Price
           const formattedPrice = `Rs ${item.price} PKR`;
 
           return (
             <ProductCard
               key={item._id}
               image={imgUrl}
+              hoverImage={hoverImgUrl}
               title={item.name}
               price={formattedPrice}
-              onClick={() => navigate(`/product/${item._id}`)} // Navigate on click
+              onClick={() => navigate(`/product/${item._id}`)}
             />
           );
         })}
