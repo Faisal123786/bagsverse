@@ -28,12 +28,15 @@ function AddProduct() {
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Fetch brands
   useEffect(() => {
     const getBrands = async () => {
       try {
         const result = await fetchBrands();
         setBrands(result);
+
+        if (result && result.length > 0) {
+          formik.setFieldValue('brand', result[0]._id);
+        }
       } catch (error) {
         setErrorMsg('Failed to load brands');
       } finally {
@@ -64,7 +67,9 @@ function AddProduct() {
       name: Yup.string().required('Name is required'),
       description: Yup.string().required('Description is required'),
       Disclaimer: Yup.string().required('Disclaimer is required'),
-      CleaningInstruction: Yup.string().required('Cleaning Instruction is required'),
+      CleaningInstruction: Yup.string().required(
+        'Cleaning Instruction is required'
+      ),
       quantity: Yup.number().typeError('Must be number').required('Required'),
       price: Yup.number().typeError('Must be number').required('Required'),
       brand: Yup.string().required('Brand is required'),
@@ -128,7 +133,7 @@ function AddProduct() {
   };
 
   // --- HANDLE THUMBNAIL CHANGE (Append Logic) ---
-  const handleThumbnailChange = async (e) => {
+  const handleThumbnailChange = async e => {
     const newFiles = Array.from(e.target.files);
     setErrorMsg('');
     setSuccessMsg('');
@@ -140,7 +145,9 @@ function AddProduct() {
 
     // Check Limit (Max 2 total)
     if (currentFiles.length + newFiles.length > 2) {
-      setErrorMsg(`Error: Maximum 2 thumbnails allowed. You already have ${currentFiles.length}.`);
+      setErrorMsg(
+        `Error: Maximum 2 thumbnails allowed. You already have ${currentFiles.length}.`
+      );
       e.target.value = ''; // Reset input
       return;
     }
@@ -149,7 +156,7 @@ function AddProduct() {
     const invalidFiles = [];
 
     await Promise.all(
-      newFiles.map(async (file) => {
+      newFiles.map(async file => {
         try {
           await validateImageDimension(file, 279, 419);
           validFiles.push(file);
@@ -160,7 +167,9 @@ function AddProduct() {
     );
 
     if (invalidFiles.length > 0) {
-      setErrorMsg(`Error: Incorrect size (279x419): ${invalidFiles.join(', ')}`);
+      setErrorMsg(
+        `Error: Incorrect size (279x419): ${invalidFiles.join(', ')}`
+      );
       e.target.value = '';
       return;
     }
@@ -169,7 +178,7 @@ function AddProduct() {
     const updatedThumbnails = [...currentFiles, ...validFiles];
     formik.setFieldValue('thumbnails', updatedThumbnails);
 
-    const newPreviewUrls = validFiles.map((file) => URL.createObjectURL(file));
+    const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
     setThumbnailsPreview([...thumbnailsPreview, ...newPreviewUrls]);
 
     // Reset input to allow adding more later
@@ -177,7 +186,7 @@ function AddProduct() {
   };
 
   // --- REMOVE THUMBNAIL HELPER ---
-  const removeThumbnail = (index) => {
+  const removeThumbnail = index => {
     const updatedFiles = formik.values.thumbnails.filter((_, i) => i !== index);
     const updatedPreviews = thumbnailsPreview.filter((_, i) => i !== index);
 
@@ -186,7 +195,7 @@ function AddProduct() {
   };
 
   // --- HANDLE MAIN IMAGE CHANGE (Append Logic) ---
-  const handleImageChange = async (e) => {
+  const handleImageChange = async e => {
     const newFiles = Array.from(e.target.files);
     setErrorMsg('');
     setSuccessMsg('');
@@ -198,7 +207,7 @@ function AddProduct() {
     const invalidFiles = [];
 
     await Promise.all(
-      newFiles.map(async (file) => {
+      newFiles.map(async file => {
         try {
           await validateImageDimension(file, 461, 461);
           validFiles.push(file);
@@ -209,7 +218,9 @@ function AddProduct() {
     );
 
     if (invalidFiles.length > 0) {
-      setErrorMsg(`Error: Incorrect size (461x461): ${invalidFiles.join(', ')}`);
+      setErrorMsg(
+        `Error: Incorrect size (461x461): ${invalidFiles.join(', ')}`
+      );
       e.target.value = '';
       return;
     }
@@ -218,14 +229,14 @@ function AddProduct() {
     const updatedImages = [...currentFiles, ...validFiles];
     formik.setFieldValue('images', updatedImages);
 
-    const newPreviewUrls = validFiles.map((file) => URL.createObjectURL(file));
+    const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
     setImagesPreview([...imagesPreview, ...newPreviewUrls]);
 
     e.target.value = '';
   };
 
   // --- REMOVE MAIN IMAGE HELPER ---
-  const removeImage = (index) => {
+  const removeImage = index => {
     const updatedFiles = formik.values.images.filter((_, i) => i !== index);
     const updatedPreviews = imagesPreview.filter((_, i) => i !== index);
 
@@ -236,9 +247,13 @@ function AddProduct() {
   return (
     <Container className='my-5'>
       <Row className='mb-4 align-items-center'>
-        <Col><h2>Add Product</h2></Col>
+        <Col>
+          <h2>Add Product</h2>
+        </Col>
         <Col className='text-end'>
-          <Button variant='secondary' onClick={() => navigate(-1)}>Back</Button>
+          <Button variant='secondary' onClick={() => navigate(-1)}>
+            Back
+          </Button>
         </Col>
       </Row>
 
@@ -250,7 +265,9 @@ function AddProduct() {
           <Form onSubmit={formik.handleSubmit}>
             {/* SKU */}
             <Form.Group as={Row} className='mb-3' controlId='sku'>
-              <Form.Label column sm={2}>SKU</Form.Label>
+              <Form.Label column sm={2}>
+                SKU
+              </Form.Label>
               <Col sm={10}>
                 <Form.Control
                   type='text'
@@ -260,13 +277,17 @@ function AddProduct() {
                   onChange={formik.handleChange}
                   isInvalid={formik.touched.sku && formik.errors.sku}
                 />
-                <Form.Control.Feedback type='invalid'>{formik.errors.sku}</Form.Control.Feedback>
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.sku}
+                </Form.Control.Feedback>
               </Col>
             </Form.Group>
 
             {/* Name */}
             <Form.Group as={Row} className='mb-3' controlId='name'>
-              <Form.Label column sm={2}>Name</Form.Label>
+              <Form.Label column sm={2}>
+                Name
+              </Form.Label>
               <Col sm={10}>
                 <Form.Control
                   type='text'
@@ -276,13 +297,17 @@ function AddProduct() {
                   onChange={formik.handleChange}
                   isInvalid={formik.touched.name && formik.errors.name}
                 />
-                <Form.Control.Feedback type='invalid'>{formik.errors.name}</Form.Control.Feedback>
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.name}
+                </Form.Control.Feedback>
               </Col>
             </Form.Group>
 
             {/* Description */}
             <Form.Group as={Row} className='mb-3' controlId='description'>
-              <Form.Label column sm={2}>Description</Form.Label>
+              <Form.Label column sm={2}>
+                Description
+              </Form.Label>
               <Col sm={10}>
                 <Form.Control
                   as='textarea'
@@ -291,15 +316,21 @@ function AddProduct() {
                   placeholder='Enter product description'
                   value={formik.values.description}
                   onChange={formik.handleChange}
-                  isInvalid={formik.touched.description && formik.errors.description}
+                  isInvalid={
+                    formik.touched.description && formik.errors.description
+                  }
                 />
-                <Form.Control.Feedback type='invalid'>{formik.errors.description}</Form.Control.Feedback>
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.description}
+                </Form.Control.Feedback>
               </Col>
             </Form.Group>
 
             {/* Disclaimer */}
             <Form.Group as={Row} className='mb-3' controlId='Disclaimer'>
-              <Form.Label column sm={2}>Disclaimer</Form.Label>
+              <Form.Label column sm={2}>
+                Disclaimer
+              </Form.Label>
               <Col sm={10}>
                 <Form.Control
                   as='textarea'
@@ -308,15 +339,25 @@ function AddProduct() {
                   placeholder='Enter product disclaimer'
                   value={formik.values.Disclaimer}
                   onChange={formik.handleChange}
-                  isInvalid={formik.touched.Disclaimer && formik.errors.Disclaimer}
+                  isInvalid={
+                    formik.touched.Disclaimer && formik.errors.Disclaimer
+                  }
                 />
-                <Form.Control.Feedback type='invalid'>{formik.errors.Disclaimer}</Form.Control.Feedback>
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.Disclaimer}
+                </Form.Control.Feedback>
               </Col>
             </Form.Group>
 
             {/* Cleaning Instruction */}
-            <Form.Group as={Row} className='mb-3' controlId='CleaningInstruction'>
-              <Form.Label column sm={2}>Cleaning Instruction</Form.Label>
+            <Form.Group
+              as={Row}
+              className='mb-3'
+              controlId='CleaningInstruction'
+            >
+              <Form.Label column sm={2}>
+                Cleaning Instruction
+              </Form.Label>
               <Col sm={10}>
                 <Form.Control
                   as='textarea'
@@ -325,9 +366,14 @@ function AddProduct() {
                   placeholder='Enter product cleaning instruction'
                   value={formik.values.CleaningInstruction}
                   onChange={formik.handleChange}
-                  isInvalid={formik.touched.CleaningInstruction && formik.errors.CleaningInstruction}
+                  isInvalid={
+                    formik.touched.CleaningInstruction &&
+                    formik.errors.CleaningInstruction
+                  }
                 />
-                <Form.Control.Feedback type='invalid'>{formik.errors.CleaningInstruction}</Form.Control.Feedback>
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.CleaningInstruction}
+                </Form.Control.Feedback>
               </Col>
             </Form.Group>
 
@@ -343,7 +389,9 @@ function AddProduct() {
                   onChange={formik.handleChange}
                   isInvalid={formik.touched.quantity && formik.errors.quantity}
                 />
-                <Form.Control.Feedback type='invalid'>{formik.errors.quantity}</Form.Control.Feedback>
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.quantity}
+                </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group as={Col} md={6} controlId='price'>
@@ -356,13 +404,17 @@ function AddProduct() {
                   onChange={formik.handleChange}
                   isInvalid={formik.touched.price && formik.errors.price}
                 />
-                <Form.Control.Feedback type='invalid'>{formik.errors.price}</Form.Control.Feedback>
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.price}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
 
             {/* Brand Dropdown */}
             <Form.Group as={Row} className='mb-3' controlId='brand'>
-              <Form.Label column sm={2}>Brand</Form.Label>
+              <Form.Label column sm={2}>
+                Brand
+              </Form.Label>
               <Col sm={10}>
                 {loadingBrands ? (
                   <Spinner animation='border' size='sm' />
@@ -374,10 +426,16 @@ function AddProduct() {
                     isInvalid={formik.touched.brand && formik.errors.brand}
                   >
                     <option value=''>Select Brand</option>
-                    {brands.map(b => <option key={b._id} value={b._id}>{b.name}</option>)}
+                    {brands.map(b => (
+                      <option key={b._id} value={b._id}>
+                        {b.name}
+                      </option>
+                    ))}
                   </Form.Select>
                 )}
-                <Form.Control.Feedback type='invalid'>{formik.errors.brand}</Form.Control.Feedback>
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.brand}
+                </Form.Control.Feedback>
               </Col>
             </Form.Group>
 
@@ -404,24 +462,41 @@ function AddProduct() {
 
             {/* --- THUMBNAILS (Append Mode + Remove) --- */}
             <Form.Group as={Row} className='mb-4' controlId='thumbnails'>
-              <Form.Label column sm={2}>Thumbnails <br /><small className="text-danger">(279 x 419, Max 2)</small></Form.Label>
+              <Form.Label column sm={2}>
+                Thumbnails <br />
+                <small className='text-danger'>(279 x 419, Max 2)</small>
+              </Form.Label>
               <Col sm={10}>
                 <Form.Control
                   type='file'
                   multiple
                   accept='image/*'
                   onChange={handleThumbnailChange}
-                  isInvalid={formik.touched.thumbnails && formik.errors.thumbnails}
+                  isInvalid={
+                    formik.touched.thumbnails && formik.errors.thumbnails
+                  }
                 />
-                <Form.Control.Feedback type='invalid'>{formik.errors.thumbnails}</Form.Control.Feedback>
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.thumbnails}
+                </Form.Control.Feedback>
                 <div className='mt-3 d-flex flex-wrap gap-2'>
                   {thumbnailsPreview.map((img, idx) => (
-                    <div key={idx} className="position-relative">
-                      <Image src={img} thumbnail width={80} height={80} alt={`thumb-${idx}`} />
+                    <div key={idx} className='position-relative'>
+                      <Image
+                        src={img}
+                        thumbnail
+                        width={80}
+                        height={80}
+                        alt={`thumb-${idx}`}
+                      />
                       <button
-                        type="button"
-                        className="btn btn-danger btn-sm position-absolute top-0 end-0 p-0 rounded-circle d-flex align-items-center justify-content-center"
-                        style={{ width: '20px', height: '20px', transform: 'translate(30%, -30%)' }}
+                        type='button'
+                        className='btn btn-danger btn-sm position-absolute top-0 end-0 p-0 rounded-circle d-flex align-items-center justify-content-center'
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          transform: 'translate(30%, -30%)'
+                        }}
                         onClick={() => removeThumbnail(idx)}
                       >
                         &times;
@@ -434,7 +509,10 @@ function AddProduct() {
 
             {/* --- MAIN IMAGES (Append Mode + Remove) --- */}
             <Form.Group as={Row} className='mb-4' controlId='images'>
-              <Form.Label column sm={2}>Main Images <br /><small className="text-danger">(461 x 461)</small></Form.Label>
+              <Form.Label column sm={2}>
+                Main Images <br />
+                <small className='text-danger'>(461 x 461)</small>
+              </Form.Label>
               <Col sm={10}>
                 <Form.Control
                   type='file'
@@ -443,15 +521,27 @@ function AddProduct() {
                   onChange={handleImageChange}
                   isInvalid={formik.touched.images && formik.errors.images}
                 />
-                <Form.Control.Feedback type='invalid'>{formik.errors.images}</Form.Control.Feedback>
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.images}
+                </Form.Control.Feedback>
                 <div className='mt-3 d-flex flex-wrap gap-2'>
                   {imagesPreview.map((img, idx) => (
-                    <div key={idx} className="position-relative">
-                      <Image src={img} thumbnail width={100} height={100} alt={`preview-${idx}`} />
+                    <div key={idx} className='position-relative'>
+                      <Image
+                        src={img}
+                        thumbnail
+                        width={100}
+                        height={100}
+                        alt={`preview-${idx}`}
+                      />
                       <button
-                        type="button"
-                        className="btn btn-danger btn-sm position-absolute top-0 end-0 p-0 rounded-circle d-flex align-items-center justify-content-center"
-                        style={{ width: '24px', height: '24px', transform: 'translate(30%, -30%)' }}
+                        type='button'
+                        className='btn btn-danger btn-sm position-absolute top-0 end-0 p-0 rounded-circle d-flex align-items-center justify-content-center'
+                        style={{
+                          width: '24px',
+                          height: '24px',
+                          transform: 'translate(30%, -30%)'
+                        }}
                         onClick={() => removeImage(idx)}
                       >
                         &times;
