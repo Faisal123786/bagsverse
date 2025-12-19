@@ -209,6 +209,7 @@ const Products = () => {
         <div className="card-img-wrapper">
           <img
             src={product.image}
+            // src="/assets/cardthumnailimage.png"
             alt={product.title}
             onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/300?text=No+Image" }}
           />

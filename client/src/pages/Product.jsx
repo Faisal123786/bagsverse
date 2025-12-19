@@ -121,7 +121,7 @@ const Product = () => {
                 ))}
               </div>
               <div className='flex-grow-1 d-flex justify-content-center align-items-center' style={{ maxWidth: '100%' }}>
-                <div style={{ maxHeight: '600px', width: '450px' }}>
+                <div style={{ maxHeight: '461px', width: '461px' }}>
                   <TransformWrapper>
                     <TransformComponent>
                       <img src={mainImage} alt={product.name} style={{ width: '100%', height: 'auto', objectFit: 'contain' }} onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/400?text=No+Image" }} />
