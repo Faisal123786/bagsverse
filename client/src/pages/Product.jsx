@@ -316,13 +316,15 @@ const Product = () => {
                 className='card mx-4 text-center'
                 style={{ minWidth: '280px' }}
               >
-                <img
-                  className='card-img-top p-3'
-                  src={imgUrl}
-                  alt={item.name}
-                  height={300}
-                  style={{ objectFit: 'contain' }}
-                />
+                <div className='product-img-wrapper'>
+                  <img
+                    className='card-img-top'
+                    src={imgUrl}
+
+                    alt={item.name}
+
+                  />
+                </div>
                 <div className='card-body'>
                   <h5 className='card-title'>
                     {item.name.substring(0, 20)}...
