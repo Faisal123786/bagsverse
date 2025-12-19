@@ -127,7 +127,7 @@ const Product = () => {
     return (
       <div className='container my-2 py-2'>
         <div className='row'>
-          <div className='col-12 col-md-6 py-3 border-0 border-end px-3'>
+          <div className='col-12 col-md-6 py-3 border-0 border-end px-0'>
             <div className='d-flex flex-column flex-md-row gap-3 justify-content-center align-items-start'>
               <div
                 className='d-flex flex-row flex-sm-column gap-2 overflow-auto'
@@ -301,37 +301,109 @@ const Product = () => {
   );
 
   const ShowSimilarProduct = () => {
+    const [hoveredProduct, setHoveredProduct] = React.useState(null);
+    const [selectedImage, setSelectedImage] = React.useState({});
+
     if (similarProducts.length === 0) return null;
+
     return (
       <div className='py-4 my-4'>
         <div className='d-flex'>
           {similarProducts.map(item => {
-            const imgUrl =
-              item.images && item.images.length > 0
-                ? item.images[0].imageUrl
+            const defaultImgUrl =
+              item.thumbnails && item.thumbnails.length > 0
+                ? item.thumbnails[0].imageUrl
                 : 'https://via.placeholder.com/300';
+
+            // Current displayed image (default ya selected)
+            const displayedImage = selectedImage[item._id] || defaultImgUrl;
+
+            // Thumbnails ke liye pehli 2 images
+            const thumbnails =
+              item.thumbnails && item.thumbnails.length > 1
+                ? item.thumbnails.slice(1, 3)
+                : [];
+
             return (
               <div
                 key={item._id}
                 className='card mx-4 text-center'
-                style={{ minWidth: '280px' }}
+                style={{ position: 'relative' }}
+                onMouseEnter={() => setHoveredProduct(item._id)}
+                onMouseLeave={() => {
+                  setHoveredProduct(null);
+                  // Reset to default image on mouse leave
+                  setSelectedImage(prev => ({
+                    ...prev,
+                    [item._id]: defaultImgUrl
+                  }));
+                }}
               >
                 <div className='product-img-wrapper'>
                   <img
                     className='card-img-top'
-                    src={imgUrl}
-
+                    src={displayedImage}
                     alt={item.name}
-
+                    style={{
+                      width: '279px',
+                      height: '419px',
+                      objectFit: 'cover',
+                      transition: 'opacity 0.3s ease'
+                    }}
                   />
+
+                  {/* Thumbnail images on hover */}
+                  {hoveredProduct === item._id && thumbnails.length > 0 && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px',
+                        zIndex: 10
+                      }}
+                    >
+                      {thumbnails.map((thumb, index) => (
+                        <img
+                          key={index}
+                          src={thumb.imageUrl}
+                          alt={`thumbnail-${index}`}
+                          onMouseEnter={() => {
+                            setSelectedImage(prev => ({
+                              ...prev,
+                              [item._id]: thumb.imageUrl
+                            }));
+                          }}
+                          style={{
+                            width: '60px',
+                            height: '60px',
+                            objectFit: 'cover',
+                            border: '2px solid white',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                            opacity:
+                              selectedImage[item._id] === thumb.imageUrl
+                                ? 1
+                                : 0.7
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
+
                 <div className='card-body'>
                   <h5 className='card-title'>
                     {item.name.substring(0, 20)}...
                   </h5>
                   <p className='fw-bold'>Rs {item.price}</p>
                 </div>
-                <div className='card-body'>
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-evenly' }}
+                >
                   <Link
                     to={'/product/' + item._id}
                     className='btn btn-dark m-1'
