@@ -216,6 +216,8 @@ textarea {
   border: 1.5px solid transparent;
   transition: all 0.3s ease-in-out;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
 
   &:hover {
     border-color: #c5a95f;
@@ -223,27 +225,29 @@ textarea {
 }
 
 .product-img-wrapper {
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  overflow: hidden;
-  height: 250px;
+  width: 100%;
+  aspect-ratio: 279 / 419;
   background-color: #f8f9fa;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
   }
 }
 
-@media (max-width: 576px) {
-  .product-img-wrapper {
-    height: 180px;
-  }
-}
+// @media (max-width: 576px) {
+//   .product-img-wrapper {
+//     aspect-ratio: 3 / 4;
+//   }
+// }
 
 .product-category {
   font-size: 0.9rem;
@@ -261,25 +265,7 @@ textarea {
   box-shadow: none !important;
 }
 
-.cart-btn {
-  background-color: #d4b86a !important;
-  border: none !important;
-  width: 45px;
-  height: 45px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
 
-  &:hover {
-    background-color: #bfa04d !important;
-    transform: scale(1.1);
-  }
-
-  i {
-    font-size: 1.2rem;
-  }
-}
 
 /* --- Custom Accordion Styles --- */
 .accordion-button {
@@ -482,19 +468,22 @@ textarea {
   cursor: pointer;
 
   .card-img-wrapper {
-    height: 256px;
-    overflow: hidden;
     position: relative;
-    background-color: #f0f2f5;
+    width: 100%;
+    aspect-ratio: 279 / 419;
+    background-color: #f8f9fa;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
 
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
+      object-fit: contain;
+      object-position: center;
     }
   }
 
@@ -580,11 +569,7 @@ textarea {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-@media (max-width: 576px) {
-  .custom-card .card-img-wrapper {
-    height: 140px;
-  }
-}
+
 
 /* =========================================
    2. DUAL RANGE SLIDER CSS

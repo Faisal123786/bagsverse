@@ -22,35 +22,18 @@ const ProductCard = ({ image, title, price, onClick }) => {
       <div className="product-img-wrapper mb-3">
         <img
           src={image}
-          // src="/assets/bagimage02.png"
+          // src="/assets/cardthumnailimage.png"
           alt={title}
-          className="img-fluid"
-          // Fallback if image fails to load
+          // className="img-fluid"
           onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/300?text=No+Image" }}
         />
       </div>
-
-      {/* Info Area */}
-      {/* <div className="d-flex justify-content-between align-items-end p-3"> */}
       <div className="product-info text-start px-3 py-2 ">
         <span className="product-category text-muted d-block mb-1 text-truncate" style={{ maxWidth: '150px' }}>
           {title}
         </span>
         <h5 className="product-price mb-0">{price}</h5>
       </div>
-
-      {/* Cart Button */}
-      {/* <Button
-          variant="warning"
-          className="cart-btn rounded-circle text-white"
-          onClick={(e) => {
-            e.stopPropagation();
-            console.log("Add to cart clicked");
-          }}
-        >
-          <i className="fa fa-cart-plus"></i>
-        </Button> */}
-      {/* </div> */}
     </div>
   );
 };

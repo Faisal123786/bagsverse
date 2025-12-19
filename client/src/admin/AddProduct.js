@@ -151,7 +151,7 @@ function AddProduct() {
     await Promise.all(
       newFiles.map(async (file) => {
         try {
-          await validateImageDimension(file, 300, 300);
+          await validateImageDimension(file, 279, 419);
           validFiles.push(file);
         } catch (fileName) {
           invalidFiles.push(fileName);
@@ -160,7 +160,7 @@ function AddProduct() {
     );
 
     if (invalidFiles.length > 0) {
-      setErrorMsg(`Error: Incorrect size (300x300): ${invalidFiles.join(', ')}`);
+      setErrorMsg(`Error: Incorrect size (279x419): ${invalidFiles.join(', ')}`);
       e.target.value = '';
       return;
     }
@@ -200,7 +200,7 @@ function AddProduct() {
     await Promise.all(
       newFiles.map(async (file) => {
         try {
-          await validateImageDimension(file, 400, 400);
+          await validateImageDimension(file, 461, 461);
           validFiles.push(file);
         } catch (fileName) {
           invalidFiles.push(fileName);
@@ -209,7 +209,7 @@ function AddProduct() {
     );
 
     if (invalidFiles.length > 0) {
-      setErrorMsg(`Error: Incorrect size (400x400): ${invalidFiles.join(', ')}`);
+      setErrorMsg(`Error: Incorrect size (461x461): ${invalidFiles.join(', ')}`);
       e.target.value = '';
       return;
     }
@@ -404,7 +404,7 @@ function AddProduct() {
 
             {/* --- THUMBNAILS (Append Mode + Remove) --- */}
             <Form.Group as={Row} className='mb-4' controlId='thumbnails'>
-              <Form.Label column sm={2}>Thumbnails <br /><small className="text-danger">(300x300, Max 2)</small></Form.Label>
+              <Form.Label column sm={2}>Thumbnails <br /><small className="text-danger">(279 x 419, Max 2)</small></Form.Label>
               <Col sm={10}>
                 <Form.Control
                   type='file'
@@ -434,7 +434,7 @@ function AddProduct() {
 
             {/* --- MAIN IMAGES (Append Mode + Remove) --- */}
             <Form.Group as={Row} className='mb-4' controlId='images'>
-              <Form.Label column sm={2}>Main Images <br /><small className="text-danger">(400x400)</small></Form.Label>
+              <Form.Label column sm={2}>Main Images <br /><small className="text-danger">(461 x 461)</small></Form.Label>
               <Col sm={10}>
                 <Form.Control
                   type='file'
