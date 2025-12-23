@@ -3,14 +3,13 @@ const router = express.Router();
 const multer = require('multer');
 const Mongoose = require('mongoose');
 
-// Bring in Models & Utils
 const Product = require('../../models/product');
 const Brand = require('../../models/brand');
 const Category = require('../../models/category');
 const auth = require('../../middleware/auth');
 const role = require('../../middleware/role');
 const checkAuth = require('../../utils/auth');
-const { s3Upload } = require('../../utils/storage');
+const { s3Upload, s3Delete } = require('../../utils/storage');
 const {
   getStoreProductsQuery,
   getStoreProductsWishListQuery
@@ -20,7 +19,7 @@ const { ROLES } = require('../../constants');
 const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB per file
+  limits: { fileSize: 10 * 1024 * 1024 }
 });
 
 // fetch product slug api
@@ -184,8 +183,8 @@ router.post(
   auth,
   role.check(ROLES.Admin, ROLES.Merchant),
   upload.fields([
-    { name: 'image[]', maxCount: 10 }, // Main images
-    { name: 'thumbnail[]', maxCount: 2 } // Thumbnail images
+    { name: 'image[]', maxCount: 10 },
+    { name: 'thumbnail[]', maxCount: 2 }
   ]),
   async (req, res) => {
     try {
@@ -202,15 +201,12 @@ router.post(
         brand
       } = req.body;
 
-      // Validations
       if (!sku) return res.status(400).json({ error: 'You must enter sku.' });
       if (!name || !description || !Disclaimer || !CleaningInstruction)
-        return res
-          .status(400)
-          .json({
-            error:
-              'You must enter name, description, disclaimer & cleaning instruction.'
-          });
+        return res.status(400).json({
+          error:
+            'You must enter name, description, disclaimer & cleaning instruction.'
+        });
       if (!quantity)
         return res.status(400).json({ error: 'You must enter a quantity.' });
       if (!price)
@@ -220,12 +216,10 @@ router.post(
       if (foundProduct)
         return res.status(400).json({ error: 'This sku is already in use.' });
 
-      // NEW: Upload thumbnail images to S3 (max 2)
       const uploadedThumbnails = [];
       if (req.files && req.files['thumbnail[]']) {
         const thumbnailFiles = req.files['thumbnail[]'];
 
-        // Validate maximum 2 thumbnails
         if (thumbnailFiles.length > 2) {
           return res.status(400).json({
             error: 'Maximum 2 thumbnail images allowed.'
@@ -238,7 +232,6 @@ router.post(
         }
       }
 
-      // Upload main images to S3
       const uploadedImages = [];
       if (req.files && req.files['image[]']) {
         const imageFiles = req.files['image[]'];
@@ -248,7 +241,6 @@ router.post(
         }
       }
 
-      // Create product with thumbnails
       const product = new Product({
         sku,
         name,
@@ -374,7 +366,6 @@ router.get(
   }
 );
 
-// CHANGED: Update product with thumbnail support
 router.put(
   '/:id',
   auth,
@@ -386,7 +377,14 @@ router.put(
   async (req, res) => {
     try {
       const productId = req.params.id;
-      const update = req.body.product ? JSON.parse(req.body.product) : req.body;
+
+      let update;
+      if (req.body.product) {
+        update = JSON.parse(req.body.product);
+      } else {
+        update = { ...req.body };
+      }
+
       const query = { _id: productId };
       const { sku, slug } = update;
 
@@ -400,51 +398,110 @@ router.put(
           .json({ error: 'Sku or slug is already in use.' });
       }
 
-      // Get existing product
       const existingProduct = await Product.findById(productId);
       if (!existingProduct) {
         return res.status(404).json({ error: 'Product not found.' });
       }
 
-      // Handle new thumbnail uploads
+      let existingImages = [];
+      let existingThumbnails = [];
+      let imagesToDelete = [];
+      let thumbnailsToDelete = [];
+
+      try {
+        if (req.body.existingImages) {
+          existingImages = JSON.parse(req.body.existingImages);
+        }
+        if (req.body.existingThumbnails) {
+          existingThumbnails = JSON.parse(req.body.existingThumbnails);
+        }
+        if (req.body.imagesToDelete) {
+          imagesToDelete = JSON.parse(req.body.imagesToDelete);
+        }
+        if (req.body.thumbnailsToDelete) {
+          thumbnailsToDelete = JSON.parse(req.body.thumbnailsToDelete);
+        }
+      } catch (parseError) {
+        console.error('Error parsing image data:', parseError);
+      }
+
+      if (imagesToDelete.length > 0) {
+        for (const imageKey of imagesToDelete) {
+          try {
+            await s3Delete(imageKey);
+            console.log(`Deleted image: ${imageKey}`);
+          } catch (deleteError) {
+            console.error(`Failed to delete image ${imageKey}:`, deleteError);
+          }
+        }
+      }
+
+      if (thumbnailsToDelete.length > 0) {
+        for (const imageKey of thumbnailsToDelete) {
+          try {
+            await s3Delete(imageKey);
+            console.log(`Deleted thumbnail: ${imageKey}`);
+          } catch (deleteError) {
+            console.error(
+              `Failed to delete thumbnail ${imageKey}:`,
+              deleteError
+            );
+          }
+        }
+      }
+
+      let finalImages = [...existingImages];
+      let finalThumbnails = [...existingThumbnails];
+
       if (req.files && req.files['thumbnail[]']) {
         const thumbnailFiles = req.files['thumbnail[]'];
 
-        if (thumbnailFiles.length > 2) {
+        if (finalThumbnails.length + thumbnailFiles.length > 2) {
           return res.status(400).json({
-            error: 'Maximum 2 thumbnail images allowed.'
+            error: 'Maximum 2 thumbnail images allowed in total.'
           });
         }
 
-        const uploadedThumbnails = [];
         for (const file of thumbnailFiles) {
           const { imageUrl, imageKey } = await s3Upload(file);
-          uploadedThumbnails.push({ imageUrl, imageKey });
+          finalThumbnails.push({ imageUrl, imageKey });
         }
-        update.thumbnails = uploadedThumbnails;
       }
 
-      // Handle new main image uploads
       if (req.files && req.files['image[]']) {
         const imageFiles = req.files['image[]'];
-        const uploadedImages = [];
+
+        if (finalImages.length + imageFiles.length > 10) {
+          return res.status(400).json({
+            error: 'Maximum 10 images allowed in total.'
+          });
+        }
+
         for (const file of imageFiles) {
           const { imageUrl, imageKey } = await s3Upload(file);
-          uploadedImages.push({ imageUrl, imageKey });
+          finalImages.push({ imageUrl, imageKey });
         }
-        update.images = uploadedImages;
       }
 
-      await Product.findOneAndUpdate(query, update, {
+      update.images = finalImages;
+      update.thumbnails = finalThumbnails;
+
+      delete update.existingImages;
+      delete update.existingThumbnails;
+      delete update.imagesToDelete;
+      delete update.thumbnailsToDelete;
+
+      const updatedProduct = await Product.findOneAndUpdate(query, update, {
         new: true
       });
 
       res.status(200).json({
         success: true,
-        message: 'Product has been updated successfully!'
+        message: 'Product has been updated successfully!',
+        product: updatedProduct
       });
     } catch (error) {
-      console.error(error);
+      console.error('Product update error:', error);
       res.status(400).json({
         error: 'Your request could not be processed. Please try again.'
       });

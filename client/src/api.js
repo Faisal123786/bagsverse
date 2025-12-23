@@ -69,15 +69,30 @@ export const fetchProductById = async id => {
 export const updateProduct = async (id, formData) => {
   try {
     console.log('Sending product data:', formData);
-    const payload = {
-      product: formData
-    };
-    const response = await API.put(`/product/${id}`, payload, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    return response.data;
+
+    // Check if formData is FormData (contains images) or plain object
+    const isFormData = formData instanceof FormData;
+
+    if (isFormData) {
+      // If it's FormData with images, send as multipart/form-data
+      const response = await API.put(`/product/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
+    } else {
+      // If it's plain object, send as JSON (backward compatibility)
+      const payload = {
+        product: formData
+      };
+      const response = await API.put(`/product/${id}`, payload, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    }
   } catch (error) {
     throw new Error(error.response?.data?.error || 'Failed to update product');
   }
@@ -91,7 +106,6 @@ export const deleteProduct = async id => {
     throw new Error(error.response?.data?.error || 'Failed to delete product');
   }
 };
-
 // =========================
 //  CATEGORY APIs
 // =========================
