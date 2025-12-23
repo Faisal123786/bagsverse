@@ -18,7 +18,10 @@ const {
 const { ROLES } = require('../../constants');
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB per file
+});
 
 // fetch product slug api
 router.get('/item/:slug', async (req, res) => {
