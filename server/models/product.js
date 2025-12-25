@@ -48,6 +48,30 @@ const ProductSchema = new Schema({
     type: String,
     trim: true
   },
+  height: {
+    type: String,
+    trim: true
+  },
+  width: {
+    type: String,
+    trim: true
+  },
+  depth: {
+    type: String,
+    trim: true
+  },
+  compartments: {
+    type: String,
+    trim: true
+  },
+  innerPocket: {
+    type: String,
+    trim: true
+  },
+  baseDetails: {
+    type: String,
+    trim: true
+  },
   quantity: {
     type: Number
   },

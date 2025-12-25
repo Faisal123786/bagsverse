@@ -194,6 +194,12 @@ router.post(
         description,
         Disclaimer,
         CleaningInstruction,
+        height,
+        width,
+        depth,
+        compartments,
+        innerPocket,
+        baseDetails,
         quantity,
         price,
         taxable,
@@ -203,10 +209,24 @@ router.post(
 
       if (!sku) return res.status(400).json({ error: 'You must enter sku.' });
       if (!name || !description || !Disclaimer || !CleaningInstruction)
-        return res.status(400).json({
-          error:
-            'You must enter name, description, disclaimer & cleaning instruction.'
-        });
+        return res
+          .status(400)
+          .json({
+            error:
+              'You must enter name, description, disclaimer & cleaning instruction.'
+          });
+      if (!height)
+        return res.status(400).json({ error: 'You must enter height.' });
+      if (!width)
+        return res.status(400).json({ error: 'You must enter width.' });
+      if (!depth)
+        return res.status(400).json({ error: 'You must enter depth.' });
+      if (!compartments)
+        return res.status(400).json({ error: 'You must enter compartments.' });
+      if (!innerPocket)
+        return res.status(400).json({ error: 'You must enter inner pocket.' });
+      if (!baseDetails)
+        return res.status(400).json({ error: 'You must enter base details.' });
       if (!quantity)
         return res.status(400).json({ error: 'You must enter a quantity.' });
       if (!price)
@@ -247,6 +267,12 @@ router.post(
         description,
         Disclaimer,
         CleaningInstruction,
+        height,
+        width,
+        depth,
+        compartments,
+        innerPocket,
+        baseDetails,
         quantity,
         price,
         taxable,

@@ -8,7 +8,7 @@ import { addCart } from '../redux/action';
 import ProductTabs from '../components/ProductTabs';
 import ProductReviews from '../components/ProductReviews'; // Updated Component
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { fetchProductById, fetchProducts } from '../api';
+import { fetchProductById, fetchProducts, fetchShippingConfig } from '../api';
 import toast from 'react-hot-toast';
 const Product = () => {
   const { id } = useParams();
@@ -23,6 +23,8 @@ const Product = () => {
   const [mainImage, setMainImage] = useState('');
   const [thumbnails, setThumbnails] = useState([]);
 
+  const [thresholdActive, setThresholdActive] = useState(false);
+  const [thresholdValue, setThresholdValue] = useState(7999);
   // --- ADD TO CART ---
   const addProductToCart = (
     productItem,
@@ -90,7 +92,24 @@ const Product = () => {
         setLoading2(false);
       }
     };
+    const getShippingConfig = async () => {
+      try {
+        const data = await fetchShippingConfig();
+        if (data) {
+          setThresholdActive(data.isThresholdActive);
+          setThresholdValue(data.thresholdValue);
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error('Failed to load shipping settings');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+
     getProductData();
+    getShippingConfig();
   }, [id]);
 
   const handleImage = index => {
@@ -259,13 +278,13 @@ const Product = () => {
               </div>
             </div>
             <hr />
-            <div
+            {thresholdActive && <div
               className='d-flex align-items-center gap-3 text-muted my-4'
               style={{ fontSize: '0.9rem' }}
             >
               <i className='fa fa-cube fa-lg'></i>
-              <span>Free Shipping on all orders above Rs. 7,999 PKR!</span>
-            </div>
+              <span>Free Shipping on all orders above Rs. {thresholdValue} PKR!</span>
+            </div>}
             <div className='mt-4'>
               <Accordion flush>
                 <Accordion.Item eventKey='0'>
