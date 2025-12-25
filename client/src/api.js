@@ -46,11 +46,7 @@ export const fetchBrands = async () => {
 
 export const addProduct = async formData => {
   try {
-    const response = await API.post('/product/add', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
+    const response = await API.post('/product/add', formData);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.error || 'Failed to add product');

@@ -1,4 +1,6 @@
 const AWS = require('aws-sdk');
+const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 
 const keys = require('../config/keys');
 
@@ -18,26 +20,38 @@ exports.s3Upload = async image => {
         region: keys.aws.region
       });
 
+      // Generate unique filename with timestamp and UUID
+      const timestamp = Date.now();
+      const uniqueId = uuidv4();
+      const fileExtension = path.extname(image.originalname);
+      const originalNameWithoutExt = path.basename(
+        image.originalname,
+        fileExtension
+      );
+      const uniqueFileName = `${originalNameWithoutExt}-${timestamp}-${uniqueId}${fileExtension}`;
+
       const params = {
         Bucket: keys.aws.bucketName,
-        Key: image.originalname,
+        Key: uniqueFileName,
         Body: image.buffer,
-        ContentType: image.mimetype
+        ContentType: image.mimetype,
+        ACL: 'public-read' // Make sure images are publicly accessible
       };
 
       const s3Upload = await s3bucket.upload(params).promise();
 
       imageUrl = s3Upload.Location;
-      imageKey = s3Upload.key;
+      imageKey = s3Upload.Key; // Fixed: Changed from 'key' to 'Key'
     }
 
     return { imageUrl, imageKey };
   } catch (error) {
+    console.error('S3 Upload Error:', error);
     return { imageUrl: '', imageKey: '' };
   }
 };
 
-// NEW: S3 Delete function
+// S3 Delete function
 exports.s3Delete = async imageKey => {
   try {
     if (!keys.aws.accessKeyId) {

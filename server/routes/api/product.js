@@ -177,7 +177,7 @@ router.get('/list/select', auth, async (req, res) => {
   }
 });
 
-// CHANGED: Add product api with thumbnail support
+// Add product api with thumbnail support
 router.post(
   '/add',
   auth,
@@ -194,6 +194,12 @@ router.post(
         description,
         Disclaimer,
         CleaningInstruction,
+        height,
+        width,
+        depth,
+        compartments,
+        innerPocket,
+        baseDetails,
         quantity,
         price,
         taxable,
@@ -207,6 +213,18 @@ router.post(
           error:
             'You must enter name, description, disclaimer & cleaning instruction.'
         });
+      if (!height)
+        return res.status(400).json({ error: 'You must enter height.' });
+      if (!width)
+        return res.status(400).json({ error: 'You must enter width.' });
+      if (!depth)
+        return res.status(400).json({ error: 'You must enter depth.' });
+      if (!compartments)
+        return res.status(400).json({ error: 'You must enter compartments.' });
+      if (!innerPocket)
+        return res.status(400).json({ error: 'You must enter inner pocket.' });
+      if (!baseDetails)
+        return res.status(400).json({ error: 'You must enter base details.' });
       if (!quantity)
         return res.status(400).json({ error: 'You must enter a quantity.' });
       if (!price)
@@ -216,6 +234,7 @@ router.post(
       if (foundProduct)
         return res.status(400).json({ error: 'This sku is already in use.' });
 
+      // Upload thumbnails sequentially to maintain order
       const uploadedThumbnails = [];
       if (req.files && req.files['thumbnail[]']) {
         const thumbnailFiles = req.files['thumbnail[]'];
@@ -226,16 +245,32 @@ router.post(
           });
         }
 
-        for (const file of thumbnailFiles) {
+        // Sequential upload to preserve order
+        for (let i = 0; i < thumbnailFiles.length; i++) {
+          const file = thumbnailFiles[i];
+          console.log(
+            `Uploading thumbnail ${i + 1}/${thumbnailFiles.length}: ${
+              file.originalname
+            }`
+          );
           const { imageUrl, imageKey } = await s3Upload(file);
           uploadedThumbnails.push({ imageUrl, imageKey });
         }
       }
 
+      // Upload images sequentially to maintain order
       const uploadedImages = [];
       if (req.files && req.files['image[]']) {
         const imageFiles = req.files['image[]'];
-        for (const file of imageFiles) {
+
+        // Sequential upload to preserve order
+        for (let i = 0; i < imageFiles.length; i++) {
+          const file = imageFiles[i];
+          console.log(
+            `Uploading image ${i + 1}/${imageFiles.length}: ${
+              file.originalname
+            }`
+          );
           const { imageUrl, imageKey } = await s3Upload(file);
           uploadedImages.push({ imageUrl, imageKey });
         }
@@ -247,13 +282,19 @@ router.post(
         description,
         Disclaimer,
         CleaningInstruction,
+        height,
+        width,
+        depth,
+        compartments,
+        innerPocket,
+        baseDetails,
         quantity,
         price,
         taxable,
         isActive,
         brand,
         images: uploadedImages,
-        thumbnails: uploadedThumbnails // NEW: Add thumbnails
+        thumbnails: uploadedThumbnails
       });
 
       const savedProduct = await product.save();
@@ -264,7 +305,7 @@ router.post(
         product: savedProduct
       });
     } catch (error) {
-      console.error(error);
+      console.error('Product add error:', error);
       return res.status(400).json({
         error: 'Your request could not be processed. Please try again.'
       });
@@ -366,6 +407,7 @@ router.get(
   }
 );
 
+// Update product api
 router.put(
   '/:id',
   auth,
@@ -425,6 +467,7 @@ router.put(
         console.error('Error parsing image data:', parseError);
       }
 
+      // Delete images from S3
       if (imagesToDelete.length > 0) {
         for (const imageKey of imagesToDelete) {
           try {
@@ -436,6 +479,7 @@ router.put(
         }
       }
 
+      // Delete thumbnails from S3
       if (thumbnailsToDelete.length > 0) {
         for (const imageKey of thumbnailsToDelete) {
           try {
@@ -450,9 +494,11 @@ router.put(
         }
       }
 
+      // Start with existing images (maintaining their order)
       let finalImages = [...existingImages];
       let finalThumbnails = [...existingThumbnails];
 
+      // Upload new thumbnails sequentially to maintain order
       if (req.files && req.files['thumbnail[]']) {
         const thumbnailFiles = req.files['thumbnail[]'];
 
@@ -462,12 +508,20 @@ router.put(
           });
         }
 
-        for (const file of thumbnailFiles) {
+        // Sequential upload to preserve order
+        for (let i = 0; i < thumbnailFiles.length; i++) {
+          const file = thumbnailFiles[i];
+          console.log(
+            `Uploading new thumbnail ${i + 1}/${thumbnailFiles.length}: ${
+              file.originalname
+            }`
+          );
           const { imageUrl, imageKey } = await s3Upload(file);
           finalThumbnails.push({ imageUrl, imageKey });
         }
       }
 
+      // Upload new images sequentially to maintain order
       if (req.files && req.files['image[]']) {
         const imageFiles = req.files['image[]'];
 
@@ -477,15 +531,24 @@ router.put(
           });
         }
 
-        for (const file of imageFiles) {
+        // Sequential upload to preserve order
+        for (let i = 0; i < imageFiles.length; i++) {
+          const file = imageFiles[i];
+          console.log(
+            `Uploading new image ${i + 1}/${imageFiles.length}: ${
+              file.originalname
+            }`
+          );
           const { imageUrl, imageKey } = await s3Upload(file);
           finalImages.push({ imageUrl, imageKey });
         }
       }
 
+      // Update the product with the final arrays
       update.images = finalImages;
       update.thumbnails = finalThumbnails;
 
+      // Clean up temporary fields
       delete update.existingImages;
       delete update.existingThumbnails;
       delete update.imagesToDelete;
@@ -509,6 +572,7 @@ router.put(
   }
 );
 
+// Update product active status
 router.put(
   '/:id/active',
   auth,
@@ -535,13 +599,56 @@ router.put(
   }
 );
 
+// Delete product api
 router.delete(
   '/delete/:id',
   auth,
   role.check(ROLES.Admin, ROLES.Merchant),
   async (req, res) => {
     try {
-      const product = await Product.deleteOne({ _id: req.params.id });
+      const productId = req.params.id;
+
+      // Get product to retrieve image keys for deletion
+      const product = await Product.findById(productId);
+
+      if (product) {
+        // Delete all images from S3
+        if (product.images && product.images.length > 0) {
+          for (const image of product.images) {
+            if (image.imageKey) {
+              try {
+                await s3Delete(image.imageKey);
+                console.log(`Deleted image: ${image.imageKey}`);
+              } catch (deleteError) {
+                console.error(
+                  `Failed to delete image ${image.imageKey}:`,
+                  deleteError
+                );
+              }
+            }
+          }
+        }
+
+        // Delete all thumbnails from S3
+        if (product.thumbnails && product.thumbnails.length > 0) {
+          for (const thumbnail of product.thumbnails) {
+            if (thumbnail.imageKey) {
+              try {
+                await s3Delete(thumbnail.imageKey);
+                console.log(`Deleted thumbnail: ${thumbnail.imageKey}`);
+              } catch (deleteError) {
+                console.error(
+                  `Failed to delete thumbnail ${thumbnail.imageKey}:`,
+                  deleteError
+                );
+              }
+            }
+          }
+        }
+      }
+
+      // Delete product from database
+      await Product.deleteOne({ _id: productId });
 
       res.status(200).json({
         success: true,
@@ -549,6 +656,7 @@ router.delete(
         product
       });
     } catch (error) {
+      console.error('Product delete error:', error);
       res.status(400).json({
         error: 'Your request could not be processed. Please try again.'
       });
