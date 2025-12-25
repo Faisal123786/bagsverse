@@ -8,7 +8,8 @@ import {
   Alert,
   Card,
   Spinner,
-  Badge
+  Badge,
+  Image
 } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -17,16 +18,20 @@ import { fetchProducts, addCategory } from '../api';
 const AddCategory = () => {
   const navigate = useNavigate();
 
+  // Form States
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [isActive, setIsActive] = useState(true);
-  const [loading, setLoading] = useState(false);
-
-  const [productList, setProductList] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
 
-  const [loadingProducts, setLoadingProducts] = useState(false);
+  // Image States
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
 
+  // UI States
+  const [loading, setLoading] = useState(false);
+  const [productList, setProductList] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -39,9 +44,6 @@ const AddCategory = () => {
         setLoadingProducts(true);
         const res = await fetchProducts();
 
-        console.log('Products API Response:', res);
-
-        // API STRUCTURE FIX
         if (Array.isArray(res)) {
           setProductList(res);
         } else if (Array.isArray(res?.products)) {
@@ -52,7 +54,6 @@ const AddCategory = () => {
           setProductList(res.data);
         } else {
           toast.error('Unexpected product data format');
-          console.error('Unexpected product response:', res);
         }
       } catch (err) {
         toast.error('Failed to load products');
@@ -66,20 +67,46 @@ const AddCategory = () => {
   }, []);
 
   // -----------------------------------------
-  // Checkbox Select Handler
+  // Handle Image Selection (150x150 Validation)
   // -----------------------------------------
-  const handleCheckboxSelect = id => {
-    setSelectedProducts(
-      prev =>
-        prev.includes(id)
-          ? prev.filter(p => p !== id) // remove
-          : [...prev, id] // add
-    );
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setErrorMsg('');
+
+    if (file) {
+      const img = new window.Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      img.onload = () => {
+        // Validate Dimensions: 150x150
+        if (img.width === 150 && img.height === 150) {
+          setImageFile(file);
+          setImagePreview(objectUrl);
+        } else {
+          setErrorMsg(`Error: Image must be exactly 150x150 pixels. Uploaded: ${img.width}x${img.height}`);
+          setImageFile(null);
+          setImagePreview('');
+          e.target.value = null; // Reset input
+        }
+      };
+
+      img.onerror = () => {
+        setErrorMsg("Invalid image file.");
+      };
+
+      img.src = objectUrl;
+    }
   };
 
   // -----------------------------------------
-  // Remove Product Chip
+  // Checkbox Select Handler
   // -----------------------------------------
+  const handleCheckboxSelect = id => {
+    setSelectedProducts(prev =>
+      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
+    );
+  };
+
   const removeProduct = id => {
     setSelectedProducts(prev => prev.filter(p => p !== id));
   };
@@ -100,14 +127,20 @@ const AddCategory = () => {
     }
 
     try {
-      const payload = {
-        name,
-        description,
-        isActive,
-        products: selectedProducts
-      };
+      // Use FormData to handle File Upload
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('description', description);
+      formData.append('isActive', isActive);
 
-      const result = await addCategory(payload);
+      // Append products array (might need JSON.stringify depending on backend, but usually loop works)
+      selectedProducts.forEach(prodId => formData.append('products[]', prodId));
+
+      if (imageFile) {
+        formData.append('image', imageFile); // 'image' key depends on your backend multer setup
+      }
+
+      const result = await addCategory(formData);
 
       toast.success(result.message || 'Category Added Successfully!');
       setSuccessMsg(result.message);
@@ -117,6 +150,8 @@ const AddCategory = () => {
       setDescription('');
       setIsActive(true);
       setSelectedProducts([]);
+      setImageFile(null);
+      setImagePreview('');
     } catch (error) {
       console.error(error);
       const msg = error?.response?.data?.error || 'Failed to add category!';
@@ -148,9 +183,7 @@ const AddCategory = () => {
           <Form onSubmit={handleSubmit}>
             {/* Name */}
             <Form.Group as={Row} className='mb-3'>
-              <Form.Label column sm={2}>
-                Name
-              </Form.Label>
+              <Form.Label column sm={2}>Name</Form.Label>
               <Col sm={10}>
                 <Form.Control
                   type='text'
@@ -164,9 +197,7 @@ const AddCategory = () => {
 
             {/* Description */}
             <Form.Group as={Row} className='mb-3'>
-              <Form.Label column sm={2}>
-                Description
-              </Form.Label>
+              <Form.Label column sm={2}>Description</Form.Label>
               <Col sm={10}>
                 <Form.Control
                   as='textarea'
@@ -175,6 +206,23 @@ const AddCategory = () => {
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                 />
+              </Col>
+            </Form.Group>
+
+            {/* Category Image (New Field) */}
+            <Form.Group as={Row} className='mb-3'>
+              <Form.Label column sm={2}>Image <br /><small className="text-danger">(150x150)</small></Form.Label>
+              <Col sm={10}>
+                <Form.Control
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+                {imagePreview && (
+                  <div className="mt-2">
+                    <Image src={imagePreview} thumbnail width={100} height={100} alt="Preview" />
+                  </div>
+                )}
               </Col>
             </Form.Group>
 
@@ -192,9 +240,7 @@ const AddCategory = () => {
 
             {/* Multi Select (Checkbox List) */}
             <Form.Group as={Row} className='mb-4'>
-              <Form.Label column sm={2}>
-                Products
-              </Form.Label>
+              <Form.Label column sm={2}>Products</Form.Label>
               <Col sm={10}>
                 {loadingProducts ? (
                   <div className='d-flex align-items-center'>
@@ -237,24 +283,11 @@ const AddCategory = () => {
                 <Col sm={{ span: 10, offset: 2 }}>
                   <div className='d-flex flex-wrap gap-2'>
                     {selectedProducts.map(id => {
-                      const prod = productList.find(p => p._id === id) || {
-                        name: 'Unknown Product'
-                      };
-
+                      const prod = productList.find(p => p._id === id) || { name: 'Unknown' };
                       return (
-                        <Badge
-                          key={id}
-                          bg='primary'
-                          pill
-                          className='p-2 d-flex align-items-center'
-                        >
+                        <Badge key={id} bg='primary' pill className='p-2 d-flex align-items-center'>
                           {prod.name}
-                          <Button
-                            size='sm'
-                            variant='light'
-                            className='ms-2 py-0 px-2'
-                            onClick={() => removeProduct(id)}
-                          >
+                          <Button size='sm' variant='light' className='ms-2 py-0 px-2' onClick={() => removeProduct(id)}>
                             ×
                           </Button>
                         </Badge>
@@ -271,12 +304,7 @@ const AddCategory = () => {
                 <Button type='submit' disabled={loading}>
                   {loading ? (
                     <>
-                      <Spinner
-                        as='span'
-                        animation='border'
-                        size='sm'
-                        className='me-2'
-                      />
+                      <Spinner as='span' animation='border' size='sm' className='me-2' />
                       Adding...
                     </>
                   ) : (

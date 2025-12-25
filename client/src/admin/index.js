@@ -12,8 +12,10 @@ import EditCategory from './EditCategory';
 import ReviewList from './ReviewList';
 import ShippingPolicy from './ShippingPolicy';
 import Banner from './Banner';
+import CustomShipping from './customShipping';
 import Promocard from './Promocard';
 import UserList from './UserList';
+
 // Example: get user from localStorage
 const getUser = () => {
   const storedUser = localStorage.getItem('user');
@@ -35,6 +37,7 @@ const AdminLayout = () => {
     { name: 'Shipping Policy', path: '/admin/shipping-policy' },
     { name: 'Banner', path: '/admin/banner' },
     { name: 'Promocard', path: '/admin/promocard' },
+    { name: 'Custom Shipping', path: '/admin/custom-shipping' },
     // { name: 'WishList', path: '/admin/wishlist' },
     // { name: 'Support', path: '/admin/support' }
   ];
@@ -87,6 +90,7 @@ const AdminLayout = () => {
                   <Route path='/banner' element={<Banner />} />
                   <Route path='/promocard' element={<Promocard />} />
                   <Route path='/user' element={<UserList />} />
+                  <Route path='/custom-shipping' element={<CustomShipping />} />
                 </>
               )}
               {user?.role === 'ROLE MERCHANT' && (

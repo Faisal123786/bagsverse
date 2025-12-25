@@ -55,6 +55,12 @@ function AddProduct() {
       Disclaimer: '',
       CleaningInstruction: '',
       quantity: '',
+      height: '',
+      width: '',
+      depth: '',
+      compartments: '',
+      innerPocket: '',
+      baseDetails: '',
       price: '',
       taxable: false,
       isActive: true,
@@ -70,6 +76,14 @@ function AddProduct() {
       CleaningInstruction: Yup.string().required(
         'Cleaning Instruction is required'
       ),
+      height: Yup.number().typeError('Must be number').required('Required'),
+      width: Yup.number().typeError('Must be number').required('Required'),
+      depth: Yup.number().typeError('Must be number').required('Required'),
+      compartments: Yup.number()
+        .typeError('Must be number')
+        .required('Required'),
+      innerPocket: Yup.number().typeError('Must be number').required('Required'),
+      baseDetails: Yup.string().required('Base Details is required'),
       quantity: Yup.number().typeError('Must be number').required('Required'),
       price: Yup.number().typeError('Must be number').required('Required'),
       brand: Yup.string().required('Brand is required'),
@@ -376,7 +390,6 @@ function AddProduct() {
                 </Form.Control.Feedback>
               </Col>
             </Form.Group>
-
             {/* Quantity & Price */}
             <Row className='mb-3'>
               <Form.Group as={Col} md={6} controlId='quantity'>
@@ -409,6 +422,106 @@ function AddProduct() {
                 </Form.Control.Feedback>
               </Form.Group>
             </Row>
+            {/* height, width, depth, compartments, innerPocket, baseDetails */}
+            <Row className='mb-3'>
+              <Form.Group as={Col} md={6} controlId='height'>
+                <Form.Label>Height</Form.Label>
+                <Form.Control
+                  type='number'
+                  name='height'
+                  placeholder='Enter height'
+                  value={formik.values.height}
+                  onChange={formik.handleChange}
+                  isInvalid={formik.touched.height && formik.errors.height}
+                />
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.height}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group as={Col} md={6} controlId='width'>
+                <Form.Label>Width</Form.Label>
+                <Form.Control
+                  type='number'
+                  name='width'
+                  placeholder='Enter width'
+                  value={formik.values.width}
+                  onChange={formik.handleChange}
+                  isInvalid={formik.touched.width && formik.errors.width}
+                />
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.width}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Row>
+            <Row className='mb-3'>
+              <Form.Group as={Col} md={6} controlId='depth'>
+                <Form.Label>Depth</Form.Label>
+                <Form.Control
+                  type='number'
+                  name='depth'
+                  placeholder='Enter depth'
+                  value={formik.values.depth}
+                  onChange={formik.handleChange}
+                  isInvalid={formik.touched.depth && formik.errors.depth}
+                />
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.depth}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group as={Col} md={6} controlId='compartments'>
+                <Form.Label>Compartments</Form.Label>
+                <Form.Control
+                  type='number'
+                  name='compartments'
+                  placeholder='Enter compartments'
+                  value={formik.values.compartments}
+                  onChange={formik.handleChange}
+                  isInvalid={formik.touched.compartments && formik.errors.compartments}
+                />
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.compartments}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Row>
+            <Form.Group as={Row} className='mb-3' controlId='innerPocket'>
+              <Form.Label column sm={2}>
+                Inner Pocket
+              </Form.Label>
+              <Col sm={10}>
+                <Form.Control
+                  type='number'
+                  name='innerPocket'
+                  placeholder='Enter inner pocket'
+                  value={formik.values.innerPocket}
+                  onChange={formik.handleChange}
+                  isInvalid={formik.touched.innerPocket && formik.errors.innerPocket}
+                />
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.innerPocket}
+                </Form.Control.Feedback>
+              </Col>
+            </Form.Group>
+            <Form.Group as={Row} className='mb-3' controlId='baseDetails'>
+              <Form.Label column sm={2}>
+                Base Details
+              </Form.Label>
+              <Col sm={10}>
+                <Form.Control
+                  as='textarea'
+                  rows={2}
+                  name='baseDetails'
+                  placeholder='Enter base details'
+                  value={formik.values.baseDetails}
+                  onChange={formik.handleChange}
+                  isInvalid={formik.touched.baseDetails && formik.errors.baseDetails}
+                />
+                <Form.Control.Feedback type='invalid'>
+                  {formik.errors.baseDetails}
+                </Form.Control.Feedback>
+              </Col>
+            </Form.Group>
 
             {/* Brand Dropdown */}
             <Form.Group as={Row} className='mb-3' controlId='brand'>

@@ -429,3 +429,25 @@ export const savePromoCard = async formData => {
     throw new Error(error.response?.data?.error || 'Failed to save promo card');
   }
 };
+
+// =========================
+//  SHIPPING CONFIG APIs
+// =========================
+
+export const fetchShippingConfig = async () => {
+  try {
+    const response = await API.get('/shipping');
+    return response.data.config;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch shipping config');
+  }
+};
+
+export const saveShippingConfig = async (data) => {
+  try {
+    const response = await API.post('/shipping', data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to save config');
+  }
+};
