@@ -42,10 +42,10 @@ const ProductTabs = ({ product }) => {
 
                         {/* Bullet Points */}
                         <ul className="text-muted product-details-list">
-                            <li className="mb-2">Measurements : <strong>Height :</strong> 11.5 " , <strong>Width :</strong> 14 " , <strong>Depth :</strong> 3 "</li>
-                            <li className="mb-2">Compartments : 1</li>
-                            <li className="mb-2">Small Pocket Inside : 1</li>
-                            <li className="mb-2">Soft Base Leather with <strong>4 studs</strong></li>
+                            <li className="mb-2">Measurements : <strong>Height :</strong> {product.height} " , <strong>Width :</strong> {product.width} " , <strong>Depth :</strong> {product.depth} "</li>
+                            <li className="mb-2">Compartments : {product.compartments}</li>
+                            <li className="mb-2">Small Pocket Inside : {product.innerPocket}</li>
+                            <li className="mb-2">{product.baseDetails}</li>
                         </ul>
                     </div>
                 </Tab>
