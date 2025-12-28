@@ -15,7 +15,7 @@ import Banner from './Banner';
 import CustomShipping from './customShipping';
 import Promocard from './Promocard';
 import UserList from './UserList';
-
+import Order from './Order';
 // Example: get user from localStorage
 const getUser = () => {
   const storedUser = localStorage.getItem('user');
@@ -37,6 +37,7 @@ const AdminLayout = () => {
     { name: 'Shipping Policy', path: '/admin/shipping-policy' },
     { name: 'Banner', path: '/admin/banner' },
     { name: 'Promocard', path: '/admin/promocard' },
+    { name: 'Orders', path: '/admin/orders' },
     { name: 'Custom Shipping', path: '/admin/custom-shipping' },
     // { name: 'WishList', path: '/admin/wishlist' },
     // { name: 'Support', path: '/admin/support' }
@@ -55,7 +56,7 @@ const AdminLayout = () => {
       <div className='main-layout d-flex flex-grow-1 justify-content-center'>
         <div className='container-layout d-flex w-100'>
           {/* ===== Sidebar ===== */}
-          <div className='sidebar bg-light text-dark p-0 shadow'>
+          <div className='sidebar bg-light text-dark p-0 shadow '>
             <ul className='nav flex-row  gap-2 gap-md-0 flex-md-column justify-content-center p-3 p-md-0 justify-content-md-start'>
               {sidebarLinks.map((link, index) => (
                 <li key={index} className='nav-item mb-0 sidebar-item'>
@@ -90,6 +91,7 @@ const AdminLayout = () => {
                   <Route path='/banner' element={<Banner />} />
                   <Route path='/promocard' element={<Promocard />} />
                   <Route path='/user' element={<UserList />} />
+                  <Route path='/orders' element={<Order />} />
                   <Route path='/custom-shipping' element={<CustomShipping />} />
                 </>
               )}
@@ -132,6 +134,12 @@ const AdminLayout = () => {
           max-width: 250px;
           background-color: #f8f9fa;
           border-radius: 8px;
+        }
+        @media (min-width: 768px) {
+          .sidebar {
+            overflow-y: auto;
+            
+          }
         }
 
         .sidebar-item {

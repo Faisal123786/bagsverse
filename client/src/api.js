@@ -447,3 +447,40 @@ export const saveShippingConfig = async (data) => {
     throw new Error(error.response?.data?.error || 'Failed to save config');
   }
 };
+// =========================
+//  ADMIN ORDER APIs
+// =========================
+
+export const fetchAllOrders = async (page = 1) => {
+  try {
+    // Matches router.get('/', ...) in your backend order.js (Admin Access)
+    const response = await API.get(`/order?page=${page}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch orders');
+  }
+};
+export const updateOrderStatus = async (orderId, status) => {
+  try {
+    const response = await API.put(`/order/status/${orderId}`, { status });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to update status');
+  }
+};
+// =========================
+//  NOTIFICATION APIs
+// =========================
+
+// Mark order as read (for both Admin and User)
+export const markOrderAsRead = async (orderId, role) => {
+  try {
+    // We send the ID and the role so the backend knows which flag (userRead or adminRead) to update
+    const response = await API.put(`/order/read-status/${orderId}`, { role });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to mark notification as read", error);
+    // Even if API fails, we return true to update UI optimistically
+    return { success: true };
+  }
+};

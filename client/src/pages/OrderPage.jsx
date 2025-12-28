@@ -18,9 +18,10 @@ const OrderPage = () => {
     useEffect(() => {
         const loadOrders = async () => {
             setLoading(true);
+
             try {
                 const data = await fetchMyOrders();
-
+                console.log("Fetched Orders:", data); // Debugging line
                 // Transform Backend Data to UI Structure
                 const formattedOrders = data.map(order => ({
                     id: order._id,
@@ -211,9 +212,12 @@ const OrderPage = () => {
                                             {order.status === 'Delivered' ? (
                                                 <>
                                                     <Link to={`/order/${order.id}`} className="btn-outline-custom text-decoration-none">
-                                                        View Invoice
+                                                        View Details
                                                     </Link>
-                                                    <button className="btn-gold">Buy Again</button>
+                                                    <Link to={`/product`} className=" text-decoration-none">
+                                                        <button className="btn-gold">Buy Again</button>
+                                                    </Link>
+
                                                 </>
                                             ) : (
                                                 <>
