@@ -109,6 +109,12 @@ textarea {
   background-color: rgba(212, 184, 106, 0.2) !important;
 }
 
+// webkit scrollbar for notifications on scrollbar-turnovers class
+.scrollbar-turnovers::-webkit-scrollbar {
+  width: 0px;
+}
+
+
 /* --- Promo Card Styles --- */
 
 .promo-card {

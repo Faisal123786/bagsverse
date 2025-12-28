@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Routes, Route } from 'react-router-dom';
+import { RxHamburgerMenu } from 'react-icons/rx';
+import { IoMdClose } from 'react-icons/io';
 import Dashboard from './Dashboard';
 import { Navbar } from '../components';
 import Account from './Account';
@@ -24,6 +26,19 @@ const getUser = () => {
 
 const AdminLayout = () => {
   const user = getUser(); // { role: 'ROLE ADMIN' } or 'ROLE MERCHANT'
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setIsDrawerOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Define sidebar links based on role
   let sidebarLinks = [
@@ -53,11 +68,40 @@ const AdminLayout = () => {
     <div className='admin-layout d-flex flex-column vh-100'>
       <Navbar />
 
-      <div className='main-layout d-flex flex-grow-1 justify-content-center'>
+      <div className='main-layout d-flex flex-grow-1 justify-content-center position-relative'>
         <div className='container-layout d-flex w-100'>
+
+          {/* Mobile Toggle Button */}
+          {isMobile && (
+            <button
+              className="btn btn-light position-absolute top-0 start-0 m-3 shadow-sm border"
+              style={{ zIndex: 1000 }}
+              onClick={() => setIsDrawerOpen(true)}
+            >
+              <RxHamburgerMenu size={24} />
+            </button>
+          )}
+
+          {/* Overlay */}
+          {isMobile && isDrawerOpen && (
+            <div
+              className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"
+              style={{ zIndex: 1040 }}
+              onClick={() => setIsDrawerOpen(false)}
+            />
+          )}
+
           {/* ===== Sidebar ===== */}
-          <div className='sidebar bg-light text-dark p-0 shadow '>
-            <ul className='nav flex-row  gap-2 gap-md-0 flex-md-column justify-content-center p-3 p-md-0 justify-content-md-start'>
+          <div className={`sidebar bg-light text-dark p-0 shadow ${isMobile ? 'mobile-drawer' : ''} ${isDrawerOpen ? 'open' : ''}`}>
+            {isMobile && (
+              <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
+                <h5 className="mb-0">Menu</h5>
+                <button className="btn btn-sm btn-light" onClick={() => setIsDrawerOpen(false)}>
+                  <IoMdClose size={24} />
+                </button>
+              </div>
+            )}
+            <ul className='nav flex-column gap-2 gap-md-0 justify-content-start p-3 p-md-0'>
               {sidebarLinks.map((link, index) => (
                 <li key={index} className='nav-item mb-0 sidebar-item'>
                   <NavLink
@@ -66,6 +110,7 @@ const AdminLayout = () => {
                     className={({ isActive }) =>
                       `nav-link ${isActive ? 'active-link' : ''}`
                     }
+                    onClick={() => isMobile && setIsDrawerOpen(false)}
                   >
                     {link.name}
                   </NavLink>
@@ -75,7 +120,7 @@ const AdminLayout = () => {
           </div>
 
           {/* ===== Content ===== */}
-          <div className='content flex-grow-1 p-3'>
+          <div className='content flex-grow-1 p-3' style={isMobile ? { marginTop: '50px' } : {}}>
             <Routes>
               {user?.role === 'ROLE ADMIN' && (
                 <>
@@ -130,8 +175,8 @@ const AdminLayout = () => {
 
         .sidebar {
           flex: 0 0 0;
-          min-width: 180px;
-          max-width: 250px;
+          min-width: 200px;
+          max-width: 260px;
           background-color: #f8f9fa;
           border-radius: 8px;
         }
@@ -140,8 +185,11 @@ const AdminLayout = () => {
             overflow-y: auto;
             
           }
+          .sidebar::-webkit-scrollbar {
+            width:0px;
+          }
         }
-
+        
         .sidebar-item {
           background-color: #fff;
           border: 1px solid #dee2e6;
@@ -176,6 +224,10 @@ const AdminLayout = () => {
           min-width: 0;
         }
 
+        .content::-webkit-scrollbar {
+          width: 0px;
+        }
+
         @media (max-width: 1200px) {
           .container-layout {
             max-width: 100%;
@@ -188,9 +240,27 @@ const AdminLayout = () => {
           }
 
           .sidebar {
-            width: 100%;
-            max-width: 100%;
-            margin-bottom: 15px;
+            display: none;
+          }
+
+          .sidebar.mobile-drawer {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            max-width: 80vw;
+            z-index: 1050;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            margin: 0;
+            border-radius: 0;
+            overflow-y: auto;
+          }
+
+          .sidebar.mobile-drawer.open {
+            transform: translateX(0);
           }
 
           .content {

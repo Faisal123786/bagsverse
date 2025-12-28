@@ -15,6 +15,7 @@ const Orders = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [showModal, setShowModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
 
     // Ref to scroll to the highlighted item
     const rowRefs = useRef({});
@@ -55,7 +56,7 @@ const Orders = () => {
 
     useEffect(() => {
         loadOrders();
-    }, [currentPage]);
+    }, [currentPage, highlightId]);
 
     // --- SCROLL TO HIGHLIGHTED ITEM ---
     useEffect(() => {
@@ -97,10 +98,30 @@ const Orders = () => {
         setShowModal(true);
     };
 
+    const filteredOrders = orders.filter(order => {
+        if (!searchTerm) return true;
+        const term = searchTerm.toLowerCase();
+        const orderId = order._id.toLowerCase();
+        const displayId = order._id.substring(0, 6).toLowerCase();
+        const date = formatDate(order.created).toLowerCase();
+        const status = order.status.toLowerCase();
+
+        return orderId.includes(term) || displayId.includes(term) || date.includes(term) || status.includes(term);
+    });
+
     return (
         <div className="admin-container">
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex flex-column gap-3 gap-md-0 justify-content-start flex-md-row justify-content-md-between align-items-md-center mb-4">
                 <h2 className="fw-bold mb-0">Orders</h2>
+                <div style={{ minWidth: '250px' }} className='align-self-end'>
+                    <Form.Control
+                        type="text"
+                        placeholder="Search ID, Date, Status..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="shadow-sm"
+                    />
+                </div>
             </div>
 
             <Card className="border-0 shadow-sm rounded-3">
@@ -131,8 +152,8 @@ const Orders = () => {
                                             <td className="text-end pe-4"><Skeleton circle width={30} height={30} /></td>
                                         </tr>
                                     ))
-                                ) : orders.length > 0 ? (
-                                    orders.map((order) => (
+                                ) : filteredOrders.length > 0 ? (
+                                    filteredOrders.map((order) => (
                                         <tr
                                             key={order._id}
                                             ref={el => rowRefs.current[order._id] = el} // Ref for scrolling

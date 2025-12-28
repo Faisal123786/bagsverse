@@ -12,7 +12,7 @@ const store = require('../../utils/store');
 const { ROLES, CART_ITEM_STATUS } = require('../../constants');
 
 router.post('/add', auth, async (req, res) => {
-  console.log("Received Order Request:", req.body); // Debugging line
+
   try {
     const cart = req.body.cartId;
     const total = req.body.total;
@@ -148,7 +148,6 @@ router.get('/', auth, async (req, res) => {
 
     const count = await Order.countDocuments();
     const orders = store.formatOrders(ordersDoc);
-    console.log("Fetched Orders:", orders); // Debugging line
     res.status(200).json({
       orders,
       totalPages: Math.ceil(count / limit),
@@ -250,7 +249,6 @@ router.get('/:orderId', auth, async (req, res) => {
     };
 
     order = store.caculateTaxAmount(order);
-    console.log("Order Data:", order);
     res.status(200).json({
       order
     });

@@ -216,7 +216,7 @@ const Navbar = () => {
                     ></div>
 
                     {/* The Dropdown */}
-                    <div className="position-absolute bg-white shadow-lg rounded-3 border" style={{ top: '100%', right: '0', width: '320px', zIndex: 1100, maxHeight: '200px', overflowY: 'auto' }}>
+                    <div className="position-absolute bg-white shadow-lg rounded-3 border scrollbar-turnovers" style={{ top: '100%', left: '50%', transform: 'translateX(-50%)', width: '270px', zIndex: 1100, maxHeight: '200px', overflowY: 'auto' }}>
                       <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
                         <h6 className="mb-0 fw-bold">Notifications</h6>
                         <small className="text-muted">{notifications.length} new</small>
@@ -228,6 +228,7 @@ const Navbar = () => {
                           {notifications.map((order) => {
                             const customerName = order.user?.firstName || (order.shippingAddress ? order.shippingAddress.firstName : "Customer");
                             const email = order.user?.email || (order.shippingAddress ? order.shippingAddress.email : "");
+                            const status = order.status || "Pending";
                             const date = new Date(order.created).toLocaleDateString();
 
                             return (
@@ -242,9 +243,9 @@ const Navbar = () => {
                                   <small className="text-muted" style={{ fontSize: '0.7rem' }}>{date}</small>
                                 </div>
                                 <p className="mb-0 small text-dark">
-                                  New order placed by <strong>{customerName}</strong>
+                                  order by <strong>{customerName}</strong>
                                 </p>
-                                {email && <small className="text-muted d-block">{email}</small>}
+                                {status && <small className="text-muted d-block">{status}</small>}
                                 <div className="mt-1 small fw-bold text-primary">Rs {order.total.toLocaleString()}</div>
                               </li>
                             );
@@ -263,7 +264,7 @@ const Navbar = () => {
                 <FiUser />
               </button>
               {userDropdown && (
-                <ul className='dropdown-menu show shadow' style={{ position: 'absolute', top: '100%', right: 0, minWidth: '180px', zIndex: 1060 }}>
+                <ul className='dropdown-menu show shadow' style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', minWidth: '200px', zIndex: 1060 }}>
                   {user ? (
                     <>
                       <li className='dropdown-item'>Hi, {user.firstName}</li>
