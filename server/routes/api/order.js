@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Mongoose = require('mongoose');
+const sendAdminNotification = require('../../utils/telegram');
 
 // Bring in Models & Utils
 const Order = require('../../models/order');
@@ -12,7 +13,6 @@ const store = require('../../utils/store');
 const { ROLES, CART_ITEM_STATUS } = require('../../constants');
 
 router.post('/add', auth, async (req, res) => {
-
   try {
     const cart = req.body.cartId;
     const total = req.body.total;
@@ -44,6 +44,8 @@ router.post('/add', auth, async (req, res) => {
     };
 
     // await mailgun.sendEmail(order.user.email, 'order-confirmation', newOrder);
+    const message = `🔔 <b>Naya Order Aaya Hai!</b>\n\nTotal Amount: ₹3\nUser: faisal`;
+    sendAdminNotification(message);
 
     res.status(200).json({
       success: true,
@@ -317,8 +319,9 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
         return res.status(200).json({
           success: true,
           orderCancelled: true,
-          message: `${req.user.role === ROLES.Admin ? 'Order' : 'Your order'
-            } has been cancelled successfully`
+          message: `${
+            req.user.role === ROLES.Admin ? 'Order' : 'Your order'
+          } has been cancelled successfully`
         });
       }
 
