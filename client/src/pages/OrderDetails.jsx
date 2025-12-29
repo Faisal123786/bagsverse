@@ -1,27 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-
-import { fetchOrderById } from "../api";
+import { fetchOrderById, fetchShippingConfig } from "../api"; // Import Shipping Config API
 import Skeleton from "react-loading-skeleton";
 
 const OrderDetails = () => {
     const { id } = useParams();
     const [order, setOrder] = useState(null);
+    const [shippingConfig, setShippingConfig] = useState(null); // State for config
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const getOrder = async () => {
+        const getData = async () => {
             setLoading(true);
             try {
-                const data = await fetchOrderById(id);
-                setOrder(data);
+                // Fetch Order and Shipping Config in parallel
+                const [orderData, configData] = await Promise.all([
+                    fetchOrderById(id),
+                    fetchShippingConfig()
+                ]);
+
+                setOrder(orderData);
+                console.log("Order Data:", orderData); // Debugging line
+                setShippingConfig(configData);
+                console.log("shippingConfig:", configData.shippingCost); // Debugging line
             } catch (error) {
-                console.error("Failed to load order", error);
+                console.error("Failed to load data", error);
             } finally {
                 setLoading(false);
             }
         };
-        getOrder();
+        getData();
     }, [id]);
 
     if (loading) {
@@ -49,6 +57,16 @@ const OrderDetails = () => {
         );
     }
 
+    // --- CALCULATIONS ---
+    // 1. Calculate Subtotal (Sum of all item totalPrices)
+    const itemsTotal = order.products?.reduce((acc, item) => acc + (item.totalPrice || (item.price * item.quantity)), 0) || 0;
+
+    // 3. Check if it was free shipping (Cost approx 0)
+
+    const TotalwithShipping = itemsTotal + (shippingConfig.shippingCost === 0 ? 0 : shippingConfig.shippingCost);
+    // --- ADDRESS ---
+    const address = order.shippingAddress || {};
+
     return (
         <>
 
@@ -71,18 +89,18 @@ const OrderDetails = () => {
                     <div className="col-lg-8">
                         <div className="detail-card">
                             <h5>Items in your order</h5>
-                            {order.products.map((item, index) => (
+                            {order.products?.map((item, index) => (
                                 <div key={index} className="item-row">
                                     <img
-                                        src={item.product?.imageUrl || item.product?.images?.[0]?.imageUrl || "https://via.placeholder.com/80?text=No+Image"}
-                                        alt={item.product?.name}
+                                        src={item.product?.imageUrl || (item.product?.images && item.product.images[0]?.imageUrl) || "https://via.placeholder.com/80?text=No+Image"}
+                                        alt={item.product?.name || "Product"}
                                     />
                                     <div className="flex-grow-1">
-                                        <h6 className="fw-bold mb-1">{item.product?.name}</h6>
+                                        <h6 className="fw-bold mb-1">{item.product?.name || "Unknown Product"}</h6>
                                         <p className="text-muted small mb-0">Qty: {item.quantity}</p>
                                     </div>
                                     <div className="fw-bold">
-                                        Rs {item.totalPrice}
+                                        Rs {(item.totalPrice || (item.price * item.quantity)).toLocaleString()}
                                     </div>
                                 </div>
                             ))}
@@ -94,14 +112,19 @@ const OrderDetails = () => {
                                 <div className="detail-card">
                                     <h5>Payment</h5>
                                     <p className="mb-1">Payment Method: <strong>Cash on Delivery</strong></p>
-                                    <p className="mb-0">Payment Status: <span className="badge bg-warning text-dark">Pending</span></p>
+                                    <p className="mb-0">
+                                        Payment Status:
+                                        <span className={`badge ms-2 ${order.status === 'Delivered' ? 'bg-success' : 'bg-warning text-dark'}`}>
+                                            {order.status === 'Delivered' ? 'Paid' : 'Pending'}
+                                        </span>
+                                    </p>
                                 </div>
                             </div>
                             <div className="col-md-6">
                                 <div className="detail-card">
-                                    <h5>Shipping</h5>
+                                    <h5>Shipping Status</h5>
                                     <p className="mb-1">Standard Shipping</p>
-                                    <p className="mb-0">Status: <strong className="text-primary">{order.status || 'Processing'}</strong></p>
+                                    <p className="mb-0">Current Status: <strong className="text-primary">{order.status || 'Processing'}</strong></p>
                                 </div>
                             </div>
                         </div>
@@ -113,12 +136,10 @@ const OrderDetails = () => {
                         {/* Address */}
                         <div className="detail-card">
                             <h5>Shipping Address</h5>
-                            <p className="fw-bold mb-1">{order.user?.firstName || "Customer"} {order.user?.lastName}</p>
-                            {/* Note: If address isn't saved in Order object in backend, this might be empty */}
-                            <p className="text-muted small mb-0">
-                                {order.user?.email}<br />
-                                (Address data depends on backend response)
-                            </p>
+                            <p className="fw-bold mb-1">{address.firstName} {address.lastName}</p>
+                            <p className="text-muted small mb-1">{address.address}</p>
+                            <p className="text-muted small mb-1">{address.city} {address.zip}</p>
+                            <p className="text-muted small mb-0">{address.phone}</p>
                         </div>
 
                         {/* Cost Summary */}
@@ -126,16 +147,20 @@ const OrderDetails = () => {
                             <h5>Order Summary</h5>
                             <div className="d-flex justify-content-between mb-2 text-muted">
                                 <span>Subtotal</span>
-                                <span>Rs {order.total}</span>
+                                <span>Rs {itemsTotal.toLocaleString()}</span>
                             </div>
                             <div className="d-flex justify-content-between mb-2 text-muted">
                                 <span>Shipping</span>
-                                <span>Rs 0 (Free)</span>
+                                {shippingConfig.shippingCost === 0 ? (
+                                    <span className="text-success fw-bold">Free</span>
+                                ) : (
+                                    <span>Rs {shippingConfig.shippingCost}</span>
+                                )}
                             </div>
                             <hr />
                             <div className="d-flex justify-content-between fw-bold fs-5">
                                 <span>Total</span>
-                                <span>Rs {order.total}</span>
+                                <span>Rs {TotalwithShipping.toLocaleString()}</span>
                             </div>
                         </div>
 

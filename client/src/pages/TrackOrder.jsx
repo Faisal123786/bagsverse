@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-
+import { Footer, Navbar } from "../components";
 import { fetchOrderById } from "../api";
 
 const TrackOrder = () => {
     const { id } = useParams();
     const [status, setStatus] = useState("Processing");
     const [loading, setLoading] = useState(true);
+    const [orderId, setOrderId] = useState("");
 
     // Status Steps Definition
+    // Ensure these match the values your backend returns or map them
     const steps = ["Placed", "Processing", "Shipped", "Delivered"];
 
     useEffect(() => {
@@ -16,9 +18,14 @@ const TrackOrder = () => {
             setLoading(true);
             try {
                 const data = await fetchOrderById(id);
-                // Normalize status (Backend might return 'Not processed', we map it to 'Placed' or 'Processing')
+                setOrderId(data._id);
+
+                // 1. Normalize status
                 let currentStatus = data.status || "Processing";
+
+                // Map 'Not processed' to 'Placed' for better UX if needed
                 if (currentStatus === "Not processed") currentStatus = "Placed";
+
                 setStatus(currentStatus);
             } catch (error) {
                 console.error("Error", error);
@@ -31,6 +38,9 @@ const TrackOrder = () => {
 
     // Helper to determine step state (completed, active, or pending)
     const getStepClass = (stepName) => {
+        // If status is Cancelled, show everything as gray/inactive
+        if (status === 'Cancelled') return "cancelled";
+
         const currentIndex = steps.indexOf(status);
         const stepIndex = steps.indexOf(stepName);
 
@@ -48,8 +58,16 @@ const TrackOrder = () => {
 
                         <div className="d-flex justify-content-between align-items-center mb-4">
                             <h2 className="fw-bold">Track Order</h2>
-                            <span className="text-muted">#{id}</span>
+                            <span className="text-muted">#{orderId}</span>
                         </div>
+
+                        {/* CANCELLED MESSAGE */}
+                        {status === 'Cancelled' && (
+                            <div className="alert alert-danger text-center mb-4">
+                                <i className="fa fa-times-circle me-2"></i>
+                                This order has been cancelled.
+                            </div>
+                        )}
 
                         <div className="tracking-wrapper">
                             {loading ? (

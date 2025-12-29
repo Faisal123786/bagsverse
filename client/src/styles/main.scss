@@ -93,6 +93,28 @@ textarea {
   }
 }
 
+@media(max-width: 410px) {
+  .BagVerseimage {
+    width: 80px !important;
+  }
+
+  .nav-icon {
+    font-size: 1.5rem !important;
+    padding: 5px 10px !important;
+  }
+}
+
+.bg-highlight,
+.bg-highlight>td {
+  background-color: rgba(212, 184, 106, 0.2) !important;
+}
+
+// webkit scrollbar for notifications on scrollbar-turnovers class
+.scrollbar-turnovers::-webkit-scrollbar {
+  width: 0px;
+}
+
+
 /* --- Promo Card Styles --- */
 
 .promo-card {

@@ -12,6 +12,7 @@ const store = require('../../utils/store');
 const { ROLES, CART_ITEM_STATUS } = require('../../constants');
 
 router.post('/add', auth, async (req, res) => {
+
   try {
     const cart = req.body.cartId;
     const total = req.body.total;
@@ -20,7 +21,9 @@ router.post('/add', auth, async (req, res) => {
     const order = new Order({
       cart,
       user,
-      total
+      total,
+      shippingAddress: req.body.shippingAddress,
+      userRead: true
     });
 
     const orderDoc = await order.save();
@@ -40,7 +43,7 @@ router.post('/add', auth, async (req, res) => {
       products: cartDoc.products
     };
 
-    await mailgun.sendEmail(order.user.email, 'order-confirmation', newOrder);
+    // await mailgun.sendEmail(order.user.email, 'order-confirmation', newOrder);
 
     res.status(200).json({
       success: true,
@@ -145,7 +148,6 @@ router.get('/', auth, async (req, res) => {
 
     const count = await Order.countDocuments();
     const orders = store.formatOrders(ordersDoc);
-
     res.status(200).json({
       orders,
       totalPages: Math.ceil(count / limit),
@@ -236,6 +238,10 @@ router.get('/:orderId', auth, async (req, res) => {
     let order = {
       _id: orderDoc._id,
       total: orderDoc.total,
+      shippingAddress: orderDoc.shippingAddress,
+      status: orderDoc.status,
+      userRead: orderDoc.userRead,
+      adminRead: orderDoc.adminRead,
       created: orderDoc.created,
       totalTax: 0,
       products: orderDoc?.cart?.products,
@@ -243,7 +249,6 @@ router.get('/:orderId', auth, async (req, res) => {
     };
 
     order = store.caculateTaxAmount(order);
-
     res.status(200).json({
       order
     });
@@ -312,9 +317,8 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
         return res.status(200).json({
           success: true,
           orderCancelled: true,
-          message: `${
-            req.user.role === ROLES.Admin ? 'Order' : 'Your order'
-          } has been cancelled successfully`
+          message: `${req.user.role === ROLES.Admin ? 'Order' : 'Your order'
+            } has been cancelled successfully`
         });
       }
 
@@ -347,5 +351,48 @@ const increaseQuantity = products => {
 
   Product.bulkWrite(bulkOptions);
 };
+// update order status apirole
+router.put('/status/:orderId', auth, async (req, res) => {
+  if (req.user.role !== ROLES.Admin) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  try {
+    const { status } = req.body;
+    // update user read status to false when admin updates order status
+    await Order.updateOne({ _id: req.params.orderId }, { userRead: false });
+    await Order.updateOne({ _id: req.params.orderId }, { status });
+    res.status(200).json({ success: true });
+  } catch (error) {
+    res.status(400).json({ error: 'Failed to update status' });
+  }
+});
+// update read status api
+router.put('/read-status/:orderId', auth, async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const userRole = req.user.role; // Get role securely from token
 
+    let update = {};
+
+    // If Admin is viewing, mark adminRead as true
+    if (userRole === ROLES.Admin) {
+      update = { adminRead: true };
+    }
+    // If User is viewing, mark userRead as true
+    else {
+      update = { userRead: true };
+    }
+
+    await Order.updateOne({ _id: orderId }, update);
+
+    res.status(200).json({
+      success: true,
+      message: 'Notification marked as read'
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: 'Your request could not be processed. Please try again.'
+    });
+  }
+});
 module.exports = router;

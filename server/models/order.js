@@ -15,6 +15,28 @@ const OrderSchema = new Schema({
     type: Number,
     default: 0
   },
+  shippingAddress: {
+    firstName: String,
+    lastName: String,
+    email: String,
+    address: String,
+    city: String,
+    phone: String,
+    zip: String
+  },
+  status: {
+    type: String,
+    default: 'Processing',
+    enum: ['Not processed', 'Processing', 'Shipped', 'Delivered', 'Cancelled']
+  },
+  userRead: {
+    type: Boolean,
+    default: false
+  },
+  adminRead: {
+    type: Boolean,
+    default: false
+  },
   updated: Date,
   created: {
     type: Date,
