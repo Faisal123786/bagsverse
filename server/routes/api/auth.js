@@ -314,11 +314,18 @@ router.get(
     const payload = {
       id: req.user.id
     };
-
-    // TODO find another way to send the token to frontend
     const token = jwt.sign(payload, secret, { expiresIn: tokenLife });
     const jwtToken = `Bearer ${token}`;
-    res.redirect(`${keys.app.clientURL}/auth/success?token=${jwtToken}`);
+
+    const user = {
+        id: req.user.id,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        email: req.user.email,
+        role: req.user.role
+    };
+    const userString = Buffer.from(JSON.stringify(user)).toString('base64');
+    res.redirect(`${keys.app.clientURL}/auth/success?token=${jwtToken}&user=${userString}`);
   }
 );
 

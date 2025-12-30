@@ -4,7 +4,6 @@ const sendAdminNotification = async text => {
   const token = process.env.TELEGRAM_TOKEN;
   const chatId = process.env.MY_TELEGRAM_CHAT_ID;
 
-  // Check karein tokens hain ya nahi
   if (!token || !chatId) {
     return console.log('Telegram credentials missing in .env');
   }
@@ -18,12 +17,11 @@ const sendAdminNotification = async text => {
         parse_mode: 'HTML'
       },
       {
-        timeout: 3000 // Agar 3 seconds mein connect na ho toh cancel kar do
+        timeout: 3000 
       }
     );
     console.log('✅ Telegram notification sent!');
   } catch (error) {
-    // Sirf console mein error dikhayein, user ka order na rokein
     console.error('❌ Telegram Blocked/Timeout:', error.message);
   }
 };

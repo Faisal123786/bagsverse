@@ -54,6 +54,10 @@ const Login = () => {
     }
   });
 
+  const handleGoogleLogin = () => {
+    window.location.href = "https://www.bagsverse.com/api/auth/google";
+  };
+
   return (
     <>
       <Toaster position='top-right' />
@@ -127,6 +131,24 @@ const Login = () => {
                 </button>
               </div>
             </form>
+            <div className="text-center my-3">
+              <span className="text-muted">OR</span>
+            </div>
+
+            <div className="text-center">
+              <button
+                type="button"
+                className="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center"
+                onClick={handleGoogleLogin}
+              >
+                <img
+                  src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                  alt="Google"
+                  style={{ width: "20px", marginRight: "10px" }}
+                />
+                Login with Google
+              </button>
+            </div>
           </div>
         </div>
       </div>

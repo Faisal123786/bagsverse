@@ -27,7 +27,11 @@ router.post('/add', auth, async (req, res) => {
     });
 
     const orderDoc = await order.save();
-
+    const populatedOrder = await Order.findById(orderDoc._id)
+      .populate({
+        path: 'user',
+        select: 'firstName lastName email'
+      });
     const cartDoc = await Cart.findById(orderDoc.cart._id).populate({
       path: 'products.product',
       populate: {
@@ -38,15 +42,35 @@ router.post('/add', auth, async (req, res) => {
     const newOrder = {
       _id: orderDoc._id,
       created: orderDoc.created,
-      user: orderDoc.user,
+     user: populatedOrder.user,
       total: orderDoc.total,
       products: cartDoc.products
     };
+    await mailgun.sendEmail(order.user.email, 'order-confirmation', newOrder);
+    const productList = newOrder.products.map((item, index) => {
+      return `   ${index + 1}. ${item.product.name} × ${item.quantity}`;
+    }).join('\n');
+    const message = `
+                  📦 <b>NEW INCOMING ORDER</b>
+                  ───────────────────────
+                  🆔 <b>Order Reference:</b> <code>#${newOrder._id}</code>
+                  👤 <b>Customer Name:</b> ${newOrder.user.firstName} ${newOrder.user.lastName || ''}
+                  📧 <b>Email:</b> ${newOrder.user.email}
 
-    // await mailgun.sendEmail(order.user.email, 'order-confirmation', newOrder);
-    const message = `🔔 <b>Naya Order Aaya Hai!</b>\n\nTotal Amount: ₹3\nUser: faisal`;
+                  💰 <b>Order Summary:</b>
+                  ━━━━━━━━━━━━━━━━━━━━━━━
+                  <b>Total Payable:</b> ₹${newOrder.total.toLocaleString()}
+                  <b>Payment Status:</b> Pending
+
+                  🛒 <b>Product Details:</b>
+                  ${productList}
+
+                  📅 <b>Timestamp:</b> ${new Date(newOrder.created).toLocaleString('en-IN', { timeZone: 'Asia/Karachi' })}
+                  ───────────────────────
+                  ✅ <i>Please process this order in the admin dashboard.</i>
+                      `;
+
     sendAdminNotification(message);
-
     res.status(200).json({
       success: true,
       message: `Your order has been placed successfully!`,

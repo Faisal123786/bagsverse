@@ -32,6 +32,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 import AdminLayout from './admin';
 import WhatsappButton from './components/WhatsappButton';
+import GoogleAuthSuccess from './pages/GoogleAuthSuccess';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -55,6 +56,7 @@ root.render(
               </PublicRoute>
             }
           />
+          <Route path="/auth/success" element={<GoogleAuthSuccess />} />
 
           <Route path='/' element={<Layout />}>
             <Route
