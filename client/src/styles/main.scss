@@ -93,7 +93,7 @@ textarea {
   }
 }
 
-@media(max-width: 410px) {
+@media (max-width: 410px) {
   .BagVerseimage {
     width: 80px !important;
   }
@@ -105,7 +105,7 @@ textarea {
 }
 
 .bg-highlight,
-.bg-highlight>td {
+.bg-highlight > td {
   background-color: rgba(212, 184, 106, 0.2) !important;
 }
 
@@ -232,8 +232,6 @@ textarea {
   border-radius: 2px;
 }
 
-
-
 /* --- Trending Products Card --- */
 .product-card {
   background: #fff;
@@ -289,8 +287,6 @@ textarea {
 .no-focus:focus {
   box-shadow: none !important;
 }
-
-
 
 /* --- Custom Accordion Styles --- */
 .accordion-button {
@@ -594,8 +590,6 @@ textarea {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-
-
 /* =========================================
    2. DUAL RANGE SLIDER CSS
    ========================================= */
@@ -698,8 +692,6 @@ textarea {
 .thumb--right {
   z-index: 5;
 }
-
-
 
 /* =========================================
    3. OTHER ELEMENTS (Sidebar, Pagination)
@@ -822,7 +814,6 @@ textarea {
   }
 }
 
-
 /* --- Policy & Content Pages --- */
 .policy-wrapper {
   max-width: 900px;
@@ -898,7 +889,8 @@ textarea {
 
 .sell-hero {
   position: relative;
-  background: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600&auto=format&fit=crop') no-repeat center center;
+  background: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600&auto=format&fit=crop')
+    no-repeat center center;
   background-size: cover;
   height: 350px;
   display: flex;
@@ -909,7 +901,7 @@ textarea {
   margin-bottom: 3rem;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -1141,7 +1133,6 @@ textarea {
     outline: none;
   }
 }
-
 
 /* --- Account Pages --- */
 
@@ -1447,7 +1438,7 @@ textarea {
 
   /* Vertical Line */
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     left: 15px;
     /* Center of the dot */

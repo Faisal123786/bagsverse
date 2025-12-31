@@ -295,7 +295,7 @@ const Navbar = () => {
             <div className='position-relative'>
               <button className='btn nav-icon' style={{ border: 'none', background: 'transparent', fontSize: '2rem', paddingTop: '0px' }} onClick={() => setCartSidebar(true)}>
                 <RiShoppingCartLine />
-                {cartItems.length > 0 && <span className='position-absolute translate-middle badge rounded-pill py-1 bg-danger' style={{ fontSize: '10px', top: '2px', left: '85%' }}>{cartItems.length}</span>}
+                {cartItems.length > 0 && <span className='position-absolute translate-middle badge rounded-pill py-1' style={{ fontSize: '10px', top: '2px', left: '85%', backgroundColor: '#d4b86a' }}>{cartItems.length}</span>}
               </button>
             </div>
             {isMobile && (
@@ -309,12 +309,12 @@ const Navbar = () => {
 
       {/* DESKTOP CATEGORIES BAR */}
       {!isMobile && (
-        <div className='bg-dark text-white sticky-top' style={{ top: '72px', zIndex: 1020 }}>
+        <div className='bg-dark text-white sticky-top' style={{ top: '72px', zIndex: 1020, height: '52px' }}>
           <div className='container py-1'>
-            <ul className='d-flex list-unstyled gap-4 mb-0 py-2 justify-content-center flex-wrap'>
+            <ul className='d-flex list-unstyled gap-4 mb-0 justify-content-center flex-wrap p-0'>
               {categories.map((item, index) => (
                 <NavLink style={{ textDecoration: "none", color: "white" }} key={index} to="/product" state={{ category: item.name }} className={() => location.pathname === '/product' && location.state?.category === item.name ? "active-links" : ""}>
-                  <li className="cursor-pointer">{item.name}</li>
+                  <li className="cursor-pointer p-2 px-3 ">{item.name}</li>
                 </NavLink>
               ))}
             </ul>

@@ -55,7 +55,7 @@ const AdminLayout = () => {
     { name: 'Promocard', path: '/admin/promocard' },
     { name: 'Orders', path: '/admin/orders' },
     { name: 'Custom Shipping', path: '/admin/custom-shipping' },
-    { name: 'Bank Details', path: '/admin/bank-details' },
+    { name: 'Bank Details', path: '/admin/bank-details' }
     // { name: 'WishList', path: '/admin/wishlist' },
     // { name: 'Support', path: '/admin/support' }
   ];
@@ -94,9 +94,28 @@ const AdminLayout = () => {
 
           {/* ===== Sidebar ===== */}
           <div
-            className={`sidebar bg-light text-dark p-0 shadow ${isMobile ? 'mobile-drawer' : ''
-              } ${isDrawerOpen ? 'open' : ''}`}
+            className={`sidebar bg-light text-dark p-0 shadow ${
+              isMobile ? 'mobile-drawer' : ''
+            } ${isDrawerOpen ? 'open' : ''}`}
+            style={{
+              border: '1px solid #d4b86a',
+              position: 'relative',
+              zIndex: 1050
+            }}
           >
+            {!isMobile && (
+              <div
+                className='p-3 py-3 bg-dark text-white fw-bold'
+                style={{
+                  position: 'sticky',
+                  top: '0px',
+                  left: '0px',
+                  right: '0px'
+                }}
+              >
+                Bagsverse
+              </div>
+            )}
             {isMobile && (
               <div className='d-flex justify-content-between align-items-center p-3 border-bottom'>
                 <h5 className='mb-0'>Menu</h5>
@@ -223,9 +242,9 @@ const AdminLayout = () => {
         }
 
         .nav-link.active-link {
-          background-color: #343a40;
+          background-color: #d4b86a;
           color: #fff !important;
-          border-radius: 6px;
+          border-radius: 0px;
         }
 
         .content {
