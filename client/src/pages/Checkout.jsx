@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Footer, Navbar } from "../components";
-import { useSelector } from "react-redux";
+import { Collapse } from 'react-bootstrap';
+
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { placeOrder, syncCartToDB, fetchShippingConfig } from "../api"; // Import fetchShippingConfig
+import { placeOrder, syncCartToDB, fetchShippingConfig, fetchBanks } from "../api"; // Added fetchBanks
 import toast from "react-hot-toast";
 
 const Checkout = () => {
@@ -21,23 +22,23 @@ const Checkout = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('COD'); // 'COD' or 'Bank Deposit'
+  const [bankList, setBankList] = useState([]); // Store fetched banks
 
   // --- SHIPPING STATE ---
   const [shippingCost, setShippingCost] = useState(0);
   const [isFreeShipping, setIsFreeShipping] = useState(false);
 
   // --- CALCULATE SUBTOTAL ---
-  // We calculate this first so we can use it in the shipping logic
   const subtotal = state.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
-  // --- FETCH SHIPPING CONFIG & CALCULATE COST ---
+  // --- FETCH SHIPPING & BANKS ---
   useEffect(() => {
-    const calculateShipping = async () => {
+    const loadData = async () => {
       try {
+        // 1. Fetch Shipping Config
         const config = await fetchShippingConfig();
-
         if (config) {
-          // Logic: Check Threshold
           if (config.isThresholdActive && subtotal >= config.thresholdValue) {
             setShippingCost(0);
             setIsFreeShipping(true);
@@ -46,28 +47,28 @@ const Checkout = () => {
             setIsFreeShipping(false);
           }
         }
+
+        // 2. Fetch Banks (For Bank Deposit option)
+        const banks = await fetchBanks();
+        setBankList(banks || []);
+
       } catch (error) {
-        console.error("Failed to load shipping config, defaulting to standard.", error);
-        setShippingCost(250); // Fallback default
+        console.error("Error loading checkout data", error);
+        setShippingCost(250); // Fallback
       }
     };
 
-    calculateShipping();
-  }, [subtotal]); // Recalculate if cart total changes
+    loadData();
+  }, [subtotal]);
 
-  // Final Total
   const totalAmount = subtotal + shippingCost;
   const totalItems = state.reduce((acc, item) => acc + item.qty, 0);
 
-  // --- HANDLE INPUT CHANGE ---
+  // --- HANDLERS ---
   const handleChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // --- HANDLE PLACE ORDER API ---
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -81,19 +82,18 @@ const Checkout = () => {
         totalPrice: item.price * item.qty
       }));
 
-      // 2. Sync Cart to DB
+      // 2. Sync Cart
       const cartResponse = await syncCartToDB({ products: productsPayload });
 
       if (!cartResponse.success || !cartResponse.cartId) {
         throw new Error("Failed to generate Cart ID");
       }
 
-      const cartId = cartResponse.cartId;
-
       // 3. Place Order
       const orderPayload = {
-        cartId: cartId,
-        total: totalAmount, // Send the dynamic total
+        cartId: cartResponse.cartId,
+        total: totalAmount,
+        paymentMethod: paymentMethod, // Send selected method
         shippingAddress: {
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -103,16 +103,14 @@ const Checkout = () => {
           phone: formData.phone,
           zip: formData.zip
         }
-        // You can also send the shipping cost separately if your backend supports it
-        // shippingCost: shippingCost 
       };
-      console.log("Order Payload:", orderPayload); // Debugging line
+
+      console.log("Order Payload:", orderPayload);
       await placeOrder(orderPayload);
 
       toast.success("Order Placed Successfully!");
-
-      localStorage.removeItem("cart"); // Clear local storage
-      // dispatch({ type: "CLEAR_CART" }); // If you have a clear action
+      localStorage.removeItem("cart");
+      // dispatch({ type: "CLEAR_CART" }); 
 
       navigate("/order-placed");
 
@@ -127,133 +125,152 @@ const Checkout = () => {
 
   return (
     <>
+
       <div className="container my-3 py-3">
         <h1 className="text-center display-6 fw-bold">Checkout</h1>
         <hr />
+
         {state.length ? (
-          <div className="container py-5">
+          <div className="container py-2">
             <div className="row my-4">
 
               {/* --- LEFT SIDE: BILLING FORM --- */}
-              <div className="col-md-7 col-lg-8">
-                <div className="checkout-card mb-4">
-                  <h4 className="mb-4 fw-bold">Billing Address</h4>
+              <div className="col-md-7 col-lg-8 bg-">
+                <div className="checkout-card mb-4   ">
+                  <h4 className="mb-3 fw-bold">Billing Address</h4>
 
-                  <form className="needs-validation" onSubmit={handlePlaceOrder}>
-                    <div className="row g-3">
+                  <form className="needs-validation  " onSubmit={handlePlaceOrder}>
+                    <div className="row g-2">
                       <div className="col-sm-6">
-                        <label className="form-label">First name</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="firstName"
-                          name="firstName"
-                          value={formData.firstName}
-                          onChange={handleChange}
-                          required
-                        />
+                        {/* <label className="form-label">First name</label> */}
+                        <input type="text" className="form-control" name="firstName" value={formData.firstName} onChange={handleChange} required placeholder="First name" />
                       </div>
-
                       <div className="col-sm-6">
-                        <label className="form-label">Last name</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="lastName"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleChange}
-                          required
-                        />
+                        {/* <label className="form-label ">Last name</label> */}
+                        <input type="text" className="form-control" name="lastName" value={formData.lastName} onChange={handleChange} required placeholder="Last name" />
                       </div>
-
-                      <div className="col-12">
-                        <label className="form-label">Email</label>
-                        <input
-                          type="email"
-                          className="form-control"
-                          id="email"
-                          name="email"
-                          placeholder="you@example.com"
-                          value={formData.email}
-                          onChange={handleChange}
-                          required
-                        />
+                      <div className="col-6">
+                        {/* <label className="form-label ">Email</label> */}
+                        <input type="email" className="form-control" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
                       </div>
-
-                      <div className="col-12">
-                        <label className="form-label">Address</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="address"
-                          name="address"
-                          placeholder="1234 Main St"
-                          value={formData.address}
-                          onChange={handleChange}
-                          required
-                        />
+                      <div className="col-6">
+                        {/* <label className="form-label ">Address</label> */}
+                        <input type="text" className="form-control" name="address" placeholder="Address" value={formData.address} onChange={handleChange} required />
                       </div>
-
-                      <div className="col-12">
-                        <label className="form-label">City</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="city"
-                          name="city"
-                          value={formData.city}
-                          onChange={handleChange}
-                          required
-                        />
+                      <div className="col-6">
+                        {/* <label className="form-label ">City</label> */}
+                        <input type="text" className="form-control" name="city" placeholder="City" value={formData.city} onChange={handleChange} required />
                       </div>
-
                       <div className="col-md-6">
-                        <label className="form-label">Phone (WhatsApp)</label>
-                        <input
-                          type="tel"
-                          className="form-control"
-                          id="phone"
-                          name="phone"
-                          placeholder="+92 300 1234567"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          required
-                        />
+                        {/* <label className="form-label ">Zip Code</label> */}
+                        <input type="text" className="form-control" name="zip" placeholder="Zip Code" value={formData.zip} onChange={handleChange} required />
+                      </div>
+                      <div className="col-md-12">
+                        {/* <label className="form-label ">Phone (WhatsApp)</label> */}
+                        <input type="tel" className="form-control" name="phone" placeholder="Phone (WhatsApp)" value={formData.phone} onChange={handleChange} required />
                       </div>
 
-                      <div className="col-md-6">
-                        <label className="form-label">Zip Code</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="zip"
-                          name="zip"
-                          value={formData.zip}
-                          onChange={handleChange}
-                          required
-                        />
+                    </div>
+
+                    {/* <hr className="my-3" /> */}
+
+                    <h4 className="my-3 fw-bold ">Payment Method</h4>
+
+                    {/* --- OPTION 1: COD --- */}
+                    <div
+                      className={`payment-method-box mb-0 rounded-0 border-bottom ${paymentMethod === 'COD' ? 'border-0 bg-light' : 'border-light'}`}
+                      onClick={() => setPaymentMethod('COD')}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="d-flex flex-column  w-100">
+                        <div className="d-flex align-items-center w-100 px-4 ">
+                          <div className="me-3 align-self-start">
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              checked={paymentMethod === 'COD'}
+                              onChange={() => setPaymentMethod('COD')}
+                              style={{ width: '20px', height: '20px' }}
+                            />
+                          </div>
+                          <p className="method-title mb-1 flex-grow-1 ">Cash on Delivery (COD)</p>
+                        </div>
+                        <div className="">
+
+                          <Collapse in={paymentMethod === 'COD'}>
+                            <div>
+                              <div className="small text-muted mt-2 bg-white p-2 rounded border">
+                                <p className="mb-1">You will receive a WhatsApp message for order confirmation within 5 to 10 minutes.</p>
+                                <p className="mb-1">Please make sure to confirm your order on WhatsApp.</p>
+                                <p className="mb-0 text-danger">Orders pending confirmation will be cancelled after 3 days.</p>
+                              </div>
+                            </div>
+                          </Collapse>
+                        </div>
                       </div>
                     </div>
 
-                    <hr className="my-4" />
+                    {/* --- OPTION 2: BANK DEPOSIT --- */}
+                    <div
+                      className={`payment-method-box mb-0 rounded-0 ${paymentMethod === 'Bank Deposit' ? 'border-0 bg-light' : 'border-light bg-gray-600'}`}
+                      onClick={() => setPaymentMethod('Bank Deposit')}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="d-flex flex-column  w-100">
+                        <div className="d-flex align-items-center w-100 px-4 ">
+                          <div className="me-3 align-self-start">
+                            <input
+                              type="radio"
+                              className="form-check-input "
+                              checked={paymentMethod === 'Bank Deposit'}
+                              onChange={() => setPaymentMethod('Bank Deposit')}
+                              style={{ width: '20px', height: '20px' }}
+                            />
+                          </div>
+                          <p className="method-title mb-1 flex-grow-1 ">Bank Deposit</p>
+                        </div>
+                        <div className="">
+                          {/* <p className="method-title mb-1">Bank Deposit</p> */}
 
-                    <h4 className="mb-3 fw-bold">Payment Method</h4>
+                          {/* BANK DETAILS SECTION (Collapsible) */}
+                          <Collapse in={paymentMethod === 'Bank Deposit'}>
+                            <div>
+                              <div className="small text-muted mt-2 bg-white p-3 rounded border">
+                                <p className="mb-3">
+                                  Make your payment directly into our bank account. Please use your Order ID as the payment reference.
+                                  Your order won’t be shipped until the funds have cleared in our account.
+                                </p>
 
-                    {/* COD SELECTION BOX */}
-                    <div className="payment-method-box">
-                      <i className="fa fa-money"></i>
-                      <div>
-                        <p className="method-title">Cash on Delivery (COD)</p>
-                        <p className="method-desc">Pay with cash upon delivery.</p>
-                      </div>
-                      <div className="ms-auto">
-                        <input type="radio" className="form-check-input" checked readOnly style={{ width: '20px', height: '20px' }} />
+                                <h6 className="fw-bold text-dark border-bottom pb-2 mb-3">BANK DETAILS</h6>
+
+                                {bankList.length > 0 ? (
+                                  bankList.map((bank) => (
+                                    <div key={bank._id} className="mb-3">
+                                      <p className="fw-bold text-dark mb-0">{bank.bankName}</p>
+                                      <p className="mb-0">Title: {bank.accountTitle}</p>
+                                      <p className="mb-0">Account No: {bank.accountNumber}</p>
+                                      {bank.iban && <p className="mb-0 iban">IBAN: {bank.iban}</p>}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <p className="text-danger">No bank details available. Please contact support.</p>
+                                )}
+
+                                <div className="mt-3 p-2 bg-success bg-opacity-10 text-success rounded border border-success">
+                                  <i className="fa fa-whatsapp me-2"></i>
+                                  Share payment receipt: <strong>+92 316 0444071</strong>
+                                </div>
+                              </div>
+                            </div>
+                          </Collapse>
+                        </div>
+                        {/* </div> */}
                       </div>
                     </div>
+                    {/* ----------------------------- */}
 
                     <button
-                      className="w-100 btn btn-dark btn-lg mt-4 rounded-pill"
+                      className="w-100 btn btn-dark btn-lg  mt-5 fs-6 fs-md-3 rounded-pill"
                       type="submit"
                       disabled={loading}
                     >
@@ -290,7 +307,6 @@ const Checkout = () => {
                       <strong>Rs {Math.round(subtotal)}</strong>
                     </li>
 
-                    {/* --- DYNAMIC SHIPPING ROW --- */}
                     <li className="list-group-item d-flex justify-content-between px-0">
                       <span>Shipping</span>
                       {isFreeShipping ? (
@@ -300,7 +316,6 @@ const Checkout = () => {
                       )}
                     </li>
 
-                    {/* Show threshold message if nearly there (Optional UX) */}
                     {!isFreeShipping && subtotal > 0 && (
                       <li className="list-group-item px-0 border-0 pt-0 pb-2">
                         <small className="text-muted" style={{ fontSize: '0.8rem' }}>
@@ -318,7 +333,7 @@ const Checkout = () => {
               </div>
 
             </div>
-          </div>
+          </div >
         ) : (
           <div className="container">
             <div className="row">
@@ -331,7 +346,8 @@ const Checkout = () => {
             </div>
           </div>
         )}
-      </div>
+      </div >
+
     </>
   );
 };

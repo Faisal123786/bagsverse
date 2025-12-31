@@ -18,6 +18,7 @@ import CustomShipping from './customShipping';
 import Promocard from './Promocard';
 import UserList from './UserList';
 import Order from './Order';
+import BankDetails from './BankDetails';
 // Example: get user from localStorage
 const getUser = () => {
   const storedUser = localStorage.getItem('user');
@@ -53,7 +54,8 @@ const AdminLayout = () => {
     { name: 'Banner', path: '/admin/banner' },
     { name: 'Promocard', path: '/admin/promocard' },
     { name: 'Orders', path: '/admin/orders' },
-    { name: 'Custom Shipping', path: '/admin/custom-shipping' }
+    { name: 'Custom Shipping', path: '/admin/custom-shipping' },
+    { name: 'Bank Details', path: '/admin/bank-details' },
     // { name: 'WishList', path: '/admin/wishlist' },
     // { name: 'Support', path: '/admin/support' }
   ];
@@ -92,9 +94,8 @@ const AdminLayout = () => {
 
           {/* ===== Sidebar ===== */}
           <div
-            className={`sidebar bg-light text-dark p-0 shadow ${
-              isMobile ? 'mobile-drawer' : ''
-            } ${isDrawerOpen ? 'open' : ''}`}
+            className={`sidebar bg-light text-dark p-0 shadow ${isMobile ? 'mobile-drawer' : ''
+              } ${isDrawerOpen ? 'open' : ''}`}
           >
             {isMobile && (
               <div className='d-flex justify-content-between align-items-center p-3 border-bottom'>
@@ -147,6 +148,7 @@ const AdminLayout = () => {
                   <Route path='/user' element={<UserList />} />
                   <Route path='/orders' element={<Order />} />
                   <Route path='/custom-shipping' element={<CustomShipping />} />
+                  <Route path='/bank-details' element={<BankDetails />} />
                 </>
               )}
               {user?.role === 'ROLE MERCHANT' && (

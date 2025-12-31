@@ -17,6 +17,7 @@ const policyRoutes = require('./policy');
 const bannerRoutes = require('./banner');
 const promoCardRoutes = require('./promoCards');
 const shippingRoutes = require('./shipping');
+const bankRoutes = require('./bank');
 // auth routes
 router.use('/auth', authRoutes);
 
@@ -63,4 +64,6 @@ router.use('/banner', bannerRoutes);
 router.use('/promo-cards', promoCardRoutes);
 // shipping
 router.use('/shipping', shippingRoutes)
+// bank
+router.use('/bank', bankRoutes);
 module.exports = router;
