@@ -484,3 +484,43 @@ export const markOrderAsRead = async (orderId, role) => {
     return { success: true };
   }
 };
+
+// =========================
+//  BANK DETAILS APIs
+// =========================
+
+export const fetchBanks = async () => {
+  try {
+    const response = await API.get('/bank');
+    return response.data.banks;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch banks');
+  }
+};
+
+export const addBank = async (bankData) => {
+  try {
+    const response = await API.post('/bank/add', bankData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to add bank');
+  }
+};
+
+export const updateBank = async (id, bankData) => {
+  try {
+    const response = await API.put(`/bank/${id}`, bankData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to update bank');
+  }
+};
+
+export const deleteBank = async (id) => {
+  try {
+    const response = await API.delete(`/bank/delete/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Failed to delete bank');
+  }
+};
