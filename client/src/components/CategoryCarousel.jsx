@@ -80,7 +80,9 @@ const CategoryCarousel = () => {
 
   return (
     <Container fluid="lg" className="py-3">
-      <h3 className="section-title mb-4">Shop by Collections</h3>
+      <div className='text-center'>
+        <h3 className="section-title mb-4 fs-3 fw-bold">Shop by Collections</h3>
+      </div>
 
       <Carousel
         responsive={responsive}

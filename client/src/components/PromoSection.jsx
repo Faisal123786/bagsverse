@@ -108,8 +108,8 @@ const PromoSection = () => {
 
   return (
     <Container fluid='lg' className='py-3'>
-      <div className='mb-4'>
-        <h2 className='section-title'>Shop by Budget</h2>
+      <div className='mb-4 text-center'>
+        <h2 className='section-title fs-3 fw-bold'>Shop by Budget</h2>
       </div>
       <Row className='g-2'>
         {cardData.map(card => (

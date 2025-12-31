@@ -45,7 +45,7 @@ const Login = () => {
         resetForm();
 
         // Redirect based on role
-        if (response.user.role === 'ADMIN') navigate('/admin');
+        if (response.user.role === 'ADMIN') navigate('/');
         else if (response.user.role === 'MERCHANT') navigate('/merchant');
         else navigate('/');
       } catch (error) {
@@ -115,7 +115,7 @@ const Login = () => {
                 )}
               </div>
 
-              <p>
+              {/* <p>
                 New Here?{' '}
                 <Link
                   to='/register'
@@ -123,7 +123,7 @@ const Login = () => {
                 >
                   Register
                 </Link>
-              </p>
+              </p> */}
 
               <div className='text-center'>
                 <button className='my-2 btn btn-dark w-100' type='submit'>

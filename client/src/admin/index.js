@@ -46,14 +46,14 @@ const AdminLayout = () => {
     { name: 'Categories', path: '/admin/categories' },
     // { name: 'Address', path: '/admin/address' },
     { name: 'Products', path: '/admin/products' },
-    { name: 'Users', path: '/admin/user' },
+    // { name: 'Users', path: '/admin/user' },
     // { name: 'Orders', path: '/admin/orders' },
     { name: 'Reviews', path: '/admin/reviews' },
     { name: 'Shipping Policy', path: '/admin/shipping-policy' },
     { name: 'Banner', path: '/admin/banner' },
     { name: 'Promocard', path: '/admin/promocard' },
     { name: 'Orders', path: '/admin/orders' },
-    { name: 'Custom Shipping', path: '/admin/custom-shipping' },
+    { name: 'Custom Shipping', path: '/admin/custom-shipping' }
     // { name: 'WishList', path: '/admin/wishlist' },
     // { name: 'Support', path: '/admin/support' }
   ];
@@ -70,11 +70,10 @@ const AdminLayout = () => {
 
       <div className='main-layout d-flex flex-grow-1 justify-content-center position-relative'>
         <div className='container-layout d-flex w-100'>
-
           {/* Mobile Toggle Button */}
           {isMobile && (
             <button
-              className="btn btn-light position-absolute top-0 start-0 m-3 shadow-sm border"
+              className='btn btn-light position-absolute top-0 start-0 m-3 shadow-sm border'
               style={{ zIndex: 1000 }}
               onClick={() => setIsDrawerOpen(true)}
             >
@@ -85,18 +84,25 @@ const AdminLayout = () => {
           {/* Overlay */}
           {isMobile && isDrawerOpen && (
             <div
-              className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"
+              className='position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50'
               style={{ zIndex: 1040 }}
               onClick={() => setIsDrawerOpen(false)}
             />
           )}
 
           {/* ===== Sidebar ===== */}
-          <div className={`sidebar bg-light text-dark p-0 shadow ${isMobile ? 'mobile-drawer' : ''} ${isDrawerOpen ? 'open' : ''}`}>
+          <div
+            className={`sidebar bg-light text-dark p-0 shadow ${
+              isMobile ? 'mobile-drawer' : ''
+            } ${isDrawerOpen ? 'open' : ''}`}
+          >
             {isMobile && (
-              <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
-                <h5 className="mb-0">Menu</h5>
-                <button className="btn btn-sm btn-light" onClick={() => setIsDrawerOpen(false)}>
+              <div className='d-flex justify-content-between align-items-center p-3 border-bottom'>
+                <h5 className='mb-0'>Menu</h5>
+                <button
+                  className='btn btn-sm btn-light'
+                  onClick={() => setIsDrawerOpen(false)}
+                >
                   <IoMdClose size={24} />
                 </button>
               </div>
@@ -120,7 +126,10 @@ const AdminLayout = () => {
           </div>
 
           {/* ===== Content ===== */}
-          <div className='content flex-grow-1 p-3' style={isMobile ? { marginTop: '50px' } : {}}>
+          <div
+            className='content flex-grow-1 p-3'
+            style={isMobile ? { marginTop: '50px' } : {}}
+          >
             <Routes>
               {user?.role === 'ROLE ADMIN' && (
                 <>

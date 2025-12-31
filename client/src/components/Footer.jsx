@@ -113,7 +113,7 @@ const Footer = () => {
         <div className='row'>
 
           {/* Customer Service Links */}
-          <div className='col-md-4 mb-4' style={columnStyle}>
+          <div className='col-md-6 mb-4' style={columnStyle}>
             <h5 className='text-uppercase'>Customer Service</h5>
             <ul className='list-unstyled'>
               {infoLinks.map(link => (
@@ -127,7 +127,7 @@ const Footer = () => {
           </div>
 
           {/* Account Links */}
-          <div className='col-md-4 mb-4' style={columnStyle}>
+          {/* <div className='col-md-4 mb-4' style={columnStyle}>
             <h5 className='text-uppercase'>Account</h5>
             <ul className='list-unstyled'>
               {accountLinks.map(link => (
@@ -138,10 +138,10 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
           {/* Newsletter Section */}
-          <div className='col-md-4 mb-4' style={lastColumnStyle}>
+          <div className='col-md-6 mb-4' style={lastColumnStyle}>
             <h5 className='text-uppercase mb-3'>Newsletter</h5>
 
             <p style={{ color: '#ccc', fontSize: '0.9rem', marginBottom: '1.2rem', lineHeight: '1.6' }} className='px-3 px-sm-0'>
@@ -170,12 +170,12 @@ const Footer = () => {
         </div>
 
         {/* Logo & Social */}
-        <div className='d-flex justify-content-center align-items-center my-2'>
+        <div className='d-flex justify-content-center align-items-center my-3'>
           <Link to='/'>
             <img
-              src='/assets/footerlogo-preview.png'
+              src='/assets/1-removebg-preview (1).png'
               alt='BagsVerse'
-              style={{ width: '160px', objectFit: 'contain' }}
+              style={{ width: '200px', objectFit: 'contain' }}
             />
           </Link>
         </div>
