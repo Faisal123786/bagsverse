@@ -103,10 +103,37 @@ const TrendingProducts = () => {
   if (!products || products.length === 0) return null;
 
   return (
-    <Container fluid='lg' className='py-3'>
-      <div className='text-center'>
-        <h3 className='section-title mb-4 fs-3 fw-bold'>Trending on BagsVerse</h3>
+    <Container fluid='lg' className='py-3' >
+      <div className="text-center my-2 py-4">
+        <div className="d-flex flex-column align-items-center">
+          {/* Elegant Top Label */}
+          <p className="mb-2" style={{
+            letterSpacing: '5px',
+            textTransform: 'uppercase',
+            fontSize: '0.7rem',
+            fontWeight: '600',
+            color: 'orange'
+          }}>
+            Exclusive curated
+          </p>
 
+          <h2 style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: '2.8rem',
+            color: '#1a1a1a',
+            fontWeight: '700',
+            lineHeight: '1'
+          }}>
+            Trending on <span style={{ fontStyle: 'italic', fontWeight: '400', color: 'orange' }}>Bagsverse</span>
+          </h2>
+
+          {/* Modern Accent: A dot and a line */}
+          <div className="d-flex align-items-center mt-3">
+            <div style={{ width: '40px', height: '1px', background: '#ddd' }}></div>
+            <div style={{ width: '6px', height: '6px', background: 'orange', borderRadius: '50%', margin: '0 10px' }}></div>
+            <div style={{ width: '40px', height: '1px', background: '#ddd' }}></div>
+          </div>
+        </div>
       </div>
 
       <Carousel
