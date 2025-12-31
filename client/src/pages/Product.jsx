@@ -256,6 +256,7 @@ const Product = () => {
                 </div>
                 <button
                   className='btn btn-outline-dark flex-grow-1 text-uppercase fw-bold rounded-0'
+                  disabled={product.quantity <= 0}
                   style={{ height: '48px' }}
                   onClick={() => addProductToCart(product, mainImage, qty)}
                 >
@@ -265,6 +266,7 @@ const Product = () => {
             </div>
             <button
               onClick={handleBuyNow}
+              disabled={product.quantity <= 0}
               className='btn btn-dark w-100 py-2 mb-4 text-uppercase fw-bold rounded-0'
               style={{ height: '48px' }}
             >
