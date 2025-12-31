@@ -104,7 +104,10 @@ const TrendingProducts = () => {
 
   return (
     <Container fluid='lg' className='py-3'>
-      <h3 className='section-title mb-4'>Trending on BagsVerse</h3>
+      <div className='text-center'>
+        <h3 className='section-title mb-4 fs-3 fw-bold'>Trending on BagsVerse</h3>
+
+      </div>
 
       <Carousel
         responsive={responsive}

@@ -7,7 +7,6 @@ const ProtectedRoute = ({ children, rolesAllowed }) => {
   const dispatch = useDispatch();
   const user = useSelector(state => state.handleUser.user);
 
-  // Auto logout if localStorage is missing
   useEffect(() => {
     const handleStorage = () => {
       const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -16,7 +15,7 @@ const ProtectedRoute = ({ children, rolesAllowed }) => {
       }
     };
     window.addEventListener('storage', handleStorage);
-    handleStorage(); // initial check
+    handleStorage();
     return () => window.removeEventListener('storage', handleStorage);
   }, [dispatch, user]);
 

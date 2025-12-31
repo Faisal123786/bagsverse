@@ -63,7 +63,7 @@ router.post(
 
 router.get(
   '/',
-  auth,
+  // auth,
   // Optional: role.check(ROLES.Admin, ROLES.Merchant),
   async (req, res) => {
     try {

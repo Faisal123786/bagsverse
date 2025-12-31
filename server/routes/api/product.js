@@ -163,7 +163,7 @@ router.get('/list', async (req, res) => {
   }
 });
 
-router.get('/list/select', auth, async (req, res) => {
+router.get('/list/select', async (req, res) => {
   try {
     const products = await Product.find({}, 'name');
 
@@ -316,37 +316,39 @@ router.post(
 // fetch products api
 router.get(
   '/',
-  auth,
   // role.check(ROLES.Admin, ROLES.Merchant),
   async (req, res) => {
     try {
       let products = [];
 
-      if (req.user.merchant) {
-        const brands = await Brand.find({
-          merchant: req.user.merchant
-        }).populate('merchant', '_id');
+      // if (req.user.merchant) {
+      //   console.log('if');
+      //   const brands = await Brand.find({
+      //     merchant: req.user.merchant
+      //   }).populate('merchant', '_id');
 
-        const brandId = brands[0]?.['_id'];
+      //   const brandId = brands[0]?.['_id'];
 
-        products = await Product.find({})
-          .populate({
-            path: 'brand',
-            populate: {
-              path: 'merchant',
-              model: 'Merchant'
-            }
-          })
-          .where('brand', brandId);
-      } else {
-        products = await Product.find({}).populate({
-          path: 'brand',
-          populate: {
-            path: 'merchant',
-            model: 'Merchant'
-          }
-        });
-      }
+      //   products = await Product.find({})
+      //     .populate({
+      //       path: 'brand',
+      //       populate: {
+      //         path: 'merchant',
+      //         model: 'Merchant'
+      //       }
+      //     })
+      //     .where('brand', brandId);
+      // } else {
+      // console.log('else');
+      products = await Product.find({}).populate({
+        path: 'brand',
+        populate: {
+          path: 'merchant',
+          model: 'Merchant'
+        }
+      });
+      // }
+      // console.log('adasdasdsadsadsaddasddasdsadsad');
 
       res.status(200).json({
         products
@@ -362,7 +364,6 @@ router.get(
 // fetch product api
 router.get(
   '/:id',
-  auth,
   // role.check(ROLES.Admin, ROLES.Merchant),
   async (req, res) => {
     try {
@@ -370,25 +371,25 @@ router.get(
 
       let productDoc = null;
 
-      if (req.user.merchant) {
-        const brands = await Brand.find({
-          merchant: req.user.merchant
-        }).populate('merchant', '_id');
+      // if (req.user.merchant) {
+      //   const brands = await Brand.find({
+      //     merchant: req.user.merchant
+      //   }).populate('merchant', '_id');
 
-        const brandId = brands[0]['_id'];
+      //   const brandId = brands[0]['_id'];
 
-        productDoc = await Product.findOne({ _id: productId })
-          .populate({
-            path: 'brand',
-            select: 'name'
-          })
-          .where('brand', brandId);
-      } else {
-        productDoc = await Product.findOne({ _id: productId }).populate({
-          path: 'brand',
-          select: 'name'
-        });
-      }
+      //   productDoc = await Product.findOne({ _id: productId })
+      //     .populate({
+      //       path: 'brand',
+      //       select: 'name'
+      //     })
+      //     .where('brand', brandId);
+      // } else {
+      productDoc = await Product.findOne({ _id: productId }).populate({
+        path: 'brand',
+        select: 'name'
+      });
+      // }
 
       if (!productDoc) {
         return res.status(404).json({

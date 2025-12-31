@@ -141,7 +141,7 @@ const Navbar = () => {
   const handleLogout = () => {
     dispatch(logoutUser());
     setUserDropdown(false);
-    navigate('/login');
+    navigate('/admin/login');
   };
 
   return (
@@ -154,7 +154,7 @@ const Navbar = () => {
         <div className='container d-flex align-items-center justify-content-between'>
           {/* LOGO */}
           <NavLink className='navbar-brand d-flex align-items-center pl-2 pl-md-0 px-md-3 m-0' to='/'>
-            <img src='/assets/newlogo.png' alt='BagVerse' className='BagVerseimage' style={{ width: '120px', marginRight: '0px', objectFit: 'contain' }} />
+            <img src='/assets/2-removebg-preview.png' alt='BagVerse' className='BagVerseimage' style={{ width: '120px', marginRight: '0px', objectFit: 'contain' }} />
           </NavLink>
 
           {/* DESKTOP SEARCH BAR */}
@@ -260,9 +260,14 @@ const Navbar = () => {
 
             {/* USER DROPDOWN */}
             <div className='position-relative'>
-              <button className='btn no-focus nav-icon' style={{ border: 'none', background: 'transparent', fontSize: '2rem' }} onClick={() => setUserDropdown(!userDropdown)}>
-                <FiUser />
-              </button>
+              {
+                user?.role === 'ROLE ADMIN' && (
+                  <button className='btn no-focus nav-icon' style={{ border: 'none', background: 'transparent', fontSize: '2rem' }} onClick={() => setUserDropdown(!userDropdown)}>
+                    <FiUser />
+                  </button>
+                )
+              }
+
               {userDropdown && (
                 <ul className='dropdown-menu show shadow' style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', minWidth: '200px', zIndex: 1060 }}>
                   {user ? (
@@ -279,7 +284,7 @@ const Navbar = () => {
                   ) : (
                     <>
                       <li><NavLink className='dropdown-item' to='/login' onClick={() => setUserDropdown(false)}><i className='fa fa-sign-in-alt me-2'></i> Sign In</NavLink></li>
-                      <li><NavLink className='dropdown-item' to='/register' onClick={() => setUserDropdown(false)}><FiUser /> Sign Up</NavLink></li>
+                      {/* <li><NavLink className='dropdown-item' to='/register' onClick={() => setUserDropdown(false)}><FiUser /> Sign Up</NavLink></li> */}
                     </>
                   )}
                 </ul>

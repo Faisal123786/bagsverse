@@ -7,15 +7,15 @@ const Product = require('../../models/product');
 const auth = require('../../middleware/auth');
 const store = require('../../utils/store');
 
-router.post('/add', auth, async (req, res) => {
+router.post('/add', async (req, res) => {
   try {
-    const user = req.user._id;
+    // const user = req.user._id;
     const items = req.body.products;
 
     const products = store.caculateItemsSalesTax(items);
 
     const cart = new Cart({
-      user,
+      // user,
       products
     });
 
@@ -34,7 +34,7 @@ router.post('/add', auth, async (req, res) => {
   }
 });
 
-router.delete('/delete/:cartId', auth, async (req, res) => {
+router.delete('/delete/:cartId', async (req, res) => {
   try {
     await Cart.deleteOne({ _id: req.params.cartId });
 
@@ -48,7 +48,7 @@ router.delete('/delete/:cartId', auth, async (req, res) => {
   }
 });
 
-router.post('/add/:cartId', auth, async (req, res) => {
+router.post('/add/:cartId', async (req, res) => {
   try {
     const product = req.body.product;
     const query = { _id: req.params.cartId };
@@ -65,7 +65,7 @@ router.post('/add/:cartId', auth, async (req, res) => {
   }
 });
 
-router.delete('/delete/:cartId/:productId', auth, async (req, res) => {
+router.delete('/delete/:cartId/:productId', async (req, res) => {
   try {
     const product = { product: req.params.productId };
     const query = { _id: req.params.cartId };

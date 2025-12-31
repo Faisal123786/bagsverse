@@ -12,26 +12,25 @@ const mailgun = require('../../services/mailgun');
 const store = require('../../utils/store');
 const { ROLES, CART_ITEM_STATUS } = require('../../constants');
 
-router.post('/add', auth, async (req, res) => {
+router.post('/add', async (req, res) => {
   try {
     const cart = req.body.cartId;
     const total = req.body.total;
-    const user = req.user._id;
+    // const user = req.user._id;
 
     const order = new Order({
       cart,
-      user,
+      // user,
       total,
-      shippingAddress: req.body.shippingAddress,
-      userRead: true
+      shippingAddress: req.body.shippingAddress
+      // userRead: true
     });
 
     const orderDoc = await order.save();
-    const populatedOrder = await Order.findById(orderDoc._id)
-      .populate({
-        path: 'user',
-        select: 'firstName lastName email'
-      });
+    // const populatedOrder = await Order.findById(orderDoc._id).populate({
+    //   path: 'user',
+    //   select: 'firstName lastName email'
+    // });
     const cartDoc = await Cart.findById(orderDoc.cart._id).populate({
       path: 'products.product',
       populate: {
@@ -42,21 +41,21 @@ router.post('/add', auth, async (req, res) => {
     const newOrder = {
       _id: orderDoc._id,
       created: orderDoc.created,
-     user: populatedOrder.user,
+      // user: populatedOrder.user,
       total: orderDoc.total,
       products: cartDoc.products
     };
-    await mailgun.sendEmail(order.user.email, 'order-confirmation', newOrder);
-    const productList = newOrder.products.map((item, index) => {
-      return `   ${index + 1}. ${item.product.name} × ${item.quantity}`;
-    }).join('\n');
+    // await mailgun.sendEmail(order.user.email, 'order-confirmation', newOrder);
+    const productList = newOrder.products
+      .map((item, index) => {
+        return `   ${index + 1}. ${item.product.name} × ${item.quantity}`;
+      })
+      .join('\n');
     const message = `
                   📦 <b>NEW INCOMING ORDER</b>
                   ───────────────────────
                   🆔 <b>Order Reference:</b> <code>#${newOrder._id}</code>
-                  👤 <b>Customer Name:</b> ${newOrder.user.firstName} ${newOrder.user.lastName || ''}
-                  📧 <b>Email:</b> ${newOrder.user.email}
-
+    }
                   💰 <b>Order Summary:</b>
                   ━━━━━━━━━━━━━━━━━━━━━━━
                   <b>Total Payable:</b> ₹${newOrder.total.toLocaleString()}
@@ -65,7 +64,9 @@ router.post('/add', auth, async (req, res) => {
                   🛒 <b>Product Details:</b>
                   ${productList}
 
-                  📅 <b>Timestamp:</b> ${new Date(newOrder.created).toLocaleString('en-IN', { timeZone: 'Asia/Karachi' })}
+                  📅 <b>Timestamp:</b> ${new Date(
+                    newOrder.created
+                  ).toLocaleString('en-IN', { timeZone: 'Asia/Karachi' })}
                   ───────────────────────
                   ✅ <i>Please process this order in the admin dashboard.</i>
                       `;
@@ -84,7 +85,7 @@ router.post('/add', auth, async (req, res) => {
 });
 
 // search orders api
-router.get('/search', auth, async (req, res) => {
+router.get('/search', async (req, res) => {
   try {
     const { search } = req.query;
 
@@ -154,7 +155,7 @@ router.get('/search', auth, async (req, res) => {
 });
 
 // fetch orders api
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
     const ordersDoc = await Order.find()
@@ -188,7 +189,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // fetch my orders api
-router.get('/me', auth, async (req, res) => {
+router.get('/me', async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
     const user = req.user._id;
@@ -226,7 +227,7 @@ router.get('/me', auth, async (req, res) => {
 });
 
 // fetch order api
-router.get('/:orderId', auth, async (req, res) => {
+router.get('/:orderId', async (req, res) => {
   try {
     const orderId = req.params.orderId;
 

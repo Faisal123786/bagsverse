@@ -14,17 +14,17 @@ import {
   ContactPage,
   Cart,
   Login,
-  Register,
+  // Register,
   Checkout,
   PageNotFound,
-  MerchantDashboard,
+  // MerchantDashboard,
   ShippingPage,
   SellWithUs,
   AccountDetails,
   OrderPage,
-  OrderPlaced,
-  TrackOrder,
-  OrderDetails
+  OrderPlaced
+  // TrackOrder,
+  // OrderDetails
 } from './pages';
 import ScrollToTop from './components/ScrollToTop';
 import { Toaster } from 'react-hot-toast';
@@ -40,135 +40,53 @@ root.render(
     <ScrollToTop>
       <Provider store={store}>
         <Routes>
-          <Route
-            path='/login'
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path='/register'
-            element={
-              <PublicRoute>
-                <Register />
-              </PublicRoute>
-            }
-          />
-          <Route path="/auth/success" element={<GoogleAuthSuccess />} />
-
           <Route path='/' element={<Layout />}>
             <Route
-              index
+              path='/admin/login'
               element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
               }
             />
-            <Route
-              path='/product'
+            {/* <Route
+              path='/register'
               element={
-                <ProtectedRoute>
-                  <Products />{' '}
-                </ProtectedRoute>
+                <PublicRoute>
+                  <Register />
+                </PublicRoute>
               }
-            />
-            <Route
-              path='/product/:id'
-              element={
-                <ProtectedRoute>
-                  <Product />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/about'
-              element={
-                <ProtectedRoute>
-                  <AboutPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/contact'
-              element={
-                <ProtectedRoute>
-                  <ContactPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/shipping'
-              element={
-                <ProtectedRoute>
-                  <ShippingPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/sell'
-              element={
-                <ProtectedRoute>
-                  <SellWithUs />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/account-details'
-              element={
-                <ProtectedRoute>
-                  <AccountDetails />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/orders'
-              element={
-                <ProtectedRoute>
-                  <OrderPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/cart'
-              element={
-                <ProtectedRoute>
-                  <Cart />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path='/order-placed'
-              element={
-                <ProtectedRoute>
-                  <OrderPlaced />
-                </ProtectedRoute>
-              }
-            />
-            <Route
+            /> */}
+            <Route path='/auth/success' element={<GoogleAuthSuccess />} />
+            <Route index element={<Home />} />
+            <Route path='/product' element={<Products />} />
+            <Route path='/product/:id' element={<Product />} />
+            <Route path='/about' element={<AboutPage />} />
+            <Route path='/contact' element={<ContactPage />} />
+            <Route path='/shipping' element={<ShippingPage />} />
+            <Route path='/sell' element={<SellWithUs />} />
+            <Route path='/account-details' element={<AccountDetails />} />
+            <Route path='/orders' element={<OrderPage />} />
+            <Route path='/cart' element={<Cart />} />
+            <Route path='/order-placed' element={<OrderPlaced />} />
+            {/* <Route
               path='/order/:id'
               element={
-                <ProtectedRoute>
+                <PublicRoute>
                   <OrderDetails />
-                </ProtectedRoute>
+                </PublicRoute>
               }
-            />
+            /> */}
             <Route
               path='/order/track/:id'
-              element={
-                <ProtectedRoute>
-                  <TrackOrder />
-                </ProtectedRoute>
-              }
+              element={<PublicRoute>{/* <TrackOrder /> */}</PublicRoute>}
             />
             <Route
               path='/checkout'
               element={
-                <ProtectedRoute>
-                  <Checkout />
-                </ProtectedRoute>
+                // <PublicRoute>
+                <Checkout />
+                // </PublicRoute>
               }
             />
           </Route>
