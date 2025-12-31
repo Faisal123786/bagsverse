@@ -108,8 +108,36 @@ const PromoSection = () => {
 
   return (
     <Container fluid='lg' className='py-3'>
-      <div className='mb-4 text-center'>
-        <h2 className='section-title fs-3 fw-bold'>Shop by Budget</h2>
+      <div className="text-center my-2 py-4">
+        <div className="d-flex flex-column align-items-center">
+          {/* Elegant Top Label */}
+          <p className="mb-2" style={{
+            letterSpacing: '5px',
+            textTransform: 'uppercase',
+            fontSize: '0.7rem',
+            fontWeight: '600',
+            color: 'orange'
+          }}>
+            Tailored Prices
+          </p>
+
+          <h2 style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: '2.8rem',
+            color: '#1a1a1a',
+            fontWeight: '700',
+            lineHeight: '1'
+          }}>
+            Shop by <span style={{ fontStyle: 'italic', fontWeight: '400', color: 'orange' }}>Budget</span>
+          </h2>
+
+          {/* Modern Accent: A dot and a line */}
+          <div className="d-flex align-items-center mt-3">
+            <div style={{ width: '40px', height: '1px', background: '#ddd' }}></div>
+            <div style={{ width: '6px', height: '6px', background: 'orange', borderRadius: '50%', margin: '0 10px' }}></div>
+            <div style={{ width: '40px', height: '1px', background: '#ddd' }}></div>
+          </div>
+        </div>
       </div>
       <Row className='g-2'>
         {cardData.map(card => (
