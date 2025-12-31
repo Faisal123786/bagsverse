@@ -48,8 +48,8 @@ const Footer = () => {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     color: 'white',
-    paddingTop: '5rem',
-    paddingBottom: '3rem',
+    paddingTop: '2rem',
+    paddingBottom: '2rem',
     zIndex: 0
   };
 
@@ -170,12 +170,12 @@ const Footer = () => {
         </div>
 
         {/* Logo & Social */}
-        <div className='d-flex justify-content-center align-items-center my-4'>
+        <div className='d-flex justify-content-center align-items-center my-2'>
           <Link to='/'>
             <img
-              src='/assets/footerlogo.png'
+              src='/assets/footerlogo-preview.png'
               alt='BagsVerse'
-              style={{ width: '250px', objectFit: 'contain' }}
+              style={{ width: '160px', objectFit: 'contain' }}
             />
           </Link>
         </div>
