@@ -10,6 +10,7 @@ import ProductReviews from '../components/ProductReviews'; // Updated Component
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { fetchProductById, fetchProducts, fetchShippingConfig } from '../api';
 import toast from 'react-hot-toast';
+import { calculateFinalPrice } from '../utils/calculateDiscountedPrice';
 const Product = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -37,15 +38,23 @@ const Product = () => {
         ? productItem.images[0].imageUrl
         : '') ||
       productItem.image;
-
+    const finalPrice = calculateFinalPrice(
+      productItem.price,
+      productItem.discountType,
+      productItem.discountValue
+    );
+    if (productItem?.quantity > product?.quantity) {
+      toast.error(`You can only add up to ${product?.quantity} of this item.`);
+      return;
+    }
     const productData = {
       ...productItem,
       image: imageToUse,
-      qty: quantity
+      qty: quantity,
+      price: finalPrice,
+      maxQuantity: product.quantity
     };
-
     dispatch(addCart(productData));
-    toast.success('Product added to cart!');
   };
 
   // --- FETCH DATA ---
@@ -142,7 +151,12 @@ const Product = () => {
       addProductToCart(product, mainImage, qty);
       navigate('/checkout');
     };
-
+    const finalPrice = calculateFinalPrice(
+      product.price,
+      product.discountType,
+      product.discountValue
+    );
+    const discountApplied = finalPrice < product.price;
     return (
       <div className='container my-2 py-2'>
         <div className='row'>
@@ -219,7 +233,16 @@ const Product = () => {
                 <i className='fa fa-heart-o'></i>
               </button>
             </div>
-            <h3 className='my-3 fw-bold'>Rs. {product.price} PKR</h3>
+            <h3 className='my-3 fw-bold'>
+              {discountApplied && (
+                <span style={{ textDecoration: 'line-through', color: '#999', marginRight: '10px' }}>
+                  Rs. {product.price} PKR
+                </span>
+              )}
+              <span style={{ color: discountApplied ? '#e60000' : '#000' }}>
+                Rs. {finalPrice} PKR
+              </span>
+            </h3>
 
             {/* Pass Review Count here if available in product object later */}
             <div className='mb-4 d-flex align-items-center'>
@@ -325,12 +348,16 @@ const Product = () => {
     const [hoveredProduct, setHoveredProduct] = React.useState(null);
     const [selectedImage, setSelectedImage] = React.useState({});
 
-    if (similarProducts.length === 0) return null;
 
     return (
       <div className='py-4 my-4'>
         <div className='d-flex'>
           {similarProducts.map(item => {
+            const similarFinalPrice = calculateFinalPrice(
+              item.price,
+              item.discountType,
+              item.discountValue
+            );
             const defaultImgUrl =
               item.thumbnails && item.thumbnails.length > 0
                 ? item.thumbnails[0].imageUrl
@@ -360,7 +387,7 @@ const Product = () => {
                   }));
                 }}
               >
-                <div className='product-img-wrapper'>
+                <div className='product-img-wrapper' style={{ position: 'relative' }}>
                   <img
                     className='card-img-top'
                     src={displayedImage}
@@ -414,13 +441,55 @@ const Product = () => {
                       ))}
                     </div>
                   )}
+                  <div>
+                    {item.discountValue > 0 && (
+
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: '10px',
+                          left: '10px',
+                          backgroundColor: 'red',
+                          color: '#fff',
+                          padding: '5px 8px',
+                          borderRadius: '5px',
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                          zIndex: 10
+                        }}
+                      >
+                        -{item?.discountValue}%
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className='card-body'>
                   <h5 className='card-title'>
                     {item.name.substring(0, 20)}...
                   </h5>
-                  <p className='fw-bold'>Rs {item.price}</p>
+                  {item.discountValue > 0 ? (
+                    <>
+                      <span
+                        style={{
+                          textDecoration: 'line-through',
+                          color: '#999',
+                          marginRight: '10px'
+                        }}
+                      >
+                        Rs. {item.price} PKR
+                      </span>
+
+                      <p className="fw-bold text-danger">
+                        Rs. {similarFinalPrice} PKR
+                      </p>
+                    </>
+                  ) : (
+                    <p className="fw-bold">
+                      Rs. {item.price} PKR
+                    </p>
+                  )}
+
                 </div>
                 <div
                   style={{ display: 'flex', justifyContent: 'space-evenly' }}

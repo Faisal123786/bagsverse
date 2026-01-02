@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { Accordion } from 'react-bootstrap';
 import { fetchProducts, fetchCategories } from '../api';
 import '../styles/main.scss';
+import { calculateFinalPrice } from '../utils/calculateDiscountedPrice';
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -54,6 +55,8 @@ const Products = () => {
           description: item.description,
           inStock: item.quantity > 0,
           quantity: item.quantity,
+          discountType: item.discountType,
+          discountValue: item.discountValue,
           // NEW: Store primary image (first thumbnail)
           image:
             item.thumbnails && item.thumbnails.length > 0
@@ -132,29 +135,22 @@ const Products = () => {
     loadData();
   }, [location.state]);
 
-  // --- 2. MAIN FILTER LOGIC ---
-  // This runs when user clicks "Apply Filters" on the sidebar
+
   const handleApplyFilter = () => {
-    // 1. Start filtering
     let updated = products;
 
-    // 2. Apply Category Logic First
     if (selectedCategory !== 'All') {
       const matchedCat = categories.find(c => c.name === selectedCategory);
       if (matchedCat && matchedCat.products) {
-        // Only keep products whose IDs are in the category's product array
         updated = updated.filter(p => matchedCat.products.includes(p.id));
       } else {
         updated = [];
       }
     }
 
-    // 3. Apply Price & Stock Logic on the result
     updated = updated.filter(item => {
-      // Price Check
       const isPriceMatch = item.price >= minVal && item.price <= maxVal;
 
-      // Stock Check
       let isStockMatch = true;
       if (stockFilter.inStock && !stockFilter.outOfStock) {
         isStockMatch = item.inStock === true;
@@ -169,7 +165,6 @@ const Products = () => {
     setFilteredProducts(updated);
   };
 
-  // --- UI HANDLERS (Slider, Checkbox, Sort) ---
   const handleRangeChange = (e, type) => {
     const value = Math.max(Number(e.target.value), 0);
     if (type === 'min') {
@@ -195,17 +190,16 @@ const Products = () => {
     setFilteredProducts(sorted);
   };
 
-  // --- PAGINATION & COUNTS ---
-  // Counts need to reflect the current category context
+
   const currentContextProducts =
     selectedCategory === 'All'
       ? products
       : (() => {
-          const cat = categories.find(c => c.name === selectedCategory);
-          return cat && cat.products
-            ? products.filter(p => cat.products.includes(p.id))
-            : [];
-        })();
+        const cat = categories.find(c => c.name === selectedCategory);
+        return cat && cat.products
+          ? products.filter(p => cat.products.includes(p.id))
+          : [];
+      })();
 
   const inStockCount = currentContextProducts.filter(p => p.inStock).length;
   const outStockCount = currentContextProducts.filter(p => !p.inStock).length;
@@ -219,8 +213,7 @@ const Products = () => {
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const paginate = pageNumber => setCurrentPage(pageNumber);
 
-  // --- COMPONENT RENDER ---
-  // NEW: Enhanced ProductCard with smooth fade transition
+
   const ProductCard = ({ product }) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -233,15 +226,35 @@ const Products = () => {
               ? () => navigate(`/product/${product.id}`)
               : undefined
           }
-          style={{ cursor: product.inStock ? 'pointer' : 'not-allowed' }}
+          style={{ cursor: product.inStock ? 'pointer' : 'not-allowed', position: 'relative' }}
         >
+          {product.discountValue > 0 && (
+            <span
+              style={{
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                backgroundColor: 'red',
+                color: '#fff',
+                padding: '5px 8px',
+                borderRadius: '5px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                zIndex: 10
+              }}
+            >
+              {product.discountType === 'percent'
+                ? `-${product.discountValue}%`
+                : `Rs ${product.discountValue}`}
+            </span>
+          )}
+
           <div
             className='card-img-wrapper'
             onMouseEnter={() => product.hoverImage && setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             style={{ position: 'relative', overflow: 'hidden' }}
           >
-            {/* Primary Image */}
             <img
               src={product.image}
               alt={product.title}
@@ -257,7 +270,7 @@ const Products = () => {
               }}
             />
 
-            {/* Hover Image (Second Thumbnail) - Only if exists */}
+            {/* Hover Image */}
             {product.hoverImage && (
               <img
                 src={product.hoverImage}
@@ -273,7 +286,7 @@ const Products = () => {
                 }}
                 onError={e => {
                   e.target.onerror = null;
-                  e.target.src = product.image; // Fallback to primary image
+                  e.target.src = product.image;
                 }}
               />
             )}
@@ -285,17 +298,39 @@ const Products = () => {
               </div>
             )}
           </div>
+
           <div className='card-body'>
             <h5 className='card-title'>{product.title}</h5>
             <div className='d-flex justify-content-between align-items-center mt-2'>
-              <span className='card-price'>Rs {product.price}</span>
+              {product?.discountValue > 0 ? (
+                <div>
+                  <span
+                    style={{
+                      textDecoration: 'line-through',
+                      color: '#999',
+                      marginRight: '5px'
+                    }}
+                  >
+                    Rs {product.price}
+                  </span>
+                  <span style={{ color: '#e60000', fontWeight: 'bold' }}>
+                    Rs {calculateFinalPrice(product.price, product.discountType, product.discountValue)}
+                  </span>
+                </div>
+              ) : (
+                <span className='card-price'>Rs {product.price}</span>
+              )}
+
               <button
                 className='cart-icon-btn'
                 disabled={!product.inStock}
                 style={{ opacity: !product.inStock ? 0.5 : 1 }}
                 onClick={e => {
                   e.stopPropagation();
-                  dispatch(addCart(product));
+                  dispatch(addCart({
+                    ...product,
+                    price: calculateFinalPrice(product.price, product.discountType, product.discountValue)
+                  }));
                   toast.success('Added to cart');
                 }}
               >
@@ -305,6 +340,7 @@ const Products = () => {
           </div>
         </div>
       </div>
+
     );
   };
 
@@ -476,9 +512,8 @@ const Products = () => {
                 <nav>
                   <ul className='pagination custom-pagination mb-0 mt-2'>
                     <li
-                      className={`page-item ${
-                        currentPage === 1 ? 'disabled' : ''
-                      }`}
+                      className={`page-item ${currentPage === 1 ? 'disabled' : ''
+                        }`}
                     >
                       <button
                         className='page-link'
@@ -490,9 +525,8 @@ const Products = () => {
                     {Array.from({ length: totalPages }, (_, i) => (
                       <li
                         key={i + 1}
-                        className={`page-item ${
-                          currentPage === i + 1 ? 'active' : ''
-                        }`}
+                        className={`page-item ${currentPage === i + 1 ? 'active' : ''
+                          }`}
                       >
                         <button
                           className='page-link'
@@ -503,9 +537,8 @@ const Products = () => {
                       </li>
                     ))}
                     <li
-                      className={`page-item ${
-                        currentPage === totalPages ? 'disabled' : ''
-                      }`}
+                      className={`page-item ${currentPage === totalPages ? 'disabled' : ''
+                        }`}
                     >
                       <button
                         className='page-link'

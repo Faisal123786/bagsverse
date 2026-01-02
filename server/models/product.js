@@ -95,6 +95,15 @@ const ProductSchema = new Schema({
   created: {
     type: Date,
     default: Date.now
+  },
+  discountType: {
+    type: String,
+    enum: ['percent', 'flat', ''],
+    default: ''
+  },
+  discountValue: {
+    type: Number,
+    default: 0
   }
 });
 
