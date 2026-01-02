@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
-import { Container, Button } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { fetchProducts } from '../api';
 import '../styles/main.scss';
+import { calculateFinalPrice } from '../utils/calculateDiscountedPrice';
 
-// 1. Responsive Settings
 const responsive = {
   superLargeDesktop: { breakpoint: { max: 4000, min: 1200 }, items: 4 },
   desktop: { breakpoint: { max: 1200, min: 992 }, items: 4 },
@@ -14,24 +14,48 @@ const responsive = {
   mobile: { breakpoint: { max: 576, min: 0 }, items: 2 }
 };
 
-// 2. The Product Card Component - UPDATED with hover functionality
-const ProductCard = ({ image, hoverImage, title, price, onClick }) => {
+const ProductCard = ({ image, hoverImage, title, price, discountValue, discountType, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
+
+  const finalPrice = calculateFinalPrice(price, discountType, discountValue);
+
+  const discountPercentage = discountType
+    ? discountType === 'percent'
+      ? discountValue
+      : Math.round((discountValue / price) * 100)
+    : 0;
 
   return (
     <div
       className='product-card mb-4'
       onClick={onClick}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: 'pointer', position: 'relative' }}
     >
-      {/* Image Area - UPDATED with hover effect */}
+      {discountPercentage > 0 && (
+        <span
+          style={{
+            position: 'absolute',
+            top: '10px',
+            left: '10px',
+            backgroundColor: 'red',
+            color: '#fff',
+            padding: '5px 8px',
+            borderRadius: '5px',
+            fontSize: '12px',
+            fontWeight: 'bold',
+            zIndex: 10
+          }}
+        >
+          -{discountPercentage}%
+        </span>
+      )}
+
       <div
         className='product-img-wrapper mb-3'
         onMouseEnter={() => hoverImage && setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        style={{ position: 'relative', overflow: 'hidden' }}
+        style={{ position: 'relative', overflow: 'hidden', borderRadius: '10px' }}
       >
-        {/* Primary Image */}
         <img
           src={image}
           alt={title}
@@ -46,8 +70,6 @@ const ProductCard = ({ image, hoverImage, title, price, onClick }) => {
             e.target.src = 'https://via.placeholder.com/300?text=No+Image';
           }}
         />
-
-        {/* Hover Image (Second Thumbnail) - Only if exists */}
         {hoverImage && (
           <img
             src={hoverImage}
@@ -63,7 +85,7 @@ const ProductCard = ({ image, hoverImage, title, price, onClick }) => {
             }}
             onError={e => {
               e.target.onerror = null;
-              e.target.src = image; // Fallback to primary image
+              e.target.src = image;
             }}
           />
         )}
@@ -76,13 +98,27 @@ const ProductCard = ({ image, hoverImage, title, price, onClick }) => {
         >
           {title}
         </span>
-        <h5 className='product-price mb-0'>{price}</h5>
+        <h5 className='product-price mb-0'>
+          <span
+            style={{
+              textDecoration: discountPercentage > 0 ? 'line-through' : 'none',
+              color: discountPercentage > 0 ? '#999' : '#000'
+            }}
+          >
+            Rs {price} PKR
+          </span>
+
+          {discountPercentage > 0 && (
+            <span style={{ color: '#e60000', fontWeight: 'bold', marginLeft: '5px' }}>
+              Rs {finalPrice} PKR
+            </span>
+          )}
+        </h5>
       </div>
     </div>
   );
 };
 
-// 3. Main Section
 const TrendingProducts = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
@@ -96,71 +132,38 @@ const TrendingProducts = () => {
         console.error('Error fetching products:', error);
       }
     };
-
     loadProducts();
   }, []);
 
   if (!products || products.length === 0) return null;
 
   return (
-    <Container fluid='lg' className='py-3' >
+    <Container fluid='lg' className='py-3'>
       <div className="text-center my-2 py-4">
-        <div className="d-flex flex-column align-items-center">
-          {/* Elegant Top Label */}
-          <p className="mb-2" style={{
-            letterSpacing: '5px',
-            textTransform: 'uppercase',
-            fontSize: '0.7rem',
-            fontWeight: '600',
-            color: 'orange'
-          }}>
-            Exclusive curated
-          </p>
-
-          <h2 style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: '2.8rem',
-            color: '#1a1a1a',
-            fontWeight: '700',
-            lineHeight: '1'
-          }}>
-            Trending on <span style={{ fontStyle: 'italic', fontWeight: '400', color: 'orange' }}>Bagsverse</span>
-          </h2>
-
-          {/* Modern Accent: A dot and a line */}
-          <div className="d-flex align-items-center mt-3">
-            <div style={{ width: '40px', height: '1px', background: '#ddd' }}></div>
-            <div style={{ width: '6px', height: '6px', background: 'orange', borderRadius: '50%', margin: '0 10px' }}></div>
-            <div style={{ width: '40px', height: '1px', background: '#ddd' }}></div>
-          </div>
-        </div>
+        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.8rem', color: '#1a1a1a' }}>
+          Trending on <span style={{ fontStyle: 'italic', fontWeight: '400', color: 'orange' }}>Bagsverse</span>
+        </h2>
       </div>
 
       <Carousel
         responsive={responsive}
-        infinite={true}
-        autoPlay={true}
+        infinite
+        autoPlay
         autoPlaySpeed={4000}
-        keyBoardControl={true}
+        keyBoardControl
         customTransition='transform 500ms ease-in-out'
         transitionDuration={500}
         itemClass='px-2 mt-3'
       >
         {products.map(item => {
-          // 1. Get Primary Image (First Thumbnail)
           const imgUrl =
             item.thumbnails && item.thumbnails.length > 0
               ? item.thumbnails[0].imageUrl
               : 'https://via.placeholder.com/300';
-
-          // 2. Get Hover Image (Second Thumbnail) - NEW
           const hoverImgUrl =
             item.thumbnails && item.thumbnails.length > 1
               ? item.thumbnails[1].imageUrl
               : null;
-
-          // 3. Format Price
-          const formattedPrice = `Rs ${item.price} PKR`;
 
           return (
             <ProductCard
@@ -168,7 +171,9 @@ const TrendingProducts = () => {
               image={imgUrl}
               hoverImage={hoverImgUrl}
               title={item.name}
-              price={formattedPrice}
+              price={item.price}
+              discountValue={item.discountValue || 0}
+              discountType={item.discountType || ''}
               onClick={() => navigate(`/product/${item._id}`)}
             />
           );

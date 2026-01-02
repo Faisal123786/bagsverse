@@ -19,6 +19,7 @@ import Promocard from './Promocard';
 import UserList from './UserList';
 import Order from './Order';
 import BankDetails from './BankDetails';
+import AdminStoreDiscount from './AdminStoreDiscount';
 // Example: get user from localStorage
 const getUser = () => {
   const storedUser = localStorage.getItem('user');
@@ -55,7 +56,8 @@ const AdminLayout = () => {
     { name: 'Promocard', path: '/admin/promocard' },
     { name: 'Orders', path: '/admin/orders' },
     { name: 'Custom Shipping', path: '/admin/custom-shipping' },
-    { name: 'Bank Details', path: '/admin/bank-details' }
+    { name: 'Bank Details', path: '/admin/bank-details' },
+    { name: 'Store Discount', path: '/admin/store-discount' }
     // { name: 'WishList', path: '/admin/wishlist' },
     // { name: 'Support', path: '/admin/support' }
   ];
@@ -168,6 +170,10 @@ const AdminLayout = () => {
                   <Route path='/orders' element={<Order />} />
                   <Route path='/custom-shipping' element={<CustomShipping />} />
                   <Route path='/bank-details' element={<BankDetails />} />
+                  <Route
+                    path='/store-discount'
+                    element={<AdminStoreDiscount />}
+                  />
                 </>
               )}
               {user?.role === 'ROLE MERCHANT' && (

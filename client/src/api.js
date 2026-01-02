@@ -435,11 +435,13 @@ export const fetchShippingConfig = async () => {
     const response = await API.get('/shipping');
     return response.data.config;
   } catch (error) {
-    throw new Error(error.response?.data?.error || 'Failed to fetch shipping config');
+    throw new Error(
+      error.response?.data?.error || 'Failed to fetch shipping config'
+    );
   }
 };
 
-export const saveShippingConfig = async (data) => {
+export const saveShippingConfig = async data => {
   try {
     const response = await API.post('/shipping', data);
     return response.data;
@@ -479,7 +481,7 @@ export const markOrderAsRead = async (orderId, role) => {
     const response = await API.put(`/order/read-status/${orderId}`, { role });
     return response.data;
   } catch (error) {
-    console.error("Failed to mark notification as read", error);
+    console.error('Failed to mark notification as read', error);
     // Even if API fails, we return true to update UI optimistically
     return { success: true };
   }
@@ -498,7 +500,7 @@ export const fetchBanks = async () => {
   }
 };
 
-export const addBank = async (bankData) => {
+export const addBank = async bankData => {
   try {
     const response = await API.post('/bank/add', bankData);
     return response.data;
@@ -516,11 +518,26 @@ export const updateBank = async (id, bankData) => {
   }
 };
 
-export const deleteBank = async (id) => {
+export const deleteBank = async id => {
   try {
     const response = await API.delete(`/bank/delete/${id}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.error || 'Failed to delete bank');
   }
+};
+
+export const getDiscountData = async () => {
+  const res = await API.get('discount/products');
+  return res.data;
+};
+
+export const saveStoreDiscount = async payload => {
+  const res = await API.post('discount/store', payload);
+  return res.data;
+};
+
+export const saveProductDiscount = async (id, payload) => {
+  const res = await API.put(`discount/product/${id}`, payload);
+  return res.data;
 };

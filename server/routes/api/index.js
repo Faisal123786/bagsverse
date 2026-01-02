@@ -18,6 +18,7 @@ const bannerRoutes = require('./banner');
 const promoCardRoutes = require('./promoCards');
 const shippingRoutes = require('./shipping');
 const bankRoutes = require('./bank');
+const discount = require('./discount');
 // auth routes
 router.use('/auth', authRoutes);
 
@@ -63,7 +64,10 @@ router.use('/banner', bannerRoutes);
 // promo cards
 router.use('/promo-cards', promoCardRoutes);
 // shipping
-router.use('/shipping', shippingRoutes)
+router.use('/shipping', shippingRoutes);
 // bank
 router.use('/bank', bankRoutes);
+// discount
+router.use('/discount', discount);
+
 module.exports = router;
