@@ -16,7 +16,8 @@ router.get('/', async (req, res) => {
                 shippingMode: 'fixed',
                 shippingCost: 250,
                 isThresholdActive: true,
-                thresholdValue: 7999
+                thresholdValue: 7999,
+                bankDepositMessage: ''
             };
         }
 
@@ -34,6 +35,7 @@ router.post('/', auth, role.check(ROLES.Admin), async (req, res) => {
             shippingCost: req.body.shippingCost,
             isThresholdActive: req.body.isThresholdActive,
             thresholdValue: req.body.thresholdValue,
+            bankDepositMessage: req.body.bankDepositMessage,
             updated: Date.now()
         };
 

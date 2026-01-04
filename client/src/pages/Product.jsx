@@ -26,6 +26,7 @@ const Product = () => {
 
   const [thresholdActive, setThresholdActive] = useState(false);
   const [thresholdValue, setThresholdValue] = useState(7999);
+  const [bankDepositMessage, setBankDepositMessage] = useState('');
   // --- ADD TO CART ---
   const addProductToCart = (
     productItem,
@@ -107,6 +108,7 @@ const Product = () => {
         if (data) {
           setThresholdActive(data.isThresholdActive);
           setThresholdValue(data.thresholdValue);
+          setBankDepositMessage(data.bankDepositMessage || '');
         }
       } catch (error) {
         console.error(error);
@@ -304,12 +306,21 @@ const Product = () => {
             </div>
             <hr />
             {thresholdActive && <div
-              className='d-flex align-items-center gap-3 text-muted my-4'
+              className='d-flex align-items-center gap-3 text-muted my-2'
               style={{ fontSize: '0.9rem' }}
             >
               <i className='fa fa-cube fa-lg'></i>
               <span>Free Shipping on all orders above Rs. {thresholdValue} PKR!</span>
             </div>}
+            {bankDepositMessage && (
+              <div
+                className='d-flex align-items-center gap-3 text-muted my-2'
+                style={{ fontSize: '0.9rem' }}
+              >
+                <i className='fa fa-bank fa-lg'></i>
+                <span>{bankDepositMessage}</span>
+              </div>
+            )}
             <div className='mt-4'>
               <Accordion flush>
                 <Accordion.Item eventKey='0'>
