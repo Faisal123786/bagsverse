@@ -69,7 +69,7 @@ const AddCategory = () => {
   // -----------------------------------------
   // Handle Image Selection (150x150 Validation)
   // -----------------------------------------
-  const handleImageChange = (e) => {
+  const handleImageChange = e => {
     const file = e.target.files[0];
     setErrorMsg('');
 
@@ -83,7 +83,9 @@ const AddCategory = () => {
           setImageFile(file);
           setImagePreview(objectUrl);
         } else {
-          setErrorMsg(`Error: Image must be exactly 150x150 pixels. Uploaded: ${img.width}x${img.height}`);
+          setErrorMsg(
+            `Error: Image must be exactly 150x150 pixels. Uploaded: ${img.width}x${img.height}`
+          );
           setImageFile(null);
           setImagePreview('');
           e.target.value = null; // Reset input
@@ -91,7 +93,7 @@ const AddCategory = () => {
       };
 
       img.onerror = () => {
-        setErrorMsg("Invalid image file.");
+        setErrorMsg('Invalid image file.');
       };
 
       img.src = objectUrl;
@@ -183,7 +185,9 @@ const AddCategory = () => {
           <Form onSubmit={handleSubmit}>
             {/* Name */}
             <Form.Group as={Row} className='mb-3'>
-              <Form.Label column sm={2}>Name</Form.Label>
+              <Form.Label column sm={2}>
+                Name
+              </Form.Label>
               <Col sm={10}>
                 <Form.Control
                   type='text'
@@ -197,7 +201,9 @@ const AddCategory = () => {
 
             {/* Description */}
             <Form.Group as={Row} className='mb-3'>
-              <Form.Label column sm={2}>Description</Form.Label>
+              <Form.Label column sm={2}>
+                Description
+              </Form.Label>
               <Col sm={10}>
                 <Form.Control
                   as='textarea'
@@ -211,16 +217,25 @@ const AddCategory = () => {
 
             {/* Category Image (New Field) */}
             <Form.Group as={Row} className='mb-3'>
-              <Form.Label column sm={2}>Image <br /><small className="text-danger">(150x150)</small></Form.Label>
+              <Form.Label column sm={2}>
+                Image <br />
+                <small className='text-danger'>(150x150)</small>
+              </Form.Label>
               <Col sm={10}>
                 <Form.Control
-                  type="file"
-                  accept="image/*"
+                  type='file'
+                  accept='image/*'
                   onChange={handleImageChange}
                 />
                 {imagePreview && (
-                  <div className="mt-2">
-                    <Image src={imagePreview} thumbnail width={100} height={100} alt="Preview" />
+                  <div className='mt-2'>
+                    <Image
+                      src={imagePreview}
+                      thumbnail
+                      width={100}
+                      height={100}
+                      alt='Preview'
+                    />
                   </div>
                 )}
               </Col>
@@ -240,7 +255,9 @@ const AddCategory = () => {
 
             {/* Multi Select (Checkbox List) */}
             <Form.Group as={Row} className='mb-4'>
-              <Form.Label column sm={2}>Products</Form.Label>
+              <Form.Label column sm={2}>
+                Products
+              </Form.Label>
               <Col sm={10}>
                 {loadingProducts ? (
                   <div className='d-flex align-items-center'>
@@ -283,11 +300,23 @@ const AddCategory = () => {
                 <Col sm={{ span: 10, offset: 2 }}>
                   <div className='d-flex flex-wrap gap-2'>
                     {selectedProducts.map(id => {
-                      const prod = productList.find(p => p._id === id) || { name: 'Unknown' };
+                      const prod = productList.find(p => p._id === id) || {
+                        name: 'Unknown'
+                      };
                       return (
-                        <Badge key={id} bg='primary' pill className='p-2 d-flex align-items-center'>
+                        <Badge
+                          key={id}
+                          bg='primary'
+                          pill
+                          className='p-2 d-flex align-items-center'
+                        >
                           {prod.name}
-                          <Button size='sm' variant='light' className='ms-2 py-0 px-2' onClick={() => removeProduct(id)}>
+                          <Button
+                            size='sm'
+                            variant='light'
+                            className='ms-2 py-0 px-2'
+                            onClick={() => removeProduct(id)}
+                          >
                             ×
                           </Button>
                         </Badge>
@@ -304,7 +333,12 @@ const AddCategory = () => {
                 <Button type='submit' disabled={loading}>
                   {loading ? (
                     <>
-                      <Spinner as='span' animation='border' size='sm' className='me-2' />
+                      <Spinner
+                        as='span'
+                        animation='border'
+                        size='sm'
+                        className='me-2'
+                      />
                       Adding...
                     </>
                   ) : (
