@@ -12,6 +12,7 @@ const CustomShipping = () => {
     const [cost, setCost] = useState(250);
     const [thresholdActive, setThresholdActive] = useState(true);
     const [thresholdValue, setThresholdValue] = useState(7999);
+    const [bankDepositMessage, setBankDepositMessage] = useState('');
 
     // --- FETCH DATA ---
     useEffect(() => {
@@ -23,6 +24,7 @@ const CustomShipping = () => {
                     setCost(data.shippingCost);
                     setThresholdActive(data.isThresholdActive);
                     setThresholdValue(data.thresholdValue);
+                    setBankDepositMessage(data.bankDepositMessage || '');
                 }
             } catch (error) {
                 console.error(error);
@@ -47,7 +49,8 @@ const CustomShipping = () => {
                 shippingMode: mode,
                 shippingCost: finalCost,
                 isThresholdActive: thresholdActive,
-                thresholdValue: thresholdValue
+                thresholdValue: thresholdValue,
+                bankDepositMessage: bankDepositMessage
             };
 
             await saveShippingConfig(payload);
@@ -176,6 +179,28 @@ const CustomShipping = () => {
                                 </Form.Text>
                             </div>
 
+                        </Card.Body>
+                    </Card>
+
+                    {/* --- BANK DEPOSIT MESSAGE CARD --- */}
+                    <Card className="border-0 shadow-sm mb-4">
+                        <Card.Header className="bg-white py-3">
+                            <h5 className="mb-0 fw-bold">Bank Deposit Message</h5>
+                        </Card.Header>
+                        <Card.Body className="p-4">
+                            <Form.Group>
+                                <Form.Label>Message for Bank Deposit / Online Payment</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={3}
+                                    value={bankDepositMessage}
+                                    onChange={(e) => setBankDepositMessage(e.target.value)}
+                                    placeholder="e.g. If you pay online via bank deposit, shipping is free."
+                                />
+                                <Form.Text className="text-muted">
+                                    This message will be displayed to the user during checkout if Bank Deposit is available.
+                                </Form.Text>
+                            </Form.Group>
                         </Card.Body>
                     </Card>
 

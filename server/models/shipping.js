@@ -26,6 +26,11 @@ const ShippingSchema = new Schema({
         type: Number,
         default: 7999
     },
+    // Bank Deposit Message
+    bankDepositMessage: {
+        type: String,
+        default: ''
+    },
     updated: {
         type: Date,
         default: Date.now
