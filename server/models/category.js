@@ -37,6 +37,12 @@ const CategorySchema = new Schema({
     type: Boolean,
     default: true
   },
+  images: [
+    {
+      imageUrl: { type: String, required: true },
+      imageKey: { type: String, required: true }
+    }
+  ],
   products: [
     {
       type: Schema.Types.ObjectId,

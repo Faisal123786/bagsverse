@@ -26,25 +26,11 @@ const responsive = {
   }
 };
 
-// 2. Ten Dummy Images (High Quality Fashion/Bags)
-const dummyImages = [
-  "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=400&auto=format&fit=crop", // Bag 1
-  "https://images.unsplash.com/photo-1591561954557-26941169b49e?q=80&w=400&auto=format&fit=crop", // Bag 2
-  "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=400&auto=format&fit=crop", // Bag 3
-  "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=400&auto=format&fit=crop", // Bag 4
-  "https://images.unsplash.com/photo-1627123424574-724758594e93?q=80&w=400&auto=format&fit=crop", // Wallet
-  "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=400&auto=format&fit=crop", // Backpack
-  "https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?q=80&w=400&auto=format&fit=crop", // Purse
-  "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?q=80&w=400&auto=format&fit=crop", // Satchel
-  "https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?q=80&w=400&auto=format&fit=crop", // Clutch
-  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop", // Watch/Accessory
-];
 
-// 3. The Circular Card Component
 const CollectionCard = ({ image, title, onClick }) => {
   return (
     <div className="collection-card text-center mx-2" onClick={onClick} style={{ cursor: 'pointer' }}>
-      <div className="img-wrapper">
+      <div className="img-wrapper" style={{ border: '1px solid #d7d7d7' }}>
         <img src={image} alt={title} draggable={false} />
       </div>
       <h5 className="mt-3 collection-title">{title}</h5>
@@ -60,8 +46,6 @@ const CategoryCarousel = () => {
     const loadCategories = async () => {
       try {
         const data = await fetchCategories();
-        console.log("Fetched categories:", data);
-        // Ensure data is an array before setting
         if (Array.isArray(data)) {
           setCategories(data);
         } else {
@@ -127,7 +111,7 @@ const CategoryCarousel = () => {
         {categories.map((cat, index) => {
           // Use modulo operator (%) to cycle through the 10 images repeatedly 
           // if there are more categories than images.
-          const imgUrl = dummyImages[index % dummyImages.length];
+          const imgUrl = cat.images[0]?.imageUrl || `https://picsum.photos/seed/category${index % 10}/300/300`;
 
           return (
             <CollectionCard
