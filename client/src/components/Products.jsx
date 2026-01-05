@@ -141,15 +141,20 @@ const Products = () => {
 
     if (selectedCategory !== 'All') {
       const matchedCat = categories.find(c => c.name === selectedCategory);
-      if (matchedCat && matchedCat.products) {
-        updated = updated.filter(p => matchedCat.products.includes(p.id));
+      if (matchedCat?.products) {
+        updated = updated.filter(p =>
+          matchedCat.products.includes(p.id)
+        );
       } else {
         updated = [];
       }
     }
 
     updated = updated.filter(item => {
-      const isPriceMatch = item.price >= minVal && item.price <= maxVal;
+      const effectivePrice = calculateFinalPrice(item?.price, item?.discountType, item?.discountValue);
+
+      const isPriceMatch =
+        effectivePrice >= minVal && effectivePrice <= maxVal;
 
       let isStockMatch = true;
       if (stockFilter.inStock && !stockFilter.outOfStock) {
@@ -160,10 +165,10 @@ const Products = () => {
 
       return isPriceMatch && isStockMatch;
     });
-
     setCurrentPage(1);
     setFilteredProducts(updated);
   };
+
 
   const handleRangeChange = (e, type) => {
     const value = Math.max(Number(e.target.value), 0);
