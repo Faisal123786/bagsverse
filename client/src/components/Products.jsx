@@ -121,7 +121,6 @@ const Products = () => {
                   item.discountType,
                   item.discountValue
                 );
-                console.log('final price' + finalPrice);
               }
 
               return finalPrice <= extractedPrice;
