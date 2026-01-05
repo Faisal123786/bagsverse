@@ -101,7 +101,7 @@ const Products = () => {
           }
         }
         else if (incomingPrice) {
-          console.log('Applying Price Filter:', incomingPrice);
+          console.log('Applyings Price Filter:', incomingPrice);
           setSelectedCategory('All');
 
           const extractedPrice = parseInt(
@@ -116,12 +116,12 @@ const Products = () => {
               let finalPrice = item.price;
 
               if (item.discountValue && item.discountValue > 0) {
-                if (item.discountType === 'percentage') {
-                  finalPrice =
-                    item.price - (item.price * item.discountValue) / 100;
-                } else if (item.discountType === 'flat') {
-                  finalPrice = item.price - item.discountValue;
-                }
+                finalPrice = calculateFinalPrice(
+                  item.price,
+                  item.discountType,
+                  item.discountValue
+                );
+                console.log('final price' + finalPrice);
               }
 
               return finalPrice <= extractedPrice;
