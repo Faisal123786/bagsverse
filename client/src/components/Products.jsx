@@ -100,7 +100,6 @@ const Products = () => {
             setFilteredProducts([]);
           }
         }
-        // CASE 2: Incoming Price
         else if (incomingPrice) {
           console.log('Applying Price Filter:', incomingPrice);
           setSelectedCategory('All');
@@ -109,17 +108,31 @@ const Products = () => {
             String(incomingPrice).replace(/[^0-9]/g, ''),
             10
           );
+
           if (!isNaN(extractedPrice)) {
             if (extractedPrice < maxLimit) setMaxVal(extractedPrice);
-            const priceFiltered = mappedProducts.filter(
-              item => item.price <= extractedPrice
-            );
+
+            const priceFiltered = mappedProducts.filter(item => {
+              let finalPrice = item.price;
+
+              if (item.discountValue && item.discountValue > 0) {
+                if (item.discountType === 'percentage') {
+                  finalPrice =
+                    item.price - (item.price * item.discountValue) / 100;
+                } else if (item.discountType === 'flat') {
+                  finalPrice = item.price - item.discountValue;
+                }
+              }
+
+              return finalPrice <= extractedPrice;
+            });
+
             setFilteredProducts(priceFiltered);
           } else {
             setFilteredProducts(mappedProducts);
           }
         }
-        // CASE 3: Default
+
         else {
           setSelectedCategory('All');
           setFilteredProducts(mappedProducts);
@@ -140,6 +153,7 @@ const Products = () => {
     let updated = products;
 
     if (selectedCategory !== 'All') {
+      console.log('sdsdsdddddddddddddddd');
       const matchedCat = categories.find(c => c.name === selectedCategory);
       if (matchedCat?.products) {
         updated = updated.filter(p =>
@@ -151,6 +165,7 @@ const Products = () => {
     }
 
     updated = updated.filter(item => {
+      console.log('sadddddddddddddddd');
       const effectivePrice = calculateFinalPrice(item?.price, item?.discountType, item?.discountValue);
 
       const isPriceMatch =
