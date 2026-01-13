@@ -33,6 +33,15 @@ import PublicRoute from './components/PublicRoute';
 import AdminLayout from './admin';
 import WhatsappButton from './components/WhatsappButton';
 import GoogleAuthSuccess from './pages/GoogleAuthSuccess';
+import ReactPixel from 'react-facebook-pixel';
+
+const options = {
+  autoConfig: true, 
+  debug: false,    
+};
+
+ReactPixel.init('1420203502948138', options);
+ReactPixel.pageView();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
