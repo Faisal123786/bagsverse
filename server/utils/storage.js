@@ -40,8 +40,8 @@ exports.s3Upload = async image => {
 
       const s3Upload = await s3bucket.upload(params).promise();
 
-      imageUrl = s3Upload.Location;
-      imageKey = s3Upload.Key; // Fixed: Changed from 'key' to 'Key'
+      imageKey = s3Upload.Key;
+      imageUrl = `https://cdn.bagsverse.com/${imageKey}`;
     }
 
     return { imageUrl, imageKey };
